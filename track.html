@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>document.documentElement.className += ' js';</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#170F0F">
+<title>Track your order — CanadaEhPeps</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="disclaimer-bar">
+  RESEARCH USE ONLY. Not for human consumption. Not a drug, food, or cosmetic. For laboratory and in-vitro research use by qualified professionals.
+</div>
+
+<header>
+  <nav>
+    <div class="brand-group">
+      <a class="logo" href="index.html" aria-label="CanadaEhPeps home">
+        <span class="logo-stack">
+          <svg class="ca-flag" viewBox="0 0 40 20" aria-hidden="true">
+            <rect width="40" height="20" fill="#FFFFFF"/><rect width="10" height="20" fill="#DA291C"/><rect x="30" width="10" height="20" fill="#DA291C"/>
+            <path fill="#DA291C" transform="translate(20,10)" d="M0,-8 L1.1,-5.2 L3.8,-6.2 L2.9,-3.3 L6.4,-4.1 L5.2,-1.4 L8,-0.5 L4.7,0.7 L5.6,3.3 L2.5,2.3 L1.2,3.2 L1.2,7.6 L-1.2,7.6 L-1.2,3.2 L-2.5,2.3 L-5.6,3.3 L-4.7,0.7 L-8,-0.5 L-5.2,-1.4 L-6.4,-4.1 L-2.9,-3.3 L-3.8,-6.2 L-1.1,-5.2 Z"/>
+          </svg>
+          <span>CanadaEhPeps</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="navlinks">
+      <a href="group-buys.html">Group Buys</a>
+      <a href="bulk-orders.html">Bulk</a>
+      <a href="coas.html">COAs</a>
+      <a href="#footer" data-support-open>Support</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+
+    <div class="icon-cluster">
+      <a class="icon-btn" href="account.html" aria-label="Account" title="Account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.2c.8-3.4 3.9-5.2 7.5-5.2s6.7 1.8 7.5 5.2"/></svg>
+      </a>
+      <a class="icon-btn" href="cart.html" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8h13l-1.1 12.5H6.6L5.5 8z"/><path d="M9 8V6.5a3 3 0 016 0V8"/></svg>
+      </a>
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle light / dark theme" aria-pressed="true"><span class="theme-toggle-icon">☽</span></button>
+      <button class="icon-btn hamburger-btn" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" data-open="false">
+      <a href="group-buys.html">Group Buys</a>
+      <a href="bulk-orders.html">Bulk Orders</a>
+      <a href="coas.html">COAs</a>
+      <a href="#footer" data-support-open>Support</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <div class="section-head"><span class="section-tag">Orders</span><h2>Track your order.</h2><p>Find the carrier and tracking number for a shipped order, then continue to the carrier's official tracking page.</p></div>
+      <form class="track-form" id="track-form">
+        <input class="field-input" id="track-input" type="text" placeholder="Order or lot number — try TEP-1042" autocomplete="off" aria-label="Order or lot number">
+        <button class="btn btn-primary" type="submit">Find shipment</button>
+      </form>
+      <p class="demo-note">DEMO MODE — real tracking links are emailed when orders ship. Try: TEP-1042 · TEP-1077 · GB-0109</p>
+      <div id="track-output" aria-live="polite"></div>
+      <p class="track-fine">Live movement and delivery scans come from the carrier on its official site. Scans can lag after a label is created or a package is first accepted.</p>
+    </div>
+  </section>
+</main>
+
+<footer id="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo">
+        <svg width="26" height="13" viewBox="0 0 40 20" aria-hidden="true">
+          <rect width="40" height="20" fill="#FFFFFF"/><rect width="10" height="20" fill="#DA291C"/><rect x="30" width="10" height="20" fill="#DA291C"/>
+          <path fill="#DA291C" transform="translate(20,10)" d="M0,-8 L1.1,-5.2 L3.8,-6.2 L2.9,-3.3 L6.4,-4.1 L5.2,-1.4 L8,-0.5 L4.7,0.7 L5.6,3.3 L2.5,2.3 L1.2,3.2 L1.2,7.6 L-1.2,7.6 L-1.2,3.2 L-2.5,2.3 L-5.6,3.3 L-4.7,0.7 L-8,-0.5 L-5.2,-1.4 L-6.4,-4.1 L-2.9,-3.3 L-3.8,-6.2 L-1.1,-5.2 Z"/>
+        </svg>
+        CanadaEhPeps
+      </div>
+      <p>Group buys and bulk research-peptide orders at batch pricing. Canadian-run. Crypto-only.</p>
+    </div>
+    <div class="footer-col"><h4>Shop</h4><a href="group-buys.html">Group Buys</a><a href="bulk-orders.html">Bulk Orders</a><a href="coas.html">COAs</a><a href="track.html">Track Order</a></div>
+    <div class="footer-col"><h4>Info</h4><a href="faq.html">FAQ</a><a href="learn.html">Learn</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refunds.html">Refund Policy</a></div>
+    <div class="footer-col"><h4>Contact</h4><a href="#">Telegram</a><a href="#">Signal</a><a href="#footer" data-support-open>Support</a></div>
+  </div>
+  <div class="footer-legal">
+    <p>© 2026 CanadaEhPeps. All products are sold strictly for research and laboratory use only. Not for human or veterinary use, not a food, drug, or cosmetic. Buyer confirms they are a qualified researcher purchasing for lawful research purposes.</p>
+    <p class="footer-tag">The Canadian way. With CanadaEhPeps
+      <span class="tag-icons" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M21.9 3.4c.3-1.1-.4-1.7-1.4-1.3L2.5 9.2c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 10.7-6.8c.5-.3 1-.1.6.3l-8.6 7.8-.3 4.8c.4 0 .6-.2.9-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.9l3-15.7z"/></svg>
+        <span class="btc">₿</span>
+      </span>
+    </p>
+  </div>
+</footer>
+
+<div class="support-overlay" id="support-overlay" data-open="false">
+  <div class="support-pop" id="support-pop" role="dialog" aria-labelledby="support-title">
+    <button class="icon-btn support-close" id="support-close" aria-label="Close support popup">✕</button>
+    <h3 id="support-title">Support</h3>
+    <p class="support-sub">Reach us on Telegram or Signal. Handles get posted here as soon as they're live.</p>
+    <div class="support-row"><span>TELEGRAM</span><span>@ — reserved</span></div>
+    <div class="support-row"><span>SIGNAL</span><span>— reserved</span></div>
+    <p class="support-fine">CONTACT DETAILS WILL BE FILLED IN HERE ONCE SET UP.</p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+/* Track Order — demo lookup only */
+(function(){
+  var f = document.getElementById('track-form');
+  var i = document.getElementById('track-input');
+  var o = document.getElementById('track-output');
+  if(!f || !i || !o) return;
+  var d = {
+    'TEP-1042': {carrier:'Canada Post', tracking:'0032 4567 8901 2345', status:'In transit', dest:'Toronto, ON'},
+    'TEP-1077': {carrier:'UPS', tracking:'1Z 447 2X8 03 9914 2206', status:'Out for delivery', dest:'Austin, TX'},
+    'GB-0109':  {carrier:'Royal Mail', tracking:'RR 2048 7731 5GB', status:'Delivered', dest:'Manchester, UK'}
+  };
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    var k = i.value.trim().toUpperCase();
+    var h = d[k];
+    if(h){
+      o.innerHTML = '<div class="track-result"><div class="result-title">Shipment found — ' + k + '</div>'
+        + '<div class="row"><span>Carrier</span><span>' + h.carrier + '</span></div>'
+        + '<div class="row"><span>Tracking number</span><span>' + h.tracking + '</span></div>'
+        + '<div class="row"><span>Status</span><span>' + h.status + '</span></div>'
+        + '<div class="row"><span>Destination</span><span>' + h.dest + '</span></div>'
+        + '<a class="btn btn-primary btn-sm" href="#" aria-disabled="true">Track with carrier</a></div>';
+    } else if(k === ''){
+      o.innerHTML = '<div class="track-miss">Enter an order or lot number to look it up.</div>';
+    } else {
+      o.innerHTML = '<div class="track-miss">Nothing found for "' + k + '". Double-check the number from your shipment email, or contact support.</div>';
+    }
+  });
+})();
+</script>
+</body>
+</html>
