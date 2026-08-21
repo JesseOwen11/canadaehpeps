@@ -253,4 +253,46 @@
   function makeRef(){
     var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     var out = '';
-    for(var i=0;i<5;i++){ out += chars.charAt(Math.floor(Math.random()*chars.length));
+    for(var i=0;i<5;i++){ out += chars.charAt(Math.floor(Math.random()*chars.length)); }
+    return 'CEP-' + out;
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    var ref = makeRef();
+    var payload = {
+      order_ref: ref,
+      customer_name: val('f-name'),
+      email: val('f-email'),
+      telegram: val('f-telegram') || 'none',
+      product: val('f-product'),
+      quantity: parseInt(val('f-qty'),10) || 1,
+      coin: val('f-coin') || 'not sure yet',
+      txid: val('f-txid') || null,
+      ship_address: val('f-addr'),
+      ship_city: val('f-city'),
+      ship_province: val('f-prov') || null,
+      ship_postal: val('f-postal'),
+      ship_country: val('f-country'),
+      status: 'pending',
+      admin_notes: val('f-notes') || null
+    };
+    db.from('orders').insert(payload).then(function(result){
+      if(result.error){
+        btn.disabled = false;
+        btn.textContent = 'Submit order';
+        alert('Something went wrong sending your order. Please try again, or contact support.\n\n(' + result.error.message + ')');
+        return;
+      }
+      form.style.display = 'none';
+      document.getElementById('success-ref').textContent = ref;
+      successBox.style.display = 'block';
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+})();
+</script>
+</body>
+</html>
