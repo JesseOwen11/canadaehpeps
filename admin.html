@@ -42,6 +42,8 @@
   .oc-status-row{display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
   .oc-status-row label{font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft);}
   .oc-status{padding:9px 14px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--bg); color:var(--ink); font-family:'Space Mono',monospace; font-size:0.72rem; font-weight:700; cursor:pointer;}
+  .oc-delete{color:var(--rust-deep); border:2px solid var(--rust-deep);}
+  .oc-delete:hover{background:var(--rust-deep); color:#fff;}
   .oc-notes{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
   .oc-notes textarea{flex:1; min-width:220px; border-radius:var(--r-md); border:2px solid var(--ink); background:var(--bg); color:var(--ink); padding:10px 14px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; font-weight:500; min-height:44px; resize:vertical;}
   .empty-note{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:36px 24px; text-align:center; color:var(--ink-soft); font-weight:500;}
@@ -60,7 +62,6 @@
   </div>
 </div>
 
-<!-- LOGIN -->
 <div class="login-wrap" id="login-view" style="display:none;">
   <div class="login-card">
     <h2>Staff sign-in</h2>
@@ -71,7 +72,6 @@
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div class="dash-wrap" id="dash-view" style="display:none;">
   <div class="summary" id="summary"></div>
   <div id="orders-list"></div>
@@ -87,7 +87,6 @@
 
   var urlKey = new URLSearchParams(window.location.search).get('key');
 
-  /* Wrong or missing key: show a boring fake 404 and stop here */
   if(urlKey !== STAFF_KEY){
     document.getElementById('login-view').style.display = 'block';
     document.getElementById('login-view').innerHTML =
@@ -168,7 +167,7 @@
           '<div class="oc-row"><span>TXID</span><span>' + (o.txid ? esc(o.txid) : '—') + '</span></div>' +
           '<div class="oc-row"><span>Ship to</span><span>' + esc(o.ship_address) + ', ' + esc(o.ship_city) + ', ' + esc(o.ship_province || '') + ' ' + esc(o.ship_postal) + ', ' + esc(o.ship_country) + '</span></div>' +
         '</div>' +
-        '<div class="oc-status-row"><label>Status</label><select class="oc-status" data-id="' + o.id + '">' + opts + '</select><span class="saved-flash" id="flash-' + o.id + '">SAVED ✓</span></div>' +
+        '<div class="oc-status-row"><label>Status</label><select class="oc-status" data-id="' + o.id + '">' + opts + '</select><span class="saved-flash" id="flash-' + o.id + '">SAVED ✓</span><button class="btn btn-ghost btn-sm oc-delete" data-del-id="' + o.id + '" style="margin-left:auto;">Delete</button></div>' +
         '<div class="oc-notes"><textarea data-notes-id="' + o.id + '" placeholder="Private notes (only you see these)">' + esc(o.admin_notes || '') + '</textarea><button class="btn btn-ghost btn-sm" data-save-id="' + o.id + '">Save notes</button></div>' +
       '</div>';
     }).join('');
@@ -187,6 +186,23 @@
         var ta = list.querySelector('[data-notes-id="' + id + '"]');
         db.from('orders').update({ admin_notes: ta.value }).eq('id', id).then(function(r){
           if(!r.error){ flash(id); }
+        });
+      });
+    });
+    list.querySelectorAll('[data-del-id]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-del-id');
+        if(!confirm('Delete this order permanently? This cannot be undone.')) return;
+        btn.disabled = true;
+        btn.textContent = 'Deleting…';
+        db.from('orders').delete().eq('id', id).then(function(r){
+          if(r.error){
+            btn.disabled = false;
+            btn.textContent = 'Delete';
+            alert('Could not delete: ' + r.error.message);
+            return;
+          }
+          loadOrders();
         });
       });
     });
