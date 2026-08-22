@@ -16,25 +16,31 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .acct-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:28px 22px; max-width:560px; margin-bottom:18px;}
-  .auth-tabs{display:flex; gap:10px; margin-bottom:20px;}
-  .auth-tab{flex:1; padding:11px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--bg); font-family:'Space Mono',monospace; font-size:0.7rem; font-weight:700; cursor:pointer; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;}
-  .auth-tab.active{background:var(--plum); color:#fff; border-color:var(--plum);}
-  .acct-field{margin-bottom:14px;}
+  .acct-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:26px 22px; max-width:680px; margin-bottom:16px;}
+  .acct-card h3{font-size:1.25rem; margin-bottom:12px;}
+  .card-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .acct-email{font-family:'Space Mono',monospace; font-size:0.8rem; font-weight:700;}
+  .acct-sub{font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--ink-soft); margin-top:4px;}
   .acct-label{display:block; font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:0 0 6px 14px;}
-  .auth-msg{color:var(--rust-deep); font-size:0.82rem; font-weight:700; margin-top:12px; min-height:1.2em;}
-  .auth-msg.ok{color:var(--ink-soft);}
-  .acct-email{font-family:'Space Mono',monospace; font-size:0.78rem; color:var(--ink-soft); margin-bottom:18px;}
+  .acct-field{margin-bottom:14px;}
   .two{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   @media (max-width:520px){ .two{grid-template-columns:1fr;} }
+  select.field-input{appearance:none; cursor:pointer;}
   .saved-flash{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; color:var(--rust-deep); opacity:0; transition:opacity .3s; margin-left:10px;}
   .saved-flash.show{opacity:1;}
-  .hist-item{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:12px 0; border-bottom:1px dashed rgba(122,43,43,0.2); font-size:0.86rem; font-weight:600;}
+  .hist-item{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:12px 0; border-bottom:1px dashed rgba(122,43,43,0.2); font-size:0.86rem; font-weight:600; align-items:center;}
   .hist-item:last-child{border-bottom:none;}
   .hist-ref{font-family:'Space Mono',monospace; font-weight:700;}
-  .hist-status{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; text-transform:uppercase; background:var(--bg); border:2px solid var(--ink); border-radius:var(--r-pill); padding:4px 12px; color:var(--ink-soft); align-self:center;}
+  .hist-status{font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; background:var(--bg); border:2px solid var(--ink); border-radius:var(--r-pill); padding:4px 12px; color:var(--ink-soft);}
   .hist-empty{color:var(--ink-soft); font-weight:500; font-size:0.88rem;}
-  .next-banner{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:18px 22px; max-width:560px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .set-block{padding:16px 0; border-bottom:1px dashed rgba(122,43,43,0.2);}
+  .set-block:last-child{border-bottom:none; padding-bottom:0;}
+  .set-block h4{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--rust-deep); margin-bottom:10px;}
+  .set-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .set-row input{flex:1; min-width:200px;}
+  .set-msg{font-size:0.76rem; font-weight:700; color:var(--ink-soft); margin-top:8px; min-height:1em;}
+  .set-msg.err{color:var(--rust-deep);}
+  .next-banner{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:18px 22px; max-width:680px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
   .next-banner p{font-weight:600; font-size:0.9rem; margin:0;}
 </style>
 </head>
@@ -95,84 +101,109 @@
       <div class="section-head">
         <span class="section-tag">Account</span>
         <h2>Your account.</h2>
-        <p>Save your shipping details once, track your orders, and check out in seconds.</p>
+        <p>Your email, orders, shipping address, and settings — all in one place, eh.</p>
       </div>
 
-      <!-- continue-to-checkout banner (only when arriving from checkout) -->
+      <!-- signed-out gate -->
+      <div class="acct-card" id="gate-card" style="text-align:center;">
+        <h3>Sign in to see your account</h3>
+        <p style="color:var(--ink-soft); font-weight:500; max-width:420px; margin:0 auto 18px;">Your orders, saved shipping address, and settings live here. Sign in or create a free account — takes ten seconds.</p>
+        <button class="btn btn-primary" id="gate-btn">Sign in / Create account</button>
+      </div>
+
+      <!-- continue-to-checkout banner -->
       <div class="next-banner" id="next-banner" style="display:none;">
         <p>Signed in and ready, eh.</p>
         <a class="btn btn-primary btn-sm" id="next-btn" href="cart.html">Continue to checkout →</a>
       </div>
 
-      <!-- AUTH CARD -->
-      <div class="acct-card" id="auth-card">
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="tab-signin">Sign in</button>
-          <button class="auth-tab" id="tab-create">Create account</button>
-        </div>
-        <div class="acct-field">
-          <label class="acct-label" for="auth-email">Email</label>
-          <input class="field-input" id="auth-email" type="email" autocomplete="email" placeholder="you@example.com">
-        </div>
-        <div class="acct-field">
-          <label class="acct-label" for="auth-pass">Password</label>
-          <input class="field-input" id="auth-pass" type="password" autocomplete="current-password" placeholder="••••••••">
-        </div>
-        <button class="btn btn-primary" id="auth-btn" style="width:100%;">Sign in</button>
-        <div class="auth-msg" id="auth-msg"></div>
-        <p class="form-note" style="margin-top:14px;">Creating an account takes ten seconds — no email verification needed. Your password must be at least 8 characters.</p>
-      </div>
+      <!-- signed-in dashboard -->
+      <div id="dash" style="display:none;">
 
-      <!-- ACCOUNT CARD -->
-      <div class="acct-card" id="account-card" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="acct-card">
+          <div class="card-head">
+            <h3 style="margin:0;">Account</h3>
+            <button class="btn btn-ghost btn-sm" id="signout-btn">Sign out</button>
+          </div>
           <div class="acct-email" id="acct-email">—</div>
-          <button class="btn btn-ghost btn-sm" id="signout-btn">Sign out</button>
+          <div class="acct-sub" id="acct-since">—</div>
         </div>
 
-        <h3 style="margin:14px 0 4px;">Shipping details</h3>
-        <p class="form-note" style="margin:0 0 16px;">Saved to your account and used automatically at checkout.</p>
-
-        <div class="acct-field">
-          <label class="acct-label" for="p-name">Name</label>
-          <input class="field-input" id="p-name" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
-        </div>
-        <div class="acct-field">
-          <label class="acct-label" for="p-addr">Street address</label>
-          <input class="field-input" id="p-addr" type="text" maxlength="200" autocomplete="street-address" placeholder="123 Example St, Unit 4">
-        </div>
-        <div class="two">
-          <div class="acct-field">
-            <label class="acct-label" for="p-city">City</label>
-            <input class="field-input" id="p-city" type="text" maxlength="80" autocomplete="address-level2" placeholder="City">
-          </div>
-          <div class="acct-field">
-            <label class="acct-label" for="p-prov">Province / State</label>
-            <input class="field-input" id="p-prov" type="text" maxlength="60" autocomplete="address-level1" placeholder="ON / BC / etc.">
-          </div>
-        </div>
-        <div class="two">
-          <div class="acct-field">
-            <label class="acct-label" for="p-postal">Postal / ZIP code</label>
-            <input class="field-input" id="p-postal" type="text" maxlength="20" autocomplete="postal-code" placeholder="M5V 2T6">
-          </div>
-          <div class="acct-field">
-            <label class="acct-label" for="p-country">Country</label>
-            <select class="field-input" id="p-country" style="appearance:none; cursor:pointer;">
-              <option selected>Canada</option>
-              <option>United States</option>
-              <option>United Kingdom</option>
-              <option>Other</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center;">
-          <button class="btn btn-primary btn-sm" id="save-profile-btn">Save shipping details</button>
-          <span class="saved-flash" id="profile-flash">SAVED ✓</span>
+        <div class="acct-card">
+          <h3>Your orders</h3>
+          <div id="history-list"><p class="hist-empty">Loading…</p></div>
         </div>
 
-        <h3 style="margin:28px 0 6px;">Your orders</h3>
-        <div id="history-list"><p class="hist-empty">Loading…</p></div>
+        <div class="acct-card">
+          <h3>Shipping address</h3>
+          <p style="color:var(--ink-soft); font-weight:500; font-size:0.84rem; margin:-6px 0 16px;">Saved here and used automatically at checkout.</p>
+          <div class="acct-field">
+            <label class="acct-label" for="p-name">Name</label>
+            <input class="field-input" id="p-name" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
+          </div>
+          <div class="acct-field">
+            <label class="acct-label" for="p-addr">Street address</label>
+            <input class="field-input" id="p-addr" type="text" maxlength="200" autocomplete="street-address" placeholder="123 Example St, Unit 4">
+          </div>
+          <div class="two">
+            <div class="acct-field">
+              <label class="acct-label" for="p-city">City</label>
+              <input class="field-input" id="p-city" type="text" maxlength="80" autocomplete="address-level2" placeholder="City">
+            </div>
+            <div class="acct-field">
+              <label class="acct-label" for="p-prov">Province / State</label>
+              <input class="field-input" id="p-prov" type="text" maxlength="60" autocomplete="address-level1" placeholder="ON / BC / etc.">
+            </div>
+          </div>
+          <div class="two">
+            <div class="acct-field">
+              <label class="acct-label" for="p-postal">Postal / ZIP code</label>
+              <input class="field-input" id="p-postal" type="text" maxlength="20" autocomplete="postal-code" placeholder="M5V 2T6">
+            </div>
+            <div class="acct-field">
+              <label class="acct-label" for="p-country">Country</label>
+              <select class="field-input" id="p-country">
+                <option selected>Canada</option>
+                <option>United States</option>
+                <option>United Kingdom</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <button class="btn btn-primary btn-sm" id="save-profile-btn">Save address</button>
+            <span class="saved-flash" id="profile-flash">SAVED ✓</span>
+          </div>
+        </div>
+
+        <div class="acct-card">
+          <h3>Settings</h3>
+
+          <div class="set-block">
+            <h4>Change email</h4>
+            <div class="set-row">
+              <input class="field-input" id="new-email" type="email" maxlength="150" placeholder="New email address">
+              <button class="btn btn-ghost btn-sm" id="upd-email-btn">Update email</button>
+            </div>
+            <div class="set-msg" id="email-msg"></div>
+          </div>
+
+          <div class="set-block">
+            <h4>Change password</h4>
+            <div class="set-row">
+              <input class="field-input" id="new-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
+              <input class="field-input" id="new-pass2" type="password" autocomplete="new-password" placeholder="Repeat it">
+              <button class="btn btn-ghost btn-sm" id="upd-pass-btn">Update password</button>
+            </div>
+            <div class="set-msg" id="pass-msg"></div>
+          </div>
+
+          <div class="set-block">
+            <h4>Two-factor authentication (2FA)</h4>
+            <p style="font-size:0.84rem; font-weight:500; color:var(--ink-soft); margin:0;">Coming soon — we're adding app-based 2FA for accounts. For now, use a strong, unique password.</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -219,21 +250,18 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Account: sign-in / create / shipping profile / order history */
+/* Account dashboard: email, orders, address, settings */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  var authCard = document.getElementById('auth-card');
-  var accountCard = document.getElementById('account-card');
+  var gate = document.getElementById('gate-card');
+  var dash = document.getElementById('dash');
   var nextBanner = document.getElementById('next-banner');
-  var msg = document.getElementById('auth-msg');
-  var authBtn = document.getElementById('auth-btn');
-  var mode = 'signin';
   var hasProfile = false;
+  var currentUser = null;
 
-  /* safe redirect target (filenames like cart.html only) */
   var nextUrl = new URLSearchParams(window.location.search).get('next');
   if(!nextUrl || !/^[a-zA-Z0-9_-]+\.html$/.test(nextUrl)){ nextUrl = null; }
 
@@ -243,81 +271,36 @@
     });
   }
 
-  function showAuth(){ authCard.style.display='block'; accountCard.style.display='none'; nextBanner.style.display='none'; }
-  function showAccount(){
-    authCard.style.display='none';
-    accountCard.style.display='block';
+  function showGate(){
+    gate.style.display = 'block';
+    dash.style.display = 'none';
+    nextBanner.style.display = 'none';
+  }
+  function showDash(){
+    gate.style.display = 'none';
+    dash.style.display = 'block';
     if(nextUrl){
-      nextBanner.style.display='flex';
+      nextBanner.style.display = 'flex';
       document.getElementById('next-btn').setAttribute('href', nextUrl);
     }
   }
 
-  function setMode(m){
-    mode = m;
-    document.getElementById('tab-signin').classList.toggle('active', m==='signin');
-    document.getElementById('tab-create').classList.toggle('active', m==='create');
-    authBtn.textContent = m==='signin' ? 'Sign in' : 'Create account';
-    document.getElementById('auth-pass').setAttribute('autocomplete', m==='signin' ? 'current-password' : 'new-password');
-    msg.textContent = '';
-  }
-
-  document.getElementById('tab-signin').addEventListener('click', function(){ setMode('signin'); });
-  document.getElementById('tab-create').addEventListener('click', function(){ setMode('create'); });
-
-  authBtn.addEventListener('click', async function(){
-    var email = document.getElementById('auth-email').value.trim();
-    var pass = document.getElementById('auth-pass').value;
-    msg.classList.remove('ok');
-    msg.textContent = '';
-    if(!email || !pass){ msg.textContent = 'Enter your email and password.'; return; }
-    if(pass.length < 8){ msg.textContent = 'Password must be at least 8 characters.'; return; }
-    authBtn.disabled = true;
-
-    if(mode === 'signin'){
-      var r = await db.auth.signInWithPassword({ email: email, password: pass });
-      if(r.error){
-        msg.textContent = 'Could not sign in — check your email and password.';
-        authBtn.disabled = false;
-        return;
-      }
-      afterAuth();
-    } else {
-      var s = await db.auth.signUp({ email: email, password: pass });
-      if(s.error){
-        msg.textContent = 'Could not create account: ' + s.error.message;
-        authBtn.disabled = false;
-        return;
-      }
-      if(s.data.session){
-        await db.from('profiles').insert({ id: s.data.user.id, email: email });
-        afterAuth();
-      } else {
-        msg.classList.add('ok');
-        msg.textContent = 'Account created — now sign in.';
-        setMode('signin');
-        authBtn.disabled = false;
-      }
-    }
+  /* gate button opens the site-wide sign-in popup */
+  document.getElementById('gate-btn').addEventListener('click', function(){
+    var pill = document.querySelector('a.acct-pill');
+    if(pill){ pill.click(); } else { window.location.reload(); }
   });
 
-  document.getElementById('auth-pass').addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ authBtn.click(); }
-  });
-
-  function afterAuth(){
-    authBtn.disabled = false;
-    if(nextUrl){ window.location.href = nextUrl; return; }
-    loadAccount();
-  }
-
-  async function loadAccount(){
+  async function load(){
     var u = await db.auth.getUser();
-    var user = u.data.user;
-    if(!user){ showAuth(); return; }
-    document.getElementById('acct-email').textContent = user.email;
+    if(!u.data.user){ showGate(); return; }
+    currentUser = u.data.user;
+    document.getElementById('acct-email').textContent = currentUser.email;
+    try {
+      document.getElementById('acct-since').textContent = 'Member since ' + new Date(currentUser.created_at).toLocaleDateString();
+    } catch(e){}
 
-    var p = await db.from('profiles').select('*').eq('id', user.id).maybeSingle();
+    var p = await db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
     if(p.data){
       hasProfile = true;
       document.getElementById('p-name').value = p.data.display_name || '';
@@ -342,13 +325,11 @@
         '</div>';
       }).join('');
     }
-    showAccount();
+    showDash();
   }
 
   document.getElementById('save-profile-btn').addEventListener('click', async function(){
-    var u = await db.auth.getUser();
-    var user = u.data.user;
-    if(!user) return;
+    if(!currentUser) return;
     var data = {
       display_name: document.getElementById('p-name').value.trim(),
       ship_address: document.getElementById('p-addr').value.trim(),
@@ -359,10 +340,10 @@
     };
     var r;
     if(hasProfile){
-      r = await db.from('profiles').update(data).eq('id', user.id);
+      r = await db.from('profiles').update(data).eq('id', currentUser.id);
     } else {
-      data.id = user.id;
-      data.email = user.email;
+      data.id = currentUser.id;
+      data.email = currentUser.email;
       r = await db.from('profiles').insert(data);
       if(!r.error){ hasProfile = true; }
     }
@@ -376,12 +357,60 @@
   });
 
   document.getElementById('signout-btn').addEventListener('click', function(){
-    db.auth.signOut().then(function(){ showAuth(); setMode('signin'); });
+    db.auth.signOut().then(function(){ showGate(); });
   });
 
-  /* init */
+  /* settings — change email */
+  document.getElementById('upd-email-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('email-msg');
+    var em = document.getElementById('new-email').value.trim();
+    msgEl.classList.remove('err');
+    msgEl.textContent = '';
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Enter a valid email address.';
+      return;
+    }
+    var r = await db.auth.updateUser({ email: em });
+    if(r.error){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Could not update: ' + r.error.message;
+    } else {
+      msgEl.textContent = 'Confirmation link sent to ' + em + ' — click it to finish the change.';
+      document.getElementById('new-email').value = '';
+    }
+  });
+
+  /* settings — change password */
+  document.getElementById('upd-pass-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('pass-msg');
+    var p1 = document.getElementById('new-pass').value;
+    var p2 = document.getElementById('new-pass2').value;
+    msgEl.classList.remove('err');
+    msgEl.textContent = '';
+    if(p1.length < 8){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Password must be at least 8 characters.';
+      return;
+    }
+    if(p1 !== p2){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'The two passwords don\'t match.';
+      return;
+    }
+    var r = await db.auth.updateUser({ password: p1 });
+    if(r.error){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Could not update: ' + r.error.message + ' — if this keeps happening, sign out and back in, then try again.';
+    } else {
+      msgEl.textContent = 'Password updated ✓';
+      document.getElementById('new-pass').value = '';
+      document.getElementById('new-pass2').value = '';
+    }
+  });
+
   db.auth.getSession().then(function(r){
-    if(r.data && r.data.session){ loadAccount(); } else { showAuth(); }
+    if(r.data && r.data.session){ load(); } else { showGate(); }
   });
 })();
 </script>
