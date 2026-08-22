@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>document.documentElement.className += ' js';</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#170F0F">
+<title>CanadaEhPeps</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .admin-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; max-width:1000px; margin:20px auto 0; padding:0 18px;}
+  .admin-bar h1{font-size:1.3rem;}
+  .admin-bar h1 span{color:var(--rust-deep);}
+  .admin-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .login-wrap{max-width:420px; margin:60px auto; padding:0 18px;}
+  .login-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 24px;}
+  .login-card h2{margin-bottom:18px;}
+  .login-card .field-input{margin-bottom:14px;}
+  .login-err{color:var(--rust-deep); font-size:0.82rem; font-weight:700; margin-top:10px; min-height:1em;}
+  .dash-wrap{max-width:1000px; margin:0 auto; padding:22px 18px 60px;}
+  .panel{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:24px 22px; margin-bottom:22px;}
+  .panel h2{font-size:1.25rem; margin-bottom:16px;}
+  .lab{display:block; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:0 0 6px 12px;}
+  .f-field{margin-bottom:14px;}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:640px){ .two{grid-template-columns:1fr;} }
+  select.field-input{appearance:none; cursor:pointer;}
+  textarea.field-input{border-radius:var(--r-md); min-height:64px; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-weight:500;}
+  .launch-msg{font-size:0.82rem; font-weight:700; color:var(--rust-deep); margin-top:10px; min-height:1em;}
+  .launch-msg.ok{color:var(--ink-soft);}
+  .buy-mgmt{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:20px; margin-bottom:16px;}
+  .bm-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .bm-code{font-family:'Space Mono',monospace; font-weight:700; font-size:1rem;}
+  .bm-date{font-family:'Space Mono',monospace; font-size:0.64rem; color:var(--ink-soft);}
+  .bm-grid{display:grid; grid-template-columns:1fr 1fr; gap:4px 24px;}
+  @media (max-width:640px){ .bm-grid{grid-template-columns:1fr;} }
+  .bm-row{display:flex; justify-content:space-between; gap:14px; padding:7px 0; border-bottom:1px dashed rgba(122,43,43,0.2); font-size:0.84rem;}
+  .bm-row span:first-child{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft); padding-top:2px; white-space:nowrap;}
+  .bm-row span:last-child{font-weight:600; text-align:right; word-break:break-word;}
+  .bm-controls{display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .bm-controls label{font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft);}
+  .bm-status{padding:9px 14px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--bg); color:var(--ink); font-family:'Space Mono',monospace; font-size:0.7rem; font-weight:700; cursor:pointer;}
+  .bm-del{color:var(--rust-deep); border:2px solid var(--rust-deep);}
+  .bm-del:hover{background:var(--rust-deep); color:#fff;}
+  .saved-flash{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; color:var(--rust-deep); opacity:0; transition:opacity .3s;}
+  .saved-flash.show{opacity:1;}
+  .empty-note{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:36px 24px; text-align:center; color:var(--ink-soft); font-weight:500;}
+</style>
+</head>
+<body>
+
+<div class="admin-bar" id="admin-bar" style="display:none;">
+  <h1>🇨🇦 CanadaEhPeps <span>· Group Buys</span></h1>
+  <div class="admin-actions">
+    <a class="btn btn-ghost btn-sm" href="admin.html?key=maple2026">Orders dashboard</a>
+    <button class="btn btn-ghost btn-sm" id="refresh-btn">Refresh</button>
+    <button class="btn btn-primary btn-sm" id="signout-btn">Sign out</button>
+    <button class="icon-btn" id="theme-toggle" aria-label="Toggle light / dark theme" aria-pressed="true"><span class="theme-toggle-icon">☽</span></button>
+  </div>
+</div>
+
+<div class="login-wrap" id="login-view" style="display:none;">
+  <div class="login-card">
+    <h2>Staff sign-in</h2>
+    <input class="field-input" id="login-email" type="email" placeholder="Admin email" autocomplete="username">
+    <input class="field-input" id="login-pass" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="btn btn-primary" id="login-btn" style="width:100%;">Sign in</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div class="dash-wrap" id="dash-view" style="display:none;">
+
+  <div class="panel">
+    <h2>Launch a new buy</h2>
+    <div class="two">
+      <div class="f-field">
+        <label class="lab" for="nb-code">Buy code</label>
+        <input class="field-input" id="nb-code" type="text" maxlength="20" placeholder="GB-0001">
+      </div>
+      <div class="f-field">
+        <label class="lab" for="nb-product">Product</label>
+        <input class="field-input" id="nb-product" type="text" maxlength="100" placeholder="MOTS-C">
+      </div>
+    </div>
+    <div class="two">
+      <div class="f-field">
+        <label class="lab" for="nb-kit">Kit label</label>
+        <input class="field-input" id="nb-kit" type="text" maxlength="80" placeholder="kit · 10 vials">
+      </div>
+      <div class="f-field">
+        <label class="lab" for="nb-vendor">Vendor (optional)</label>
+        <input class="field-input" id="nb-vendor" type="text" maxlength="80" placeholder="Vendor / factory">
+      </div>
+    </div>
+    <div class="two">
+      <div class="f-field">
+        <label class="lab" for="nb-price">Price per kit (CAD)</label>
+        <input class="field-input" id="nb-price" type="number" min="0" step="0.01" placeholder="38">
+      </div>
+      <div class="f-field">
+        <label class="lab" for="nb-total">Total kits available</label>
+        <input class="field-input" id="nb-total" type="number" min="1" max="9999" placeholder="20">
+      </div>
+    </div>
+    <div class="f-field">
+      <label class="lab" for="nb-deadline">Deadline (buy closes)</label>
+      <input class="field-input" id="nb-deadline" type="datetime-local">
+    </div>
+    <div class="f-field">
+      <label class="lab" for="nb-desc">Description shown to customers</label>
+      <textarea class="field-input" id="nb-desc" maxlength="500" placeholder="What's in the kit, expected timeline, anything buyers should know."></textarea>
+    </div>
+    <button class="btn btn-primary" id="launch-btn">Launch buy</button>
+    <div class="launch-msg" id="launch-msg"></div>
+  </div>
+
+  <h2 style="margin-bottom:14px;">Manage buys</h2>
+  <div id="buys-list"><div class="empty-note">Loading…</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+<script>
+/* Group buy manager — hidden behind secret key + staff login */
+(function(){
+  /* SECRET KEY — keep this private */
+  var STAFF_KEY = 'maple2026';
+
+  var urlKey = new URLSearchParams(window.location.search).get('key');
+
+  if(urlKey !== STAFF_KEY){
+    document.getElementById('login-view').style.display = 'block';
+    document.getElementById('login-view').innerHTML =
+      '<div class="login-card" style="text-align:center;">' +
+      '<h2>404</h2>' +
+      '<p style="color:var(--ink-soft); font-weight:500;">This page doesn\'t exist, eh.</p>' +
+      '<a class="btn btn-primary btn-sm" href="index.html" style="margin-top:16px;">Back to CanadaEhPeps</a>' +
+      '</div>';
+    return;
+  }
+
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var STATUSES = ['open','closed','shipping','delivered','failed'];
+
+  var adminBar = document.getElementById('admin-bar');
+  var loginView = document.getElementById('login-view');
+  var dashView = document.getElementById('dash-view');
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function showLogin(){ adminBar.style.display='none'; loginView.style.display='block'; dashView.style.display='none'; }
+  function showDash(){ adminBar.style.display='flex'; loginView.style.display='none'; dashView.style.display='block'; }
+
+  function fmtDate(iso){
+    try { return new Date(iso).toLocaleString(); } catch(e){ return iso; }
+  }
+
+  function suggestCode(count){
+    return 'GB-' + String(count + 1).padStart(4, '0');
+  }
+
+  async function loadBuys(){
+    var list = document.getElementById('buys-list');
+    list.innerHTML = '<div class="empty-note">Loading…</div>';
+    var b = await db.from('buys').select('*').order('created_at', { ascending: false }).limit(100);
+    if(b.error){
+      list.innerHTML = '<div class="empty-note">Could not load buys: ' + esc(b.error.message) + '</div>';
+      return;
+    }
+    var f = await db.rpc('buy_fills');
+    var fills = {};
+    (f.data || []).forEach(function(r){ fills[r.code] = Number(r.reserved); });
+
+    var codeEl = document.getElementById('nb-code');
+    if(!codeEl.value.trim()){
+      codeEl.value = suggestCode((b.data || []).length);
+    }
+
+    if(!b.data || !b.data.length){
+      list.innerHTML = '<div class="empty-note">No buys yet, eh. Launch your first one above — it appears on the Group Buys page instantly.</div>';
+      return;
+    }
+
+    list.innerHTML = b.data.map(function(buy){
+      var reserved = fills[buy.code] || 0;
+      var opts = STATUSES.map(function(s){
+        return '<option value="' + s + '"' + (buy.status === s ? ' selected' : '') + '>' + s + '</option>';
+      }).join('');
+      return '<div class="buy-mgmt">' +
+        '<div class="bm-head"><span class="bm-code">' + esc(buy.code) + '</span><span class="bm-date">deadline: ' + esc(fmtDate(buy.deadline)) + '</span></div>' +
+        '<div class="bm-grid">' +
+          '<div class="bm-row"><span>Product</span><span>' + esc(buy.product) + '</span></div>' +
+          '<div class="bm-row"><span>Kit</span><span>' + esc(buy.kit_label) + '</span></div>' +
+          '<div class="bm-row"><span>Price</span><span>$' + Number(buy.price_cad) + ' CAD</span></div>' +
+          '<div class="bm-row"><span>Reserved</span><span>' + reserved + ' / ' + buy.total_units + '</span></div>' +
+          '<div class="bm-row"><span>Vendor</span><span>' + esc(buy.vendor || '—') + '</span></div>' +
+          '<div class="bm-row"><span>Description</span><span>' + esc(buy.description || '—') + '</span></div>' +
+        '</div>' +
+        '<div class="bm-controls">' +
+          '<label>Status</label>' +
+          '<select class="bm-status" data-id="' + buy.id + '">' + opts + '</select>' +
+          '<span class="saved-flash" id="flash-' + buy.id + '">SAVED ✓</span>' +
+          '<button class="btn btn-ghost btn-sm bm-del" data-del-id="' + buy.id + '" style="margin-left:auto;">Delete</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    list.querySelectorAll('.bm-status').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var id = sel.getAttribute('data-id');
+        db.from('buys').update({ status: sel.value }).eq('id', id).then(function(r){
+          if(!r.error){
+            var el = document.getElementById('flash-' + id);
+            if(el){ el.classList.add('show'); setTimeout(function(){ el.classList.remove('show'); }, 1600); }
+          } else {
+            alert('Could not update: ' + r.error.message);
+          }
+        });
+      });
+    });
+
+    list.querySelectorAll('.bm-del').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-del-id');
+        if(!confirm('Delete this buy permanently? Reservations already placed will remain as orders.')) return;
+        btn.disabled = true;
+        btn.textContent = 'Deleting…';
+        db.from('buys').delete().eq('id', id).then(function(r){
+          if(r.error){
+            btn.disabled = false;
+            btn.textContent = 'Delete';
+            alert('Could not delete: ' + r.error.message);
+            return;
+          }
+          loadBuys();
+        });
+      });
+    });
+  }
+
+  document.getElementById('launch-btn').addEventListener('click', function(){
+    var btn = document.getElementById('launch-btn');
+    var msgEl = document.getElementById('launch-msg');
+    msgEl.classList.remove('ok');
+    msgEl.textContent = '';
+
+    var code = document.getElementById('nb-code').value.trim().toUpperCase();
+    var product = document.getElementById('nb-product').value.trim();
+    var kit = document.getElementById('nb-kit').value.trim() || 'kit';
+    var vendor = document.getElementById('nb-vendor').value.trim() || null;
+    var price = parseFloat(document.getElementById('nb-price').value);
+    var total = parseInt(document.getElementById('nb-total').value, 10);
+    var deadlineRaw = document.getElementById('nb-deadline').value;
+    var desc = document.getElementById('nb-desc').value.trim() || null;
+
+    if(!code || !product){ msgEl.textContent = 'Code and product are required.'; return; }
+    if(isNaN(price) || price < 0){ msgEl.textContent = 'Enter a valid price.'; return; }
+    if(isNaN(total) || total < 1){ msgEl.textContent = 'Enter how many kits are available.'; return; }
+    if(!deadlineRaw){ msgEl.textContent = 'Pick a deadline.'; return; }
+    var deadline = new Date(deadlineRaw);
+    if(isNaN(deadline.getTime())){ msgEl.textContent = 'Deadline looks invalid.'; return; }
+    if(deadline.getTime() <= Date.now()){ msgEl.textContent = 'Deadline must be in the future.'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Launching…';
+    db.from('buys').insert({
+      code: code,
+      product: product,
+      kit_label: kit,
+      description: desc,
+      price_cad: price,
+      total_units: total,
+      deadline: deadline.toISOString(),
+      status: 'open',
+      vendor: vendor
+    }).then(function(r){
+      btn.disabled = false;
+      btn.textContent = 'Launch buy';
+      if(r.error){
+        msgEl.textContent = 'Could not launch: ' + r.error.message;
+        return;
+      }
+      msgEl.classList.add('ok');
+      msgEl.textContent = code + ' is LIVE, eh. Check the Group Buys page.';
+      document.getElementById('nb-product').value = '';
+      document.getElementById('nb-kit').value = '';
+      document.getElementById('nb-vendor').value = '';
+      document.getElementById('nb-price').value = '';
+      document.getElementById('nb-total').value = '';
+      document.getElementById('nb-deadline').value = '';
+      document.getElementById('nb-desc').value = '';
+      document.getElementById('nb-code').value = '';
+      loadBuys();
+    });
+  });
+
+  document.getElementById('login-btn').addEventListener('click', function(){
+    var email = document.getElementById('login-email').value.trim();
+    var pass = document.getElementById('login-pass').value;
+    var errEl = document.getElementById('login-err');
+    errEl.textContent = '';
+    db.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
+      if(r.error){
+        errEl.textContent = 'Could not sign in — check the email and password.';
+        return;
+      }
+      db.from('profiles').select('is_staff').eq('id', r.data.user.id).maybeSingle().then(function(p){
+        if(!p.data || !p.data.is_staff){
+          errEl.textContent = 'This account is not staff.';
+          db.auth.signOut();
+          return;
+        }
+        showDash();
+        loadBuys();
+      });
+    });
+  });
+
+  document.getElementById('signout-btn').addEventListener('click', function(){
+    db.auth.signOut().then(function(){ showLogin(); });
+  });
+
+  document.getElementById('refresh-btn').addEventListener('click', loadBuys);
+
+  document.getElementById('login-pass').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ document.getElementById('login-btn').click(); }
+  });
+
+  db.auth.getSession().then(function(r){
+    if(r.data && r.data.session){
+      db.from('profiles').select('is_staff').eq('id', r.data.user.id).maybeSingle().then(function(p){
+        if(p.data && p.data.is_staff){
+          showDash();
+          loadBuys();
+        } else {
+          showLogin();
+        }
+      });
+    } else {
+      showLogin();
+    }
+  });
+})();
+</script>
+</body>
+</html>
