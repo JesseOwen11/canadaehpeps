@@ -15,6 +15,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/400.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
+<style>
+  .learn-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:16px;}
+  .guide-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:22px 20px; display:flex; flex-direction:column; gap:10px;}
+  .guide-meta{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .guide-cat{font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; background:var(--plum); color:#fff; padding:5px 12px; border-radius:var(--r-pill);}
+  .guide-cat.crypto{background:var(--rust-deep);}
+  .guide-time{font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--ink-soft);}
+  .guide-card h3{font-size:1.15rem; line-height:1.3;}
+  .guide-card > p{font-size:0.84rem; font-weight:500; color:var(--ink-soft); line-height:1.5; flex:1;}
+  .guide-body{display:none; border-top:2px dashed rgba(122,43,43,0.25); padding-top:14px; font-size:0.86rem; font-weight:500; line-height:1.65; color:var(--ink);}
+  .guide-card.open .guide-body{display:block;}
+  .guide-body h4{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin:16px 0 6px;}
+  .guide-body h4:first-child{margin-top:0;}
+  .guide-body ul{padding-left:20px; margin:6px 0;}
+  .guide-body li{margin-bottom:5px;}
+  .guide-body .warn{background:var(--bg); border:2px dashed var(--ink); border-radius:var(--r-md); padding:10px 14px; margin:12px 0; font-size:0.8rem;}
+</style>
 </head>
 <body>
 
@@ -70,14 +87,137 @@
 <main>
   <section>
     <div class="wrap">
-      <div class="section-head"><span class="section-tag">Learn</span><h2>Plain-language guides for the lab.</h2><p>Short, practical references for handling research peptides properly. Lab use only — none of this is medical advice.</p></div>
-      <div class="learn-grid">
-        <div class="learn-card"><h3>Reconstitution &amp; bacteriostatic water</h3><p>Bacteriostatic water is sterile water with 0.9% benzyl alcohol, used to keep multi-dose reconstituted vials stable between uses.</p><ul><li>Work clean — wipe stoppers, use sterile technique</li><li>Add water slowly down the vial wall, not onto the powder</li><li>Swirl gently until clear; never shake</li><li>Label with the date; refrigerate after reconstitution</li></ul></div>
-        <div class="learn-card"><h3>Storage &amp; handling</h3><p>Lyophilized peptides are at their most stable dry and cold.</p><ul><li>Store unopened vials frozen, ideally at −20°C</li><li>Keep the desiccant in; moisture is the enemy</li><li>Avoid repeated warm-up / cool-down cycles</li><li>Once reconstituted, keep refrigerated and use within your lab's window</li></ul></div>
-        <div class="learn-card"><h3>Payments</h3><p>We need a transaction ID (TXID) on every order. Here's the easy way to find yours and paste it in.</p><ul><li>Send the exact amount on the exact network shown at checkout</li><li>Find the send in your wallet's activity and copy the transaction ID (TXID)</li><li>Paste it on the payment page — the order confirms once the network does</li><li>Solana confirms in seconds, Ethereum in a couple of minutes, Bitcoin in about twenty</li></ul></div>
-        <div class="learn-card"><h3>How group buys work</h3><p>The whole flow, start to finish:</p><ul><li>A buy opens — reserve your quantity during the window</li><li>Pay in crypto and paste your transaction ID</li><li>The buy closes at the fill target or countdown, whichever first</li><li>The batch is sourced and tested, then orders ship with tracking</li></ul></div>
+      <div class="section-head">
+        <span class="section-tag">Learn</span>
+        <h2>Guides &amp; references.</h2>
+        <p>Plain-language notes for research workflows — paying in crypto, reconstitution, storage, and how our group buys work. For laboratory / research use only; not medical or dosing guidance.</p>
       </div>
-      <p class="learn-fine">All guidance is for laboratory research contexts only. Always follow your own facility's safety and handling protocols.</p>
+
+      <div class="learn-grid">
+
+        <div class="guide-card">
+          <div class="guide-meta"><span class="guide-cat crypto">Crypto</span><span class="guide-time">5 min read</span></div>
+          <h3>How to Pay With Bitcoin or USDC</h3>
+          <p>New to crypto? Start here — what you need, how to get coins, and how to send payment the right way.</p>
+          <button class="btn btn-primary btn-sm guide-toggle" type="button">Read</button>
+          <div class="guide-body">
+            <h4>What you need</h4>
+            <ul>
+              <li>An exchange account (Kraken, Coinbase, Newton, Shakepay, etc.) or a self-custody wallet.</li>
+              <li>Enough to cover the order <b>plus the network fee</b> — fees are small but real.</li>
+            </ul>
+            <h4>Which coins we accept</h4>
+            <ul>
+              <li><b>Bitcoin (BTC)</b> — sent on the Bitcoin network.</li>
+              <li><b>USDC on Ethereum</b> — an ERC-20 stablecoin, pegged to the US dollar.</li>
+              <li><b>USDC on Solana</b> — same dollar peg, much lower fees, fast confirmations.</li>
+            </ul>
+            <h4>How paying works here</h4>
+            <ul>
+              <li>Place your order — nothing is owed yet.</li>
+              <li>We confirm the order and send you a payment address for the coin you chose.</li>
+              <li>Send the exact amount, then give us the transaction ID (see the TXID guide).</li>
+            </ul>
+            <div class="warn">⚠️ Always double-check the address and the <b>network</b> before sending. USDC sent on the wrong network (Ethereum vs Solana) can be unrecoverable. Copy-paste addresses — never type them by hand.</div>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-meta"><span class="guide-cat crypto">Payments</span><span class="guide-time">4 min read</span></div>
+          <h3>How to Find Your Transaction ID (TXID) and Confirm Your Payment</h3>
+          <p>We need a transaction ID on every order. Here's the easy, step-by-step way to find yours and paste it in.</p>
+          <button class="btn btn-primary btn-sm guide-toggle" type="button">Read</button>
+          <div class="guide-body">
+            <h4>What a TXID is</h4>
+            <p>Every crypto transaction gets a unique ID (a long string of letters and numbers). It's your proof of payment — it lets us find your transaction on the blockchain and match it to your order.</p>
+            <h4>Where to find it</h4>
+            <ul>
+              <li><b>Exchanges (Kraken, Coinbase, Newton…):</b> open your history / activity → tap the withdrawal you just made → copy the "TXID" or "hash".</li>
+              <li><b>Wallets:</b> open the sent transaction → copy the transaction hash.</li>
+            </ul>
+            <h4>Confirmations</h4>
+            <ul>
+              <li>Bitcoin: usually confirmed within 10–30 minutes.</li>
+              <li>USDC on Solana: typically under a minute.</li>
+              <li>USDC on Ethereum: usually 1–5 minutes.</li>
+            </ul>
+            <p>Paste the TXID into your order notes (or send it to support). Once we see it confirmed, your order moves to packing.</p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-meta"><span class="guide-cat">Reconstitution</span><span class="guide-time">4 min read</span></div>
+          <h3>Bacteriostatic Water for Research Reconstitution</h3>
+          <p>What bac water is, how it differs from sterile water, and how it's used to reconstitute lyophilized research samples.</p>
+          <button class="btn btn-primary btn-sm guide-toggle" type="button">Read</button>
+          <div class="guide-body">
+            <h4>What it is</h4>
+            <p>Bacteriostatic water is sterile water with a small amount of benzyl alcohol (typically 0.9%). The alcohol suppresses bacterial growth, which is why it's the standard choice for multi-use reconstitution in research settings.</p>
+            <h4>Bac water vs sterile water</h4>
+            <ul>
+              <li><b>Bacteriostatic water:</b> for multi-draw use over days — the preservative keeps it usable.</li>
+              <li><b>Sterile water:</b> no preservative — generally used for single-use preparations only.</li>
+            </ul>
+            <h4>Reconstitution practice (lab basics)</h4>
+            <ul>
+              <li>Let the vial reach room temperature before adding diluent.</li>
+              <li>Direct diluent against the vial wall, not onto the powder cake.</li>
+              <li>Gently swirl — <b>never shake</b> — until fully dissolved.</li>
+              <li>Label with compound, concentration, and date immediately.</li>
+            </ul>
+            <div class="warn">For laboratory research use only. This is not medical advice and not dosing guidance.</div>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-meta"><span class="guide-cat">Buying</span><span class="guide-time">3 min read</span></div>
+          <h3>How Group Buys Work at CanadaEhPeps</h3>
+          <p>Reserve a kit, pay in crypto, and follow the buy's posted fulfillment timeline from close through shipping.</p>
+          <button class="btn btn-primary btn-sm guide-toggle" type="button">Read</button>
+          <div class="guide-body">
+            <h4>The lifecycle of a buy</h4>
+            <ul>
+              <li><b>Buy opens:</b> the buy page shows the product, kit size, price, and the goal. Reservations are first come, first served.</li>
+              <li><b>Buy closes:</b> when the goal is hit or the timer ends, the buy locks.</li>
+              <li><b>Payment window:</b> everyone who reserved gets payment details. Pay within the window or your slot is released.</li>
+              <li><b>Vendor order:</b> we place the bulk order with the vendor.</li>
+              <li><b>Arrival &amp; testing:</b> the batch arrives and is sent to a third-party lab. COAs get posted.</li>
+              <li><b>Shipping:</b> kits ship out per the buy's posted timeline, with tracking.</li>
+            </ul>
+            <h4>If a buy fails</h4>
+            <p>If a buy can't reach its goal or a batch fails testing, participants are refunded pro-rata. That's the guarantee.</p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-meta"><span class="guide-cat">Handling</span><span class="guide-time">4 min read</span></div>
+          <h3>Research Peptide Storage &amp; Handling: A Lab Reference</h3>
+          <p>Lyophilized vs reconstituted storage, light and moisture, freeze-thaw cycles, and labeling — the practical lab basics.</p>
+          <button class="btn btn-primary btn-sm guide-toggle" type="button">Read</button>
+          <div class="guide-body">
+            <h4>Lyophilized (freeze-dried) peptides</h4>
+            <ul>
+              <li>Short-term (weeks): 2–8°C is generally fine.</li>
+              <li>Long-term (months+): −20°C, sealed, with desiccant.</li>
+              <li>Keep away from moisture — open vials only at room temperature to avoid condensation.</li>
+            </ul>
+            <h4>Reconstituted peptides</h4>
+            <ul>
+              <li>Store at 2–8°C.</li>
+              <li>Generally used within ~30 days of reconstitution.</li>
+              <li>Avoid repeated freeze-thaw cycles — aliquot if you need long storage.</li>
+            </ul>
+            <h4>General handling</h4>
+            <ul>
+              <li>Protect from light (amber or boxed storage).</li>
+              <li>Label everything: compound, concentration, date reconstituted.</li>
+              <li>Use clean technique — swab septums before each draw.</li>
+            </ul>
+            <div class="warn">Reference material for laboratory research only. Not medical advice.</div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 </main>
@@ -121,5 +261,18 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+/* Learn page — expandable guide cards */
+(function(){
+  document.querySelectorAll('.guide-card').forEach(function(card){
+    var btn = card.querySelector('.guide-toggle');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var isOpen = card.classList.toggle('open');
+      btn.textContent = isOpen ? 'Close' : 'Read';
+    });
+  });
+})();
+</script>
 </body>
 </html>
