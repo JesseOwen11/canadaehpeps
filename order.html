@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .form-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:28px 22px; max-width:640px;}
+  .form-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:28px 22px; max-width:640px; position:relative;}
   .form-grid{display:grid; grid-template-columns:1fr; gap:14px;}
   .two{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   @media (max-width:520px){ .two{grid-template-columns:1fr;} }
@@ -30,6 +30,8 @@
   .order-success h3{font-size:1.6rem; margin-bottom:8px;}
   .order-success p{color:var(--ink-soft); font-size:0.92rem; font-weight:500; max-width:440px; margin:0 auto;}
   .order-ref{display:inline-block; font-family:'Space Mono',monospace; font-weight:700; font-size:1.35rem; background:var(--plum); color:#fff; padding:13px 28px; border-radius:var(--r-pill); margin:18px 0; letter-spacing:0.06em;}
+  /* honeypot: invisible to humans, tempting to bots */
+  .hp-wrap{position:absolute !important; left:-9999px !important; top:auto; width:1px; height:1px; overflow:hidden;}
 </style>
 </head>
 <body>
@@ -92,21 +94,24 @@
         <p>Fill this out and we'll confirm it by email or Telegram with payment details. Keep your order reference safe — you'll need it.</p>
       </div>
 
-      <form class="form-card" id="order-form">
+      <form class="form-card" id="order-form" autocomplete="on">
+        <div class="hp-wrap" aria-hidden="true">
+          <label>Leave this field empty <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
         <div class="form-grid">
           <h3 class="form-section">Your details</h3>
           <div>
             <label class="form-label" for="f-name">Name *</label>
-            <input class="field-input" id="f-name" type="text" required autocomplete="name" placeholder="Your name">
+            <input class="field-input" id="f-name" type="text" required maxlength="100" autocomplete="name" placeholder="Your name">
           </div>
           <div class="two">
             <div>
               <label class="form-label" for="f-email">Email *</label>
-              <input class="field-input" id="f-email" type="email" required autocomplete="email" placeholder="you@example.com">
+              <input class="field-input" id="f-email" type="email" required maxlength="150" autocomplete="email" placeholder="you@example.com">
             </div>
             <div>
               <label class="form-label" for="f-telegram">Telegram (optional)</label>
-              <input class="field-input" id="f-telegram" type="text" placeholder="@handle or none">
+              <input class="field-input" id="f-telegram" type="text" maxlength="60" placeholder="@handle or none">
             </div>
           </div>
 
@@ -127,7 +132,7 @@
             </div>
             <div>
               <label class="form-label" for="f-qty">Quantity *</label>
-              <input class="field-input" id="f-qty" type="number" min="1" value="1" required>
+              <input class="field-input" id="f-qty" type="number" min="1" max="999" value="1" required>
             </div>
           </div>
           <div class="two">
@@ -143,33 +148,33 @@
             </div>
             <div>
               <label class="form-label" for="f-txid">Transaction ID (if you already paid)</label>
-              <input class="field-input" id="f-txid" type="text" placeholder="Paste TXID or leave blank">
+              <input class="field-input" id="f-txid" type="text" maxlength="150" placeholder="Paste TXID or leave blank">
             </div>
           </div>
           <div>
             <label class="form-label" for="f-notes">Order notes (optional)</label>
-            <textarea class="field-input" id="f-notes" placeholder="Bulk quantities, questions, anything we should know"></textarea>
+            <textarea class="field-input" id="f-notes" maxlength="500" placeholder="Bulk quantities, questions, anything we should know"></textarea>
           </div>
 
           <h3 class="form-section">Shipping address</h3>
           <div>
             <label class="form-label" for="f-addr">Street address *</label>
-            <input class="field-input" id="f-addr" type="text" required autocomplete="street-address" placeholder="123 Example St, Unit 4">
+            <input class="field-input" id="f-addr" type="text" required maxlength="200" autocomplete="street-address" placeholder="123 Example St, Unit 4">
           </div>
           <div class="two">
             <div>
               <label class="form-label" for="f-city">City *</label>
-              <input class="field-input" id="f-city" type="text" required autocomplete="address-level2" placeholder="City">
+              <input class="field-input" id="f-city" type="text" required maxlength="80" autocomplete="address-level2" placeholder="City">
             </div>
             <div>
               <label class="form-label" for="f-prov">Province / State</label>
-              <input class="field-input" id="f-prov" type="text" autocomplete="address-level1" placeholder="ON / BC / etc.">
+              <input class="field-input" id="f-prov" type="text" maxlength="60" autocomplete="address-level1" placeholder="ON / BC / etc.">
             </div>
           </div>
           <div class="two">
             <div>
               <label class="form-label" for="f-postal">Postal / ZIP code *</label>
-              <input class="field-input" id="f-postal" type="text" required autocomplete="postal-code" placeholder="M5V 2T6">
+              <input class="field-input" id="f-postal" type="text" required maxlength="20" autocomplete="postal-code" placeholder="M5V 2T6">
             </div>
             <div>
               <label class="form-label" for="f-country">Country *</label>
@@ -238,7 +243,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Order form — inserts into the orders table */
+/* Order form — hardened: honeypot, rate limit, length caps, validation */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
@@ -247,6 +252,9 @@
   var form = document.getElementById('order-form');
   var successBox = document.getElementById('order-success');
   var btn = document.getElementById('submit-btn');
+
+  var CAPS = { 'f-name':100,'f-email':150,'f-telegram':60,'f-txid':150,'f-notes':500,'f-addr':200,'f-city':80,'f-prov':60,'f-postal':20 };
+  var COOLDOWN_MS = 30000; /* 30 seconds between submissions */
 
   function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
@@ -257,18 +265,62 @@
     return 'CEP-' + out;
   }
 
+  function showSuccess(ref){
+    form.style.display = 'none';
+    document.getElementById('success-ref').textContent = ref;
+    successBox.style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
+
+    /* 1 — Honeypot: bots fill hidden fields, humans never see them */
+    if(val('f-website') !== ''){ showSuccess(makeRef()); return; }
+
+    /* 2 — Rate limit */
+    var now = Date.now();
+    var last = 0;
+    try { last = parseInt(localStorage.getItem('cep_last_order') || '0', 10); } catch(err){}
+    if(now - last < COOLDOWN_MS){
+      alert('Please wait a moment before submitting again.');
+      return;
+    }
+
+    /* 3 — Length caps */
+    for(var id in CAPS){
+      if(val(id).length > CAPS[id]){
+        alert('One of the fields is too long. Please shorten it and try again.');
+        return;
+      }
+    }
+
+    /* 4 — Validation */
+    var em = val('f-email');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
+      alert('Please enter a valid email address.');
+      return;
+    }
+    var qty = parseInt(val('f-qty'), 10);
+    if(!(qty >= 1 && qty <= 999)){
+      alert('Quantity must be between 1 and 999.');
+      return;
+    }
+    if(val('f-name') === '' || val('f-product') === '' || val('f-addr') === '' || val('f-city') === '' || val('f-postal') === ''){
+      alert('Please fill in all required fields.');
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = 'Sending…';
     var ref = makeRef();
     var payload = {
       order_ref: ref,
       customer_name: val('f-name'),
-      email: val('f-email'),
+      email: em,
       telegram: val('f-telegram') || 'none',
       product: val('f-product'),
-      quantity: parseInt(val('f-qty'),10) || 1,
+      quantity: qty,
       coin: val('f-coin') || 'not sure yet',
       txid: val('f-txid') || null,
       ship_address: val('f-addr'),
@@ -283,13 +335,11 @@
       if(result.error){
         btn.disabled = false;
         btn.textContent = 'Submit order';
-        alert('Something went wrong sending your order. Please try again, or contact support.\n\n(' + result.error.message + ')');
+        alert('Something went wrong sending your order. Please try again, or contact support.');
         return;
       }
-      form.style.display = 'none';
-      document.getElementById('success-ref').textContent = ref;
-      successBox.style.display = 'block';
-      window.scrollTo({top:0, behavior:'smooth'});
+      try { localStorage.setItem('cep_last_order', String(now)); } catch(err){}
+      showSuccess(ref);
     });
   });
 })();
