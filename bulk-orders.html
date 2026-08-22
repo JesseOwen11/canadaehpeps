@@ -16,23 +16,28 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .terms-strip{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:34px;}
+  .terms-strip{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:30px;}
   .term-bubble{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:16px 16px 14px;}
   .term-bubble h4{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin-bottom:6px;}
   .term-bubble p{font-size:0.8rem; font-weight:500; color:var(--ink-soft); line-height:1.45;}
-  .prod-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;}
-  .prod-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:22px 20px 20px; display:flex; flex-direction:column; gap:10px;}
-  .prod-lot{font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; letter-spacing:0.08em; color:var(--ink-soft); text-transform:uppercase;}
-  .prod-card h3{font-size:1.5rem; margin:0;}
-  .prod-price{font-family:'Space Mono',monospace; font-weight:700; font-size:1.05rem; color:var(--rust-deep);}
-  .prod-price span{color:var(--ink-soft); font-size:0.68rem; font-weight:400;}
-  .prod-sub{font-size:0.8rem; font-weight:500; color:var(--ink-soft); line-height:1.45; flex:1;}
-  .prod-buy{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:6px;}
-  .stepper{display:flex; align-items:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg);}
-  .step-btn{width:36px; height:38px; border:none; background:transparent; color:var(--ink); font-size:1.1rem; font-weight:700; cursor:pointer;}
+  /* thin, tall cards — 2 per row on mobile */
+  .prod-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;}
+  @media (min-width:720px){ .prod-grid{grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:16px;} }
+  .prod-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:20px 12px 16px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center; min-height:300px;}
+  @media (min-width:720px){ .prod-card{padding:24px 20px 20px; min-height:320px;} }
+  .prod-lot{font-family:'Space Mono',monospace; font-size:0.56rem; font-weight:700; letter-spacing:0.08em; color:var(--ink-soft); text-transform:uppercase;}
+  .prod-card h3{font-size:1.3rem; margin:2px 0 0; line-height:1.15;}
+  @media (min-width:720px){ .prod-card h3{font-size:1.55rem;} }
+  .prod-price{font-family:'Space Mono',monospace; font-weight:700; font-size:1rem; color:var(--rust-deep);}
+  .prod-price span{color:var(--ink-soft); font-size:0.6rem; font-weight:400; display:block; margin-top:2px;}
+  .prod-sub{font-size:0.72rem; font-weight:500; color:var(--ink-soft); line-height:1.45; flex:1; margin:2px 0 4px;}
+  .prod-buy{display:flex; flex-direction:column; gap:8px; width:100%; margin-top:auto;}
+  .stepper{display:flex; align-items:center; justify-content:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg); width:100%;}
+  .step-btn{width:34px; height:36px; border:none; background:transparent; color:var(--ink); font-size:1.05rem; font-weight:700; cursor:pointer;}
   .step-btn:hover{background:var(--plum); color:#fff;}
-  .step-qty{width:52px; height:38px; border:none; background:transparent; color:var(--ink); text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem; -moz-appearance:textfield;}
+  .step-qty{width:44px; height:36px; border:none; background:transparent; color:var(--ink); text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.85rem; -moz-appearance:textfield;}
   .step-qty::-webkit-inner-spin-button, .step-qty::-webkit-outer-spin-button{-webkit-appearance:none; margin:0;}
+  .add-btn{width:100%; font-size:0.78rem;}
   .cart-cta{display:flex; justify-content:center; margin-top:26px;}
   .cart-badge{position:absolute; top:-6px; right:-8px; min-width:18px; height:18px; border-radius:999px; background:var(--rust-deep); color:#fff; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1;}
   .toast{position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--plum); color:#fff; font-family:'Space Mono',monospace; font-size:0.72rem; font-weight:700; padding:12px 22px; border-radius:var(--r-pill); opacity:0; transition:all .3s; pointer-events:none; z-index:99;}
@@ -111,66 +116,66 @@
         <div class="prod-card">
           <span class="prod-lot">BLK // Always open</span>
           <h3>MOTS-C</h3>
-          <div class="prod-price">$-- <span>/ 10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Exact price confirmed when we review your order.</p>
+          <div class="prod-price">$--<span>10mg vial</span></div>
+          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
           <div class="prod-buy">
             <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-mots" type="button">−</button><input class="step-qty" id="q-mots" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-mots" type="button">+</button></div>
-            <button class="btn btn-primary btn-sm add-btn" data-id="mots-c" data-name="MOTS-C — 10mg" data-qty="q-mots">Add to cart</button>
+            <button class="btn btn-primary add-btn" data-id="mots-c" data-name="MOTS-C — 10mg" data-qty="q-mots">Add to cart</button>
           </div>
         </div>
 
         <div class="prod-card">
           <span class="prod-lot">BLK // Always open</span>
           <h3>BPC-157</h3>
-          <div class="prod-price">$-- <span>/ 10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Exact price confirmed when we review your order.</p>
+          <div class="prod-price">$--<span>10mg vial</span></div>
+          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
           <div class="prod-buy">
             <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-bpc" type="button">−</button><input class="step-qty" id="q-bpc" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-bpc" type="button">+</button></div>
-            <button class="btn btn-primary btn-sm add-btn" data-id="bpc-157" data-name="BPC-157 — 10mg" data-qty="q-bpc">Add to cart</button>
+            <button class="btn btn-primary add-btn" data-id="bpc-157" data-name="BPC-157 — 10mg" data-qty="q-bpc">Add to cart</button>
           </div>
         </div>
 
         <div class="prod-card">
           <span class="prod-lot">BLK // Always open</span>
           <h3>TB-500</h3>
-          <div class="prod-price">$-- <span>/ 10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Exact price confirmed when we review your order.</p>
+          <div class="prod-price">$--<span>10mg vial</span></div>
+          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
           <div class="prod-buy">
             <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-tb" type="button">−</button><input class="step-qty" id="q-tb" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-tb" type="button">+</button></div>
-            <button class="btn btn-primary btn-sm add-btn" data-id="tb-500" data-name="TB-500 — 10mg" data-qty="q-tb">Add to cart</button>
+            <button class="btn btn-primary add-btn" data-id="tb-500" data-name="TB-500 — 10mg" data-qty="q-tb">Add to cart</button>
           </div>
         </div>
 
         <div class="prod-card">
           <span class="prod-lot">BLK // Always open</span>
           <h3>GHK-Cu</h3>
-          <div class="prod-price">$-- <span>/ 50mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Exact price confirmed when we review your order.</p>
+          <div class="prod-price">$--<span>50mg vial</span></div>
+          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
           <div class="prod-buy">
             <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-ghk" type="button">−</button><input class="step-qty" id="q-ghk" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-ghk" type="button">+</button></div>
-            <button class="btn btn-primary btn-sm add-btn" data-id="ghk-cu" data-name="GHK-Cu — 50mg" data-qty="q-ghk">Add to cart</button>
+            <button class="btn btn-primary add-btn" data-id="ghk-cu" data-name="GHK-Cu — 50mg" data-qty="q-ghk">Add to cart</button>
           </div>
         </div>
 
         <div class="prod-card">
           <span class="prod-lot">BLK // Always open</span>
           <h3>KPV</h3>
-          <div class="prod-price">$-- <span>/ 10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Exact price confirmed when we review your order.</p>
+          <div class="prod-price">$--<span>10mg vial</span></div>
+          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
           <div class="prod-buy">
             <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-kpv" type="button">−</button><input class="step-qty" id="q-kpv" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-kpv" type="button">+</button></div>
-            <button class="btn btn-primary btn-sm add-btn" data-id="kpv" data-name="KPV — 10mg" data-qty="q-kpv">Add to cart</button>
+            <button class="btn btn-primary add-btn" data-id="kpv" data-name="KPV — 10mg" data-qty="q-kpv">Add to cart</button>
           </div>
         </div>
 
         <div class="prod-card">
           <span class="prod-lot">BLK // Always open</span>
           <h3>AOD-9604</h3>
-          <div class="prod-price">$-- <span>/ 10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Exact price confirmed when we review your order.</p>
+          <div class="prod-price">$--<span>10mg vial</span></div>
+          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
           <div class="prod-buy">
             <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-aod" type="button">−</button><input class="step-qty" id="q-aod" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-aod" type="button">+</button></div>
-            <button class="btn btn-primary btn-sm add-btn" data-id="aod-9604" data-name="AOD-9604 — 10mg" data-qty="q-aod">Add to cart</button>
+            <button class="btn btn-primary add-btn" data-id="aod-9604" data-name="AOD-9604 — 10mg" data-qty="q-aod">Add to cart</button>
           </div>
         </div>
       </div>
@@ -254,7 +259,6 @@
     return n;
   }
 
-  /* quantity steppers */
   document.querySelectorAll('.step-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       var input = document.getElementById(btn.getAttribute('data-target'));
@@ -267,7 +271,6 @@
     input.addEventListener('change', function(){ input.value = clampQty(input.value); });
   });
 
-  /* add to cart */
   document.querySelectorAll('.add-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       var id = btn.getAttribute('data-id');
