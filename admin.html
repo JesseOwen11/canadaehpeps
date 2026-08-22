@@ -80,14 +80,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Admin dashboard — hidden behind secret key + staff login */
 (function(){
-  /* SECRET KEY — change 'maple2026' to any word you like (no spaces) */
   var STAFF_KEY = 'maple2026';
-
   var urlKey = new URLSearchParams(window.location.search).get('key');
 
-  if(urlKey !== var STAFF_KEY = 'cep-9k4m-x7q2-v8n5';){
+  if(urlKey !== STAFF_KEY){
     document.getElementById('login-view').style.display = 'block';
     document.getElementById('login-view').innerHTML =
       '<div class="login-card" style="text-align:center;">' +
@@ -103,7 +100,6 @@
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var STATUSES = ['pending','awaiting payment','paid','packing','shipped','delivered','cancelled','problem'];
-
   var adminBar = document.getElementById('admin-bar');
   var loginView = document.getElementById('login-view');
   var dashView = document.getElementById('dash-view');
@@ -115,93 +111,68 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-
-  function showLogin(){
-    adminBar.style.display = 'none';
-    loginView.style.display = 'block';
-    dashView.style.display = 'none';
-  }
-
-  function showDash(){
-    adminBar.style.display = 'flex';
-    loginView.style.display = 'none';
-    dashView.style.display = 'block';
-  }
-
-  function fmtDate(iso){
-    try { return new Date(iso).toLocaleString(); } catch(e){ return iso; }
-  }
+  function showLogin(){ adminBar.style.display='none'; loginView.style.display='block'; dashView.style.display='none'; }
+  function showDash(){ adminBar.style.display='flex'; loginView.style.display='none'; dashView.style.display='block'; }
+  function fmtDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
 
   function renderSummary(orders){
-    var total = orders.length;
-    var pend = orders.filter(function(o){ return o.status === 'pending'; }).length;
-    var aw = orders.filter(function(o){ return o.status === 'awaiting payment'; }).length;
-    var paid = orders.filter(function(o){ return o.status === 'paid' || o.status === 'packing'; }).length;
-    var shipped = orders.filter(function(o){ return o.status === 'shipped'; }).length;
+    var total=orders.length;
+    var pend=orders.filter(function(o){return o.status==='pending';}).length;
+    var aw=orders.filter(function(o){return o.status==='awaiting payment';}).length;
+    var paid=orders.filter(function(o){return o.status==='paid'||o.status==='packing';}).length;
+    var shipped=orders.filter(function(o){return o.status==='shipped';}).length;
     document.getElementById('summary').innerHTML =
-      '<span class="sum-chip">TOTAL <b>' + total + '</b></span>' +
-      '<span class="sum-chip">PENDING <b>' + pend + '</b></span>' +
-      '<span class="sum-chip">AWAITING PAYMENT <b>' + aw + '</b></span>' +
-      '<span class="sum-chip">PAID/PACKING <b>' + paid + '</b></span>' +
-      '<span class="sum-chip">SHIPPED <b>' + shipped + '</b></span>';
+      '<span class="sum-chip">TOTAL <b>'+total+'</b></span>'+
+      '<span class="sum-chip">PENDING <b>'+pend+'</b></span>'+
+      '<span class="sum-chip">AWAITING PAYMENT <b>'+aw+'</b></span>'+
+      '<span class="sum-chip">PAID/PACKING <b>'+paid+'</b></span>'+
+      '<span class="sum-chip">SHIPPED <b>'+shipped+'</b></span>';
   }
 
   function renderOrders(orders){
-    var list = document.getElementById('orders-list');
+    var list=document.getElementById('orders-list');
     if(!orders.length){
-      list.innerHTML = '<div class="empty-note">No orders yet, eh. When a customer submits the order form, it lands here instantly.</div>';
+      list.innerHTML='<div class="empty-note">No orders yet, eh. When a customer submits the order form, it lands here instantly.</div>';
       return;
     }
     list.innerHTML = orders.map(function(o){
-      var opts = STATUSES.map(function(s){
-        return '<option value="' + s + '"' + (o.status === s ? ' selected' : '') + '>' + s + '</option>';
-      }).join('');
-      return '<div class="order-card">' +
-        '<div class="oc-head"><span class="oc-ref">' + esc(o.order_ref || '(no ref)') + '</span><span class="oc-date">' + esc(fmtDate(o.created_at)) + '</span></div>' +
-        '<div class="oc-grid">' +
-          '<div class="oc-row"><span>Name</span><span>' + esc(o.customer_name) + '</span></div>' +
-          '<div class="oc-row"><span>Email</span><span>' + esc(o.email) + '</span></div>' +
-          '<div class="oc-row"><span>Telegram</span><span>' + esc(o.telegram || '—') + '</span></div>' +
-          '<div class="oc-row"><span>Product</span><span>' + esc(o.product) + ' × ' + esc(o.quantity) + '</span></div>' +
-          '<div class="oc-row"><span>Coin</span><span>' + esc(o.coin || '—') + '</span></div>' +
-          '<div class="oc-row"><span>TXID</span><span>' + (o.txid ? esc(o.txid) : '—') + '</span></div>' +
-          '<div class="oc-row"><span>Ship to</span><span>' + esc(o.ship_address) + ', ' + esc(o.ship_city) + ', ' + esc(o.ship_province || '') + ' ' + esc(o.ship_postal) + ', ' + esc(o.ship_country) + '</span></div>' +
-        '</div>' +
-        '<div class="oc-status-row"><label>Status</label><select class="oc-status" data-id="' + o.id + '">' + opts + '</select><span class="saved-flash" id="flash-' + o.id + '">SAVED ✓</span><button class="btn btn-ghost btn-sm oc-delete" data-del-id="' + o.id + '" style="margin-left:auto;">Delete</button></div>' +
-        '<div class="oc-notes"><textarea data-notes-id="' + o.id + '" placeholder="Private notes (only you see these)">' + esc(o.admin_notes || '') + '</textarea><button class="btn btn-ghost btn-sm" data-save-id="' + o.id + '">Save notes</button></div>' +
+      var opts=STATUSES.map(function(s){ return '<option value="'+s+'"'+(o.status===s?' selected':'')+'>'+s+'</option>'; }).join('');
+      return '<div class="order-card">'+
+        '<div class="oc-head"><span class="oc-ref">'+esc(o.order_ref||'(no ref)')+'</span><span class="oc-date">'+esc(fmtDate(o.created_at))+'</span></div>'+
+        '<div class="oc-grid">'+
+          '<div class="oc-row"><span>Name</span><span>'+esc(o.customer_name)+'</span></div>'+
+          '<div class="oc-row"><span>Email</span><span>'+esc(o.email)+'</span></div>'+
+          '<div class="oc-row"><span>Telegram</span><span>'+esc(o.telegram||'—')+'</span></div>'+
+          '<div class="oc-row"><span>Product</span><span>'+esc(o.product)+' × '+esc(o.quantity)+'</span></div>'+
+          '<div class="oc-row"><span>Coin</span><span>'+esc(o.coin||'—')+'</span></div>'+
+          '<div class="oc-row"><span>TXID</span><span>'+(o.txid?esc(o.txid):'—')+'</span></div>'+
+          '<div class="oc-row"><span>Ship to</span><span>'+esc(o.ship_address)+', '+esc(o.ship_city)+', '+esc(o.ship_province||'')+' '+esc(o.ship_postal)+', '+esc(o.ship_country)+'</span></div>'+
+        '</div>'+
+        '<div class="oc-status-row"><label>Status</label><select class="oc-status" data-id="'+o.id+'">'+opts+'</select><span class="saved-flash" id="flash-'+o.id+'">SAVED ✓</span><button class="btn btn-ghost btn-sm oc-delete" data-del-id="'+o.id+'" style="margin-left:auto;">Delete</button></div>'+
+        '<div class="oc-notes"><textarea data-notes-id="'+o.id+'" placeholder="Private notes (only you see these)">'+esc(o.admin_notes||'')+'</textarea><button class="btn btn-ghost btn-sm" data-save-id="'+o.id+'">Save notes</button></div>'+
       '</div>';
     }).join('');
 
     list.querySelectorAll('.oc-status').forEach(function(sel){
-      sel.addEventListener('change', function(){
-        var id = sel.getAttribute('data-id');
-        db.from('orders').update({ status: sel.value }).eq('id', id).then(function(r){
-          if(!r.error){ flash(id); }
-        });
+      sel.addEventListener('change',function(){
+        var id=sel.getAttribute('data-id');
+        db.from('orders').update({status:sel.value}).eq('id',id).then(function(r){ if(!r.error){flash(id);} });
       });
     });
     list.querySelectorAll('[data-save-id]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var id = btn.getAttribute('data-save-id');
-        var ta = list.querySelector('[data-notes-id="' + id + '"]');
-        db.from('orders').update({ admin_notes: ta.value }).eq('id', id).then(function(r){
-          if(!r.error){ flash(id); }
-        });
+      btn.addEventListener('click',function(){
+        var id=btn.getAttribute('data-save-id');
+        var ta=list.querySelector('[data-notes-id="'+id+'"]');
+        db.from('orders').update({admin_notes:ta.value}).eq('id',id).then(function(r){ if(!r.error){flash(id);} });
       });
     });
     list.querySelectorAll('[data-del-id]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var id = btn.getAttribute('data-del-id');
+      btn.addEventListener('click',function(){
+        var id=btn.getAttribute('data-del-id');
         if(!confirm('Delete this order permanently? This cannot be undone.')) return;
-        btn.disabled = true;
-        btn.textContent = 'Deleting…';
-        db.from('orders').delete().eq('id', id).then(function(r){
-          if(r.error){
-            btn.disabled = false;
-            btn.textContent = 'Delete';
-            alert('Could not delete: ' + r.error.message);
-            return;
-          }
+        btn.disabled=true; btn.textContent='Deleting…';
+        db.from('orders').delete().eq('id',id).then(function(r){
+          if(r.error){ btn.disabled=false; btn.textContent='Delete'; alert('Could not delete: '+r.error.message); return; }
           loadOrders();
         });
       });
@@ -209,56 +180,38 @@
   }
 
   function flash(id){
-    var el = document.getElementById('flash-' + id);
+    var el=document.getElementById('flash-'+id);
     if(!el) return;
     el.classList.add('show');
-    setTimeout(function(){ el.classList.remove('show'); }, 1600);
+    setTimeout(function(){ el.classList.remove('show'); },1600);
   }
 
   function loadOrders(){
-    document.getElementById('orders-list').innerHTML = '<div class="empty-note">Loading orders…</div>';
-    db.from('orders').select('*').order('created_at', { ascending: false }).limit(300).then(function(r){
-      if(r.error){
-        document.getElementById('orders-list').innerHTML = '<div class="empty-note">Could not load orders: ' + esc(r.error.message) + '</div>';
-        return;
-      }
-      renderSummary(r.data || []);
-      renderOrders(r.data || []);
+    document.getElementById('orders-list').innerHTML='<div class="empty-note">Loading orders…</div>';
+    db.from('orders').select('*').order('created_at',{ascending:false}).limit(300).then(function(r){
+      if(r.error){ document.getElementById('orders-list').innerHTML='<div class="empty-note">Could not load orders: '+esc(r.error.message)+'</div>'; return; }
+      renderSummary(r.data||[]);
+      renderOrders(r.data||[]);
     });
   }
 
-  document.getElementById('login-btn').addEventListener('click', function(){
-    var email = document.getElementById('login-email').value.trim();
-    var pass = document.getElementById('login-pass').value;
-    var errEl = document.getElementById('login-err');
-    errEl.textContent = '';
-    db.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
-      if(r.error){
-        errEl.textContent = 'Could not sign in — check the email and password.';
-        return;
-      }
-      showDash();
-      loadOrders();
+  document.getElementById('login-btn').addEventListener('click',function(){
+    var email=document.getElementById('login-email').value.trim();
+    var pass=document.getElementById('login-pass').value;
+    var errEl=document.getElementById('login-err');
+    errEl.textContent='';
+    db.auth.signInWithPassword({email:email,password:pass}).then(function(r){
+      if(r.error){ errEl.textContent='Could not sign in — check the email and password.'; return; }
+      showDash(); loadOrders();
     });
   });
 
-  signoutBtn.addEventListener('click', function(){
-    db.auth.signOut().then(function(){ showLogin(); });
-  });
-
-  refreshBtn.addEventListener('click', loadOrders);
-
-  document.getElementById('login-pass').addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ document.getElementById('login-btn').click(); }
-  });
+  signoutBtn.addEventListener('click',function(){ db.auth.signOut().then(function(){ showLogin(); }); });
+  refreshBtn.addEventListener('click',loadOrders);
+  document.getElementById('login-pass').addEventListener('keydown',function(e){ if(e.key==='Enter'){ document.getElementById('login-btn').click(); } });
 
   db.auth.getSession().then(function(r){
-    if(r.data && r.data.session){
-      showDash();
-      loadOrders();
-    } else {
-      showLogin();
-    }
+    if(r.data && r.data.session){ showDash(); loadOrders(); } else { showLogin(); }
   });
 })();
 </script>
