@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#170F0F">
-<title>Group Buys — CanadaEhPeps</title>
+<title>Group buys — CanadaEhPeps</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/600.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/700.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/500.css">
@@ -15,6 +15,51 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/400.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
+<style>
+  .how-strip{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; margin-bottom:30px;}
+  .how-bubble{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:16px 16px 14px;}
+  .how-bubble h4{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin-bottom:6px;}
+  .how-bubble p{font-size:0.8rem; font-weight:500; color:var(--ink-soft); line-height:1.45;}
+  .buys-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px;}
+  .buy-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:22px 20px; display:flex; flex-direction:column; gap:10px;}
+  .buy-top{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .buy-code{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; letter-spacing:0.06em; background:var(--bg); border:2px solid var(--ink); border-radius:var(--r-pill); padding:5px 12px; color:var(--ink-soft);}
+  .buy-status{font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; border-radius:var(--r-pill); padding:5px 12px; color:#fff;}
+  .st-open{background:var(--plum);}
+  .st-closed{background:var(--ink-soft);}
+  .st-shipping,.st-delivered{background:var(--rust-deep);}
+  .st-failed{background:var(--rust-deep);}
+  .buy-card h3{font-size:1.5rem; margin:0;}
+  .buy-kit{font-family:'Space Mono',monospace; font-weight:700; font-size:0.95rem; color:var(--rust-deep);}
+  .buy-desc{font-size:0.82rem; font-weight:500; color:var(--ink-soft); line-height:1.5; flex:1;}
+  .fill-track{height:14px; border:2px solid var(--ink); border-radius:var(--r-pill); background:var(--bg); overflow:hidden;}
+  .fill-bar{height:100%; background:var(--plum); width:0%; transition:width .6s;}
+  .buy-meta{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;}
+  .buy-count{color:var(--rust-deep);}
+  .buys-empty{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:44px 26px; text-align:center; color:var(--ink-soft); font-weight:500; max-width:640px;}
+  /* reserve popup */
+  .resv-overlay{position:fixed; inset:0; background:rgba(23,15,15,0.55); display:none; align-items:center; justify-content:center; z-index:200; padding:18px;}
+  .resv-overlay[data-open="true"]{display:flex;}
+  .resv-pop{position:relative; background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 26px 26px; width:100%; max-width:440px; box-shadow:0 18px 50px rgba(0,0,0,0.35); max-height:92vh; overflow:auto;}
+  .resv-close{position:absolute; top:10px; right:10px;}
+  .resv-pop h3{font-size:1.35rem; margin-bottom:4px;}
+  .resv-kit{font-family:'Space Mono',monospace; font-weight:700; font-size:0.8rem; color:var(--rust-deep); margin-bottom:14px;}
+  .resv-label{display:block; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:12px 0 6px 2px;}
+  .resv-ship{background:var(--bg); border:2px dashed var(--ink); border-radius:var(--r-md); padding:12px 14px; font-size:0.8rem; font-weight:600; line-height:1.5;}
+  .resv-ship a{color:var(--rust-deep); font-weight:700;}
+  select.field-input{appearance:none; cursor:pointer;}
+  textarea.field-input{border-radius:var(--r-md); min-height:54px; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-weight:500;}
+  .resv-msg{color:var(--rust-deep); font-size:0.8rem; font-weight:700; margin-top:10px; min-height:1em;}
+  .resv-msg.ok{color:var(--ink-soft);}
+  .order-ref{display:inline-block; font-family:'Space Mono',monospace; font-weight:700; font-size:1.2rem; background:var(--plum); color:#fff; padding:11px 24px; border-radius:var(--r-pill); margin:14px 0; letter-spacing:0.06em;}
+  .qty-row{display:flex; align-items:center; gap:10px;}
+  .qty-row .stepper{display:flex; align-items:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg);}
+  .qty-row .step-btn{width:36px; height:38px; border:none; background:transparent; color:var(--ink); font-size:1.1rem; font-weight:700; cursor:pointer;}
+  .qty-row .step-btn:hover{background:var(--plum); color:#fff;}
+  .qty-row .step-qty{width:52px; height:38px; border:none; background:transparent; color:var(--ink); text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem; -moz-appearance:textfield;}
+  .qty-row .step-qty::-webkit-inner-spin-button, .qty-row .step-qty::-webkit-outer-spin-button{-webkit-appearance:none; margin:0;}
+  .qty-left{font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; color:var(--ink-soft);}
+</style>
 </head>
 <body>
 
@@ -71,38 +116,20 @@
   <section>
     <div class="wrap">
       <div class="section-head">
-        <span class="section-tag">Group Buys</span>
-        <h2>Open group buys.</h2>
-        <p>Each ticket below is the entrance to its group buy store. The store opens when an admin launches the buy.</p>
+        <span class="section-tag">Group buys</span>
+        <h2>Group buys.</h2>
+        <p>Batch pricing, first come first served. Reserve a kit while the buy is open — you only pay after the buy closes and we confirm.</p>
       </div>
-      <div class="tickets">
-        <div class="ticket">
-          <div class="ticket-head"><span class="lot">LOT// GB-0114</span><span class="status">FILLING</span></div>
-          <div class="ticket-body"><h3>Group Buy — Winter Soldier</h3><p class="desc">Entrance to this group buy's store. Batch-tested. Closes once the lot fills or the countdown ends, whichever comes first.</p></div>
-          <div class="fill-track"><div class="fill-bar" style="width:0%"></div></div>
-          <div class="ticket-price meta-end"><span class="fill">0% filled</span></div>
-          <a class="ticket-cta" href="#" title="Store opens when an admin launches this buy">Enter store</a>
-        </div>
-        <div class="ticket">
-          <div class="ticket-head"><span class="lot">LOT// GB-0115</span><span class="status">FILLING</span></div>
-          <div class="ticket-body"><h3>Group Buy — New Year New You</h3><p class="desc">Entrance to this group buy's store. Batch-tested. Closes once the lot fills or the countdown ends, whichever comes first.</p></div>
-          <div class="fill-track"><div class="fill-bar" style="width:0%"></div></div>
-          <div class="ticket-price meta-end"><span class="fill">0% filled</span></div>
-          <a class="ticket-cta" href="#" title="Store opens when an admin launches this buy">Enter store</a>
-        </div>
-      </div>
-      <p class="entrance-note">THE TICKETS ABOVE ARE ENTRANCES ONLY — THE STORE ITSELF OPENS HERE WHEN AN ADMIN LAUNCHES THE BUY.</p>
 
-      <h3 class="list-head">Previous buys</h3>
-      <div class="past-item">
-        <div class="past-left"><span class="past-lot">LOT// GB-0112</span><span class="past-name">Null</span></div>
-        <div class="past-right"><span class="past-status">SHIPPED</span><a class="past-link" href="track.html">Track this buy</a></div>
+      <div class="how-strip">
+        <div class="how-bubble"><h4>1 · Reserve</h4><p>Reserve kits while the buy is open. Free account required — nothing is owed yet.</p></div>
+        <div class="how-bubble"><h4>2 · Pay</h4><p>When the buy closes we email payment details. Pay in crypto within the window.</p></div>
+        <div class="how-bubble"><h4>3 · Ship</h4><p>The batch arrives, gets tested, COAs posted, then kits ship per the buy's timeline.</p></div>
       </div>
-      <div class="past-item">
-        <div class="past-left"><span class="past-lot">LOT// GB-0109</span><span class="past-name">Null</span></div>
-        <div class="past-right"><span class="past-status">COMPLETED</span><a class="past-link" href="#">View updates &amp; announcements</a></div>
+
+      <div class="buys-grid" id="buys-grid">
+        <div class="buys-empty">Loading buys…</div>
       </div>
-      <p class="crosslink">Looking for standing bulk pricing instead? See <a href="bulk-orders.html">Bulk Orders</a>.</p>
     </div>
   </section>
 </main>
@@ -145,6 +172,281 @@
   </div>
 </div>
 
+<!-- reserve popup -->
+<div class="resv-overlay" id="resv-overlay" data-open="false">
+  <div class="resv-pop" role="dialog">
+    <button class="icon-btn resv-close" id="resv-close" aria-label="Close">✕</button>
+    <div id="resv-form-wrap">
+      <h3 id="resv-title">Reserve</h3>
+      <div class="resv-kit" id="resv-kit">—</div>
+      <label class="resv-label">Kits to reserve</label>
+      <div class="qty-row">
+        <div class="stepper"><button class="step-btn" id="resv-minus" type="button">−</button><input class="step-qty" id="resv-qty" type="number" min="1" value="1"><button class="step-btn" id="resv-plus" type="button">+</button></div>
+        <span class="qty-left" id="resv-left"></span>
+      </div>
+      <label class="resv-label">Shipping (from your account)</label>
+      <div class="resv-ship" id="resv-ship">—</div>
+      <label class="resv-label">Payment coin</label>
+      <select class="field-input" id="resv-coin">
+        <option value="" disabled selected>Choose…</option>
+        <option>Bitcoin (BTC)</option>
+        <option>USDC — Ethereum network</option>
+        <option>USDC — Solana network</option>
+        <option>Not sure yet</option>
+      </select>
+      <label class="resv-label">Notes (optional)</label>
+      <textarea class="field-input" id="resv-notes" maxlength="400" placeholder="Anything we should know"></textarea>
+      <button class="btn btn-primary" id="resv-btn" style="width:100%; margin-top:14px;">Reserve kits</button>
+      <div class="resv-msg" id="resv-msg"></div>
+      <p style="font-size:0.72rem; color:var(--ink-soft); font-weight:500; margin-top:12px; line-height:1.45;">Reserving holds your spot — nothing is owed until the buy closes and we confirm your payment details by email.</p>
+    </div>
+    <div id="resv-success" style="display:none; text-align:center;">
+      <h3>Reserved. Eh, nice one. 🇨🇦</h3>
+      <p style="color:var(--ink-soft); font-weight:500;">Your reservation reference:</p>
+      <div class="order-ref" id="resv-ref">CEP-00000</div>
+      <p style="color:var(--ink-soft); font-weight:500;">We'll email you when the buy closes with payment details. Track this reservation in your account.</p>
+      <button class="btn btn-ghost btn-sm" id="resv-done" style="margin-top:14px;">Done</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
+<script>
+/* Group buys — dynamic cards + reservations */
+(function(){
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  var WEB3FORMS_KEY = 'ec3741b6-dfd0-40d0-a6ed-1cfca868658d';
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var grid = document.getElementById('buys-grid');
+  var buys = [];
+  var fills = {};
+  var currentUser = null;
+  var currentBuy = null;
+  var profile = null;
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function isOpen(buy){
+    if(buy.status !== 'open') return false;
+    return new Date(buy.deadline).getTime() > Date.now();
+  }
+
+  function countdownText(deadline){
+    var ms = new Date(deadline).getTime() - Date.now();
+    if(ms <= 0) return 'Closed';
+    var d = Math.floor(ms / 86400000);
+    var h = Math.floor((ms % 86400000) / 3600000);
+    var m = Math.floor((ms % 3600000) / 60000);
+    return 'Closes in ' + (d > 0 ? d + 'd ' : '') + h + 'h ' + m + 'm';
+  }
+
+  function render(){
+    if(!buys.length){
+      grid.innerHTML = '<div class="buys-empty">No group buys live right now, eh. When one launches, it appears here instantly — watch this space.</div>';
+      return;
+    }
+    grid.innerHTML = buys.map(function(b){
+      var reserved = fills[b.code] || 0;
+      var pct = Math.min(100, Math.round((reserved / b.total_units) * 100));
+      var open = isOpen(b);
+      var statusClass = 'st-' + b.status;
+      var statusText = b.status.toUpperCase();
+      return '<div class="buy-card">' +
+        '<div class="buy-top"><span class="buy-code">' + esc(b.code) + '</span><span class="buy-status ' + statusClass + '">' + esc(statusText) + '</span></div>' +
+        '<h3>' + esc(b.product) + '</h3>' +
+        '<div class="buy-kit">' + esc(b.kit_label) + ' · $' + Number(b.price_cad) + ' per kit</div>' +
+        '<p class="buy-desc">' + esc(b.description || '') + '</p>' +
+        '<div class="fill-track"><div class="fill-bar" style="width:' + pct + '%"></div></div>' +
+        '<div class="buy-meta"><span>' + reserved + ' / ' + b.total_units + ' reserved</span><span class="buy-count" data-deadline="' + esc(b.deadline) + '">' + (open ? countdownText(b.deadline) : 'Closed') + '</span></div>' +
+        (open
+          ? '<button class="btn btn-primary reserve-btn" data-code="' + esc(b.code) + '">Reserve a kit</button>'
+          : '<button class="btn btn-ghost" disabled style="opacity:0.55; cursor:default;">Buy ' + (b.status === 'open' ? 'closed' : esc(b.status)) + '</button>') +
+      '</div>';
+    }).join('');
+
+    grid.querySelectorAll('.reserve-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var code = btn.getAttribute('data-code');
+        var buy = buys.find(function(b){ return b.code === code; });
+        if(!buy) return;
+        db.auth.getSession().then(function(r){
+          if(!r.data.session){
+            var pill = document.querySelector('a.acct-pill');
+            if(pill){ pill.click(); }
+            return;
+          }
+          currentUser = r.data.session.user;
+          openReserve(buy);
+        });
+      });
+    });
+  }
+
+  /* live countdowns */
+  setInterval(function(){
+    document.querySelectorAll('.buy-count').forEach(function(el){
+      el.textContent = countdownText(el.getAttribute('data-deadline'));
+    });
+  }, 30000);
+
+  async function loadAll(){
+    var b = await db.from('buys').select('*').order('created_at', { ascending: false }).limit(50);
+    buys = b.data || [];
+    var f = await db.rpc('buy_fills');
+    fills = {};
+    (f.data || []).forEach(function(r){ fills[r.code] = Number(r.reserved); });
+    render();
+  }
+
+  /* ---------- reserve popup ---------- */
+  var overlay = document.getElementById('resv-overlay');
+  var msg = document.getElementById('resv-msg');
+
+  function openReserve(buy){
+    currentBuy = buy;
+    msg.textContent = '';
+    document.getElementById('resv-form-wrap').style.display = 'block';
+    document.getElementById('resv-success').style.display = 'none';
+    document.getElementById('resv-title').textContent = 'Reserve — ' + buy.product;
+    document.getElementById('resv-kit').textContent = buy.kit_label + ' · $' + Number(buy.price_cad) + ' per kit';
+    var left = Math.max(0, buy.total_units - (fills[buy.code] || 0));
+    document.getElementById('resv-left').textContent = left + ' kit' + (left === 1 ? '' : 's') + ' left';
+    document.getElementById('resv-qty').value = 1;
+    document.getElementById('resv-qty').max = Math.max(1, left);
+    document.getElementById('resv-coin').selectedIndex = 0;
+    document.getElementById('resv-notes').value = '';
+
+    var shipEl = document.getElementById('resv-ship');
+    if(profile && profile.ship_address && profile.ship_city && profile.ship_postal){
+      shipEl.innerHTML = esc(profile.display_name || currentUser.email) + '<br>' +
+        esc(profile.ship_address) + ', ' + esc(profile.ship_city) + ', ' +
+        esc(profile.ship_province || '') + ' ' + esc(profile.ship_postal) + ', ' + esc(profile.ship_country || 'Canada') +
+        '<br><a href="account.html" style="font-size:0.72rem;">Change address</a>';
+    } else {
+      shipEl.innerHTML = 'No shipping address on your account yet, eh.<br><a href="account.html">Add your address first →</a>';
+    }
+    overlay.setAttribute('data-open', 'true');
+  }
+
+  function closeReserve(){ overlay.setAttribute('data-open', 'false'); }
+  document.getElementById('resv-close').addEventListener('click', closeReserve);
+  document.getElementById('resv-done').addEventListener('click', closeReserve);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeReserve(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeReserve(); });
+
+  document.getElementById('resv-minus').addEventListener('click', function(){
+    var q = document.getElementById('resv-qty');
+    q.value = Math.max(1, (parseInt(q.value, 10) || 1) - 1);
+  });
+  document.getElementById('resv-plus').addEventListener('click', function(){
+    var q = document.getElementById('resv-qty');
+    var max = parseInt(q.max, 10) || 1;
+    q.value = Math.min(max, (parseInt(q.value, 10) || 1) + 1);
+  });
+
+  function makeRef(){
+    var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    var out = '';
+    for(var i=0;i<5;i++){ out += chars.charAt(Math.floor(Math.random()*chars.length)); }
+    return 'CEP-' + out;
+  }
+
+  document.getElementById('resv-btn').addEventListener('click', function(){
+    var btn = document.getElementById('resv-btn');
+    if(!currentBuy || !currentUser) return;
+    if(!profile || !profile.ship_address || !profile.ship_city || !profile.ship_postal){
+      msg.textContent = 'Add your shipping address on your account page first.';
+      return;
+    }
+    var kits = parseInt(document.getElementById('resv-qty').value, 10);
+    var left = Math.max(0, currentBuy.total_units - (fills[currentBuy.code] || 0));
+    if(!(kits >= 1)){ msg.textContent = 'Choose at least 1 kit.'; return; }
+    if(kits > left){ msg.textContent = 'Only ' + left + ' kits left.'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Reserving…';
+    msg.textContent = '';
+    var ref = makeRef();
+    var notes = document.getElementById('resv-notes').value.trim();
+
+    var payload = {
+      order_ref: ref,
+      user_id: currentUser.id,
+      customer_name: profile.display_name || currentUser.email,
+      email: currentUser.email,
+      telegram: 'none',
+      product: currentBuy.product + ' (' + currentBuy.kit_label + ')',
+      quantity: kits,
+      coin: document.getElementById('resv-coin').value || 'not sure yet',
+      txid: null,
+      ship_address: profile.ship_address,
+      ship_city: profile.ship_city,
+      ship_province: profile.ship_province || null,
+      ship_postal: profile.ship_postal,
+      ship_country: profile.ship_country || 'Canada',
+      status: 'pending',
+      buy_code: currentBuy.code,
+      admin_notes: 'GROUP BUY RESERVATION ' + currentBuy.code + (notes ? ' | NOTES: ' + notes : '')
+    };
+
+    db.from('orders').insert(payload).then(function(result){
+      if(result.error){
+        btn.disabled = false;
+        btn.textContent = 'Reserve kits';
+        msg.textContent = 'Could not reserve: ' + result.error.message;
+        return;
+      }
+      /* staff alert email */
+      try {
+        fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: 'New reservation ' + ref + ' — buy ' + currentBuy.code,
+            from_name: 'CanadaEhPeps Group Buys',
+            name: payload.customer_name,
+            email: currentUser.email,
+            bot: '',
+            'Order Reference': ref,
+            'Buy': currentBuy.code + ' — ' + currentBuy.product,
+            'Kits Reserved': kits,
+            'Customer': payload.customer_name + ' <' + currentUser.email + '>',
+            'Payment Coin': payload.coin,
+            'Notes': notes || 'none',
+            'Status': 'pending'
+          })
+        }).catch(function(){});
+      } catch(err){}
+      document.getElementById('resv-form-wrap').style.display = 'none';
+      document.getElementById('resv-ref').textContent = ref;
+      document.getElementById('resv-success').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Reserve kits';
+      loadAll();
+    });
+  });
+
+  /* init: session + profile, then buys */
+  db.auth.getSession().then(function(r){
+    if(r.data.session){
+      currentUser = r.data.session.user;
+      db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle().then(function(p){
+        profile = p.data;
+        loadAll();
+      });
+    } else {
+      loadAll();
+    }
+  });
+})();
+</script>
 </body>
 </html>
