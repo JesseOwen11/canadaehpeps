@@ -20,7 +20,6 @@
   .term-bubble{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:16px 16px 14px;}
   .term-bubble h4{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin-bottom:6px;}
   .term-bubble p{font-size:0.8rem; font-weight:500; color:var(--ink-soft); line-height:1.45;}
-  /* thin, tall cards — 2 per row on mobile */
   .prod-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;}
   @media (min-width:720px){ .prod-grid{grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:16px;} }
   .prod-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:20px 12px 16px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center; min-height:300px;}
@@ -38,6 +37,7 @@
   .step-qty{width:44px; height:36px; border:none; background:transparent; color:var(--ink); text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.85rem; -moz-appearance:textfield;}
   .step-qty::-webkit-inner-spin-button, .step-qty::-webkit-outer-spin-button{-webkit-appearance:none; margin:0;}
   .add-btn{width:100%; font-size:0.78rem;}
+  .grid-note{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:36px 24px; text-align:center; color:var(--ink-soft); font-weight:500; grid-column:1 / -1;}
   .cart-cta{display:flex; justify-content:center; margin-top:26px;}
   .cart-badge{position:absolute; top:-6px; right:-8px; min-width:18px; height:18px; border-radius:999px; background:var(--rust-deep); color:#fff; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1;}
   .toast{position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--plum); color:#fff; font-family:'Space Mono',monospace; font-size:0.72rem; font-weight:700; padding:12px 22px; border-radius:var(--r-pill); opacity:0; transition:all .3s; pointer-events:none; z-index:99;}
@@ -108,76 +108,12 @@
       <div class="terms-strip">
         <div class="term-bubble"><h4>How it works</h4><p>Add to cart → check out with your account → we confirm your order by email and send the payment address.</p></div>
         <div class="term-bubble"><h4>Payment</h4><p>BTC or USDC only — and only after we confirm your order. Nothing is owed until we confirm.</p></div>
-        <div class="term-bubble"><h4>Shipping</h4><p>Shipping from Alberta, discreet packaging. Instant shipping estimate in your cart.</p></div>
-        <div class="term-bubble"><h4>Research only</h4><p>18+ only. All products sold strictly for laboratory research purposes (RUO).</p></div>
+        <div class="term-bubble"><h4>Shipping</h4><p>Canada Post from Ontario, discreet packaging. Instant shipping estimate in your cart.</p></div>
+        <div class="term-bubble"><h4>Research only</h4><p>18+ only. All products sold strictly for laboratory research purposes.</p></div>
       </div>
 
-      <div class="prod-grid">
-        <div class="prod-card">
-          <span class="prod-lot">BLK // Always open</span>
-          <h3>MOTS-C</h3>
-          <div class="prod-price">$--<span>10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
-          <div class="prod-buy">
-            <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-mots" type="button">−</button><input class="step-qty" id="q-mots" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-mots" type="button">+</button></div>
-            <button class="btn btn-primary add-btn" data-id="mots-c" data-name="MOTS-C — 10mg" data-qty="q-mots">Add to cart</button>
-          </div>
-        </div>
-
-        <div class="prod-card">
-          <span class="prod-lot">BLK // Always open</span>
-          <h3>BPC-157</h3>
-          <div class="prod-price">$--<span>10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
-          <div class="prod-buy">
-            <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-bpc" type="button">−</button><input class="step-qty" id="q-bpc" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-bpc" type="button">+</button></div>
-            <button class="btn btn-primary add-btn" data-id="bpc-157" data-name="BPC-157 — 10mg" data-qty="q-bpc">Add to cart</button>
-          </div>
-        </div>
-
-        <div class="prod-card">
-          <span class="prod-lot">BLK // Always open</span>
-          <h3>TB-500</h3>
-          <div class="prod-price">$--<span>10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
-          <div class="prod-buy">
-            <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-tb" type="button">−</button><input class="step-qty" id="q-tb" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-tb" type="button">+</button></div>
-            <button class="btn btn-primary add-btn" data-id="tb-500" data-name="TB-500 — 10mg" data-qty="q-tb">Add to cart</button>
-          </div>
-        </div>
-
-        <div class="prod-card">
-          <span class="prod-lot">BLK // Always open</span>
-          <h3>GHK-Cu</h3>
-          <div class="prod-price">$--<span>50mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
-          <div class="prod-buy">
-            <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-ghk" type="button">−</button><input class="step-qty" id="q-ghk" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-ghk" type="button">+</button></div>
-            <button class="btn btn-primary add-btn" data-id="ghk-cu" data-name="GHK-Cu — 50mg" data-qty="q-ghk">Add to cart</button>
-          </div>
-        </div>
-
-        <div class="prod-card">
-          <span class="prod-lot">BLK // Always open</span>
-          <h3>KPV</h3>
-          <div class="prod-price">$--<span>10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
-          <div class="prod-buy">
-            <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-kpv" type="button">−</button><input class="step-qty" id="q-kpv" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-kpv" type="button">+</button></div>
-            <button class="btn btn-primary add-btn" data-id="kpv" data-name="KPV — 10mg" data-qty="q-kpv">Add to cart</button>
-          </div>
-        </div>
-
-        <div class="prod-card">
-          <span class="prod-lot">BLK // Always open</span>
-          <h3>AOD-9604</h3>
-          <div class="prod-price">$--<span>10mg vial</span></div>
-          <p class="prod-sub">Batch-tested. Price confirmed at order review.</p>
-          <div class="prod-buy">
-            <div class="stepper"><button class="step-btn" data-step="-1" data-target="q-aod" type="button">−</button><input class="step-qty" id="q-aod" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="q-aod" type="button">+</button></div>
-            <button class="btn btn-primary add-btn" data-id="aod-9604" data-name="AOD-9604 — 10mg" data-qty="q-aod">Add to cart</button>
-          </div>
-        </div>
+      <div class="prod-grid" id="prod-grid">
+        <div class="grid-note">Loading products…</div>
       </div>
 
       <div class="cart-cta">
@@ -230,15 +166,20 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Bulk page — cart lives in the browser, no account needed to browse/add */
+/* Bulk page — products from the database, cart in the browser */
 (function(){
-  function getCart(){
-    try { return JSON.parse(localStorage.getItem('cep_cart') || '[]'); } catch(e){ return []; }
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
   }
-  function saveCart(c){
-    localStorage.setItem('cep_cart', JSON.stringify(c));
-    updateBadge();
-  }
+
+  function getCart(){ try{ return JSON.parse(localStorage.getItem('cep_cart') || '[]'); }catch(e){ return []; } }
+  function saveCart(c){ localStorage.setItem('cep_cart', JSON.stringify(c)); updateBadge(); }
   function updateBadge(){
     var b = document.getElementById('cart-badge');
     if(!b) return;
@@ -259,32 +200,63 @@
     return n;
   }
 
-  document.querySelectorAll('.step-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var input = document.getElementById(btn.getAttribute('data-target'));
-      if(!input) return;
-      var delta = parseInt(btn.getAttribute('data-step'), 10);
-      input.value = clampQty((parseInt(input.value, 10) || 1) + delta);
-    });
-  });
-  document.querySelectorAll('.step-qty').forEach(function(input){
-    input.addEventListener('change', function(){ input.value = clampQty(input.value); });
-  });
+  function renderGrid(prods){
+    var grid = document.getElementById('prod-grid');
+    if(!prods.length){
+      grid.innerHTML = '<div class="grid-note">No bulk products listed right now, eh. Check back soon.</div>';
+      return;
+    }
+    grid.innerHTML = prods.map(function(p){
+      var priceHtml = (p.price_cad === null || p.price_cad === undefined)
+        ? '$--<span>' + esc(p.size_label) + '</span>'
+        : '$' + Number(p.price_cad) + '<span>' + esc(p.size_label) + '</span>';
+      var qid = 'q-' + p.id;
+      return '<div class="prod-card">' +
+        '<span class="prod-lot">BLK // Always open</span>' +
+        '<h3>' + esc(p.name) + '</h3>' +
+        '<div class="prod-price">' + priceHtml + '</div>' +
+        '<p class="prod-sub">' + esc(p.description || '') + '</p>' +
+        '<div class="prod-buy">' +
+          '<div class="stepper"><button class="step-btn" data-step="-1" data-target="' + qid + '" type="button">−</button><input class="step-qty" id="' + qid + '" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="' + qid + '" type="button">+</button></div>' +
+          '<button class="btn btn-primary add-btn" data-id="bulk-' + p.id + '" data-name="' + esc(p.name + ' — ' + p.size_label) + '" data-qty="' + qid + '">Add to cart</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
 
-  document.querySelectorAll('.add-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var id = btn.getAttribute('data-id');
-      var name = btn.getAttribute('data-name');
-      var qty = clampQty(document.getElementById(btn.getAttribute('data-qty')).value);
-      var cart = getCart();
-      var found = false;
-      cart.forEach(function(it){
-        if(it.id === id){ it.qty = clampQty(it.qty + qty); found = true; }
+    grid.querySelectorAll('.step-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var input = document.getElementById(btn.getAttribute('data-target'));
+        if(!input) return;
+        var delta = parseInt(btn.getAttribute('data-step'), 10);
+        input.value = clampQty((parseInt(input.value, 10) || 1) + delta);
       });
-      if(!found){ cart.push({ id: id, name: name, qty: qty }); }
-      saveCart(cart);
-      toast(name + ' added to cart ✓');
     });
+    grid.querySelectorAll('.step-qty').forEach(function(input){
+      input.addEventListener('change', function(){ input.value = clampQty(input.value); });
+    });
+    grid.querySelectorAll('.add-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-id');
+        var name = btn.getAttribute('data-name');
+        var qty = clampQty(document.getElementById(btn.getAttribute('data-qty')).value);
+        var cart = getCart();
+        var found = false;
+        cart.forEach(function(it){
+          if(it.id === id){ it.qty = clampQty(it.qty + qty); found = true; }
+        });
+        if(!found){ cart.push({ id: id, name: name, qty: qty }); }
+        saveCart(cart);
+        toast(name + ' added to cart ✓');
+      });
+    });
+  }
+
+  db.from('bulk_products').select('*').eq('active', true).order('sort', { ascending: true }).limit(100).then(function(r){
+    if(r.error){
+      document.getElementById('prod-grid').innerHTML = '<div class="grid-note">Could not load products. Refresh the page, eh.</div>';
+      return;
+    }
+    renderGrid(r.data || []);
   });
 
   updateBadge();
