@@ -131,7 +131,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Group buy manager — fail-safe: always shows sign-in first, upgrades to dashboard if staff */
+/* Group buy manager — same simple session check as the orders page (no extra gate) */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -278,10 +278,8 @@
     errEl.textContent = '';
     db.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
       if(r.error){ errEl.textContent = 'Could not sign in — check the email and password.'; return; }
-      db.from('profiles').select('is_staff').eq('id', r.data.user.id).maybeSingle().then(function(p){
-        if(!p.error && p.data && p.data.is_staff){ showDash(); loadBuys(); }
-        else { errEl.textContent = 'This account is not staff.'; db.auth.signOut(); }
-      });
+      showDash();
+      loadBuys();
     });
   });
 
@@ -289,14 +287,13 @@
   document.getElementById('refresh-btn').addEventListener('click', loadBuys);
   document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-btn').click(); } });
 
-  /* FAIL-SAFE INIT: show the sign-in box first, so the page is never blank.
-     Then, if there's already a logged-in staff session, upgrade to the dashboard. */
+  /* Simple session check — identical to the orders page.
+     Sign in once, move between both pages freely. Page is never blank. */
   showLogin();
   db.auth.getSession().then(function(r){
     if(r.data && r.data.session){
-      db.from('profiles').select('is_staff').eq('id', r.data.session.user.id).maybeSingle().then(function(p){
-        if(!p.error && p.data && p.data.is_staff){ showDash(); loadBuys(); }
-      }).catch(function(){ /* stay on sign-in */ });
+      showDash();
+      loadBuys();
     }
   }).catch(function(){ /* stay on sign-in */ });
 })();
