@@ -414,5 +414,48 @@
   });
 })();
 </script>
+  <script>
+/* Danger zone — customer self-service account deletion */
+(function(){
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  function boot(){
+    var anchor = document.getElementById('signout-btn');
+    if(!anchor || document.getElementById('delete-account-btn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'delete-account-btn';
+    btn.type = 'button';
+    btn.className = 'btn btn-ghost btn-sm';
+    btn.textContent = 'Delete my account';
+    btn.style.marginTop = '20px';
+    btn.style.width = '100%';
+    btn.style.color = 'var(--rust-deep)';
+    btn.style.borderColor = 'var(--rust-deep)';
+    anchor.insertAdjacentElement('afterend', btn);
+    btn.addEventListener('click', function(){
+      var dbz = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      dbz.auth.getSession().then(function(r){
+        if(!r.data || !r.data.session){ alert('Sign in first, eh.'); return; }
+        if(!confirm('Delete your account? Your profile and saved shipping details will be permanently removed. Past order records are kept for business purposes.')) return;
+        if(!confirm('Last chance — this cannot be undone. Delete your account now?')) return;
+        btn.disabled = true;
+        btn.textContent = 'Deleting…';
+        dbz.from('profiles').delete().eq('id', r.data.session.user.id).then(function(res){
+          if(res.error){
+            alert('Could not delete: ' + res.error.message);
+            btn.disabled = false;
+            btn.textContent = 'Delete my account';
+            return;
+          }
+          dbz.auth.signOut().then(function(){ window.location.href = 'index.html'; });
+        });
+      });
+    });
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
+  else { boot(); }
+})();
+</script>
+
 </body>
 </html>
