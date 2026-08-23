@@ -20,7 +20,7 @@
   .how-bubble{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:16px 16px 14px;}
   .how-bubble h4{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin-bottom:6px;}
   .how-bubble p{font-size:0.8rem; font-weight:500; color:var(--ink-soft); line-height:1.45;}
-  .buys-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px;}
+  .buys-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;}
   .buy-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:22px 20px; display:flex; flex-direction:column; gap:10px;}
   .buy-top{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
   .buy-code{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; letter-spacing:0.06em; background:var(--bg); border:2px solid var(--ink); border-radius:var(--r-pill); padding:5px 12px; color:var(--ink-soft);}
@@ -29,15 +29,17 @@
   .st-closed{background:var(--ink-soft);}
   .st-shipping,.st-delivered{background:var(--rust-deep);}
   .st-failed{background:var(--rust-deep);}
-  .buy-card h3{font-size:1.5rem; margin:0;}
-  .buy-kit{font-family:'Space Mono',monospace; font-weight:700; font-size:0.95rem; color:var(--rust-deep);}
-  .buy-desc{font-size:0.82rem; font-weight:500; color:var(--ink-soft); line-height:1.5; flex:1;}
-  .fill-track{height:14px; border:2px solid var(--ink); border-radius:var(--r-pill); background:var(--bg); overflow:hidden;}
+  .buy-desc{font-size:0.82rem; font-weight:500; color:var(--ink-soft); line-height:1.5;}
+  .prod-row{background:var(--bg); border:2px dashed var(--ink); border-radius:var(--r-md); padding:14px; display:flex; flex-direction:column; gap:8px;}
+  .pr-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .pr-name{font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.15rem;}
+  .pr-price{font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem; color:var(--rust-deep);}
+  .pr-kit{font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft);}
+  .fill-track{height:12px; border:2px solid var(--ink); border-radius:var(--r-pill); background:var(--panel); overflow:hidden;}
   .fill-bar{height:100%; background:var(--plum); width:0%; transition:width .6s;}
-  .buy-meta{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;}
+  .buy-meta{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;}
   .buy-count{color:var(--rust-deep);}
   .buys-empty{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:44px 26px; text-align:center; color:var(--ink-soft); font-weight:500; max-width:640px;}
-  /* reserve popup */
   .resv-overlay{position:fixed; inset:0; background:rgba(23,15,15,0.55); display:none; align-items:center; justify-content:center; z-index:200; padding:18px;}
   .resv-overlay[data-open="true"]{display:flex;}
   .resv-pop{position:relative; background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 26px 26px; width:100%; max-width:440px; box-shadow:0 18px 50px rgba(0,0,0,0.35); max-height:92vh; overflow:auto;}
@@ -53,7 +55,7 @@
   .resv-msg.ok{color:var(--ink-soft);}
   .order-ref{display:inline-block; font-family:'Space Mono',monospace; font-weight:700; font-size:1.2rem; background:var(--plum); color:#fff; padding:11px 24px; border-radius:var(--r-pill); margin:14px 0; letter-spacing:0.06em;}
   .qty-row{display:flex; align-items:center; gap:10px;}
-  .qty-row .stepper{display:flex; align-items:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg);}
+  .qty-row .stepper{display:flex; align-items:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--panel);}
   .qty-row .step-btn{width:36px; height:38px; border:none; background:transparent; color:var(--ink); font-size:1.1rem; font-weight:700; cursor:pointer;}
   .qty-row .step-btn:hover{background:var(--plum); color:#fff;}
   .qty-row .step-qty{width:52px; height:38px; border:none; background:transparent; color:var(--ink); text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem; -moz-appearance:textfield;}
@@ -118,7 +120,7 @@
       <div class="section-head">
         <span class="section-tag">Group buys</span>
         <h2>Group buys.</h2>
-        <p>Batch pricing, first come first served. Reserve a kit while the buy is open — you only pay after the buy closes and we confirm.</p>
+        <p>Batch pricing, first come first served. Reserve kits while the buy is open — you only pay after the buy closes and we confirm.</p>
       </div>
 
       <div class="how-strip">
@@ -213,7 +215,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Group buys — dynamic cards + reservations */
+/* Group buys — multi-product cards + per-product reservations */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
@@ -225,6 +227,7 @@
   var fills = {};
   var currentUser = null;
   var currentBuy = null;
+  var currentProd = null;
   var profile = null;
 
   function esc(s){
@@ -232,6 +235,13 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
+
+  function getProds(buy){
+    if(buy.products && buy.products.length) return buy.products;
+    return [{ name: buy.product, kit_label: buy.kit_label, price_cad: buy.price_cad, total_units: buy.total_units, vendor: buy.vendor }];
+  }
+
+  function fillKey(code, name){ return code + '|' + name; }
 
   function isOpen(buy){
     if(buy.status !== 'open') return false;
@@ -253,28 +263,37 @@
       return;
     }
     grid.innerHTML = buys.map(function(b){
-      var reserved = fills[b.code] || 0;
-      var pct = Math.min(100, Math.round((reserved / b.total_units) * 100));
       var open = isOpen(b);
-      var statusClass = 'st-' + b.status;
-      var statusText = b.status.toUpperCase();
+      var prods = getProds(b);
+      var prodHtml = prods.map(function(p, pi){
+        var reserved = fills[fillKey(b.code, p.name)] || 0;
+        var total = p.total_units || 0;
+        var pct = total > 0 ? Math.min(100, Math.round((reserved / total) * 100)) : 0;
+        return '<div class="prod-row">' +
+          '<div class="pr-head"><span class="pr-name">' + esc(p.name) + '</span><span class="pr-price">$' + Number(p.price_cad) + ' / kit</span></div>' +
+          '<div class="pr-kit">' + esc(p.kit_label || 'kit') + (p.vendor ? ' · ' + esc(p.vendor) : '') + '</div>' +
+          '<div class="fill-track"><div class="fill-bar" style="width:' + pct + '%"></div></div>' +
+          '<div class="buy-meta"><span>' + reserved + ' / ' + total + ' reserved</span></div>' +
+          (open
+            ? '<button class="btn btn-primary btn-sm reserve-btn" data-code="' + esc(b.code) + '" data-pidx="' + pi + '">Reserve kits</button>'
+            : '') +
+        '</div>';
+      }).join('');
       return '<div class="buy-card">' +
-        '<div class="buy-top"><span class="buy-code">' + esc(b.code) + '</span><span class="buy-status ' + statusClass + '">' + esc(statusText) + '</span></div>' +
-        '<h3>' + esc(b.product) + '</h3>' +
-        '<div class="buy-kit">' + esc(b.kit_label) + ' · $' + Number(b.price_cad) + ' per kit</div>' +
-        '<p class="buy-desc">' + esc(b.description || '') + '</p>' +
-        '<div class="fill-track"><div class="fill-bar" style="width:' + pct + '%"></div></div>' +
-        '<div class="buy-meta"><span>' + reserved + ' / ' + b.total_units + ' reserved</span><span class="buy-count" data-deadline="' + esc(b.deadline) + '">' + (open ? countdownText(b.deadline) : 'Closed') + '</span></div>' +
-        (open
-          ? '<button class="btn btn-primary reserve-btn" data-code="' + esc(b.code) + '">Reserve a kit</button>'
-          : '<button class="btn btn-ghost" disabled style="opacity:0.55; cursor:default;">Buy ' + (b.status === 'open' ? 'closed' : esc(b.status)) + '</button>') +
+        '<div class="buy-top"><span class="buy-code">' + esc(b.code) + '</span><span class="buy-status st-' + esc(b.status) + '">' + esc(b.status.toUpperCase()) + '</span></div>' +
+        (b.description ? '<p class="buy-desc">' + esc(b.description) + '</p>' : '') +
+        prodHtml +
+        '<div class="buy-meta"><span class="buy-count" data-deadline="' + esc(b.deadline) + '">' + (open ? countdownText(b.deadline) : 'Closed') + '</span></div>' +
+        (!open ? '<button class="btn btn-ghost btn-sm" disabled style="opacity:0.55; cursor:default;">Buy ' + (b.status === 'open' ? 'closed' : esc(b.status)) + '</button>' : '') +
       '</div>';
     }).join('');
 
     grid.querySelectorAll('.reserve-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         var code = btn.getAttribute('data-code');
-        var buy = buys.find(function(b){ return b.code === code; });
+        var pidx = parseInt(btn.getAttribute('data-pidx'), 10);
+        var buy = null;
+        for(var i=0;i<buys.length;i++){ if(buys[i].code === code){ buy = buys[i]; break; } }
         if(!buy) return;
         db.auth.getSession().then(function(r){
           if(!r.data.session){
@@ -283,40 +302,43 @@
             return;
           }
           currentUser = r.data.session.user;
-          openReserve(buy);
+          var prods = getProds(buy);
+          openReserve(buy, prods[pidx]);
         });
       });
     });
   }
 
-  /* live countdowns */
   setInterval(function(){
     document.querySelectorAll('.buy-count').forEach(function(el){
       el.textContent = countdownText(el.getAttribute('data-deadline'));
     });
   }, 30000);
 
-  async function loadAll(){
-    var b = await db.from('buys').select('*').order('created_at', { ascending: false }).limit(50);
-    buys = b.data || [];
-    var f = await db.rpc('buy_fills');
-    fills = {};
-    (f.data || []).forEach(function(r){ fills[r.code] = Number(r.reserved); });
-    render();
+  function loadAll(){
+    db.from('buys').select('*').order('created_at', { ascending: false }).limit(50).then(function(b){
+      buys = b.data || [];
+      db.rpc('buy_fills_detail').then(function(f){
+        fills = {};
+        (f.data || []).forEach(function(r){ fills[fillKey(r.code, r.product_name)] = Number(r.reserved); });
+        render();
+      });
+    });
   }
 
   /* ---------- reserve popup ---------- */
   var overlay = document.getElementById('resv-overlay');
   var msg = document.getElementById('resv-msg');
 
-  function openReserve(buy){
+  function openReserve(buy, prod){
     currentBuy = buy;
+    currentProd = prod;
     msg.textContent = '';
     document.getElementById('resv-form-wrap').style.display = 'block';
     document.getElementById('resv-success').style.display = 'none';
-    document.getElementById('resv-title').textContent = 'Reserve — ' + buy.product;
-    document.getElementById('resv-kit').textContent = buy.kit_label + ' · $' + Number(buy.price_cad) + ' per kit';
-    var left = Math.max(0, buy.total_units - (fills[buy.code] || 0));
+    document.getElementById('resv-title').textContent = 'Reserve — ' + prod.name;
+    document.getElementById('resv-kit').textContent = buy.code + ' · ' + (prod.kit_label || 'kit') + ' · $' + Number(prod.price_cad) + ' per kit';
+    var left = Math.max(0, (prod.total_units || 0) - (fills[fillKey(buy.code, prod.name)] || 0));
     document.getElementById('resv-left').textContent = left + ' kit' + (left === 1 ? '' : 's') + ' left';
     document.getElementById('resv-qty').value = 1;
     document.getElementById('resv-qty').max = Math.max(1, left);
@@ -360,13 +382,13 @@
 
   document.getElementById('resv-btn').addEventListener('click', function(){
     var btn = document.getElementById('resv-btn');
-    if(!currentBuy || !currentUser) return;
+    if(!currentBuy || !currentProd || !currentUser) return;
     if(!profile || !profile.ship_address || !profile.ship_city || !profile.ship_postal){
       msg.textContent = 'Add your shipping address on your account page first.';
       return;
     }
     var kits = parseInt(document.getElementById('resv-qty').value, 10);
-    var left = Math.max(0, currentBuy.total_units - (fills[currentBuy.code] || 0));
+    var left = Math.max(0, (currentProd.total_units || 0) - (fills[fillKey(currentBuy.code, currentProd.name)] || 0));
     if(!(kits >= 1)){ msg.textContent = 'Choose at least 1 kit.'; return; }
     if(kits > left){ msg.textContent = 'Only ' + left + ' kits left.'; return; }
 
@@ -382,7 +404,7 @@
       customer_name: profile.display_name || currentUser.email,
       email: currentUser.email,
       telegram: 'none',
-      product: currentBuy.product + ' (' + currentBuy.kit_label + ')',
+      product: currentProd.name,
       quantity: kits,
       coin: document.getElementById('resv-coin').value || 'not sure yet',
       txid: null,
@@ -393,7 +415,7 @@
       ship_country: profile.ship_country || 'Canada',
       status: 'pending',
       buy_code: currentBuy.code,
-      admin_notes: 'GROUP BUY RESERVATION ' + currentBuy.code + (notes ? ' | NOTES: ' + notes : '')
+      admin_notes: 'GROUP BUY RESERVATION ' + currentBuy.code + ' — ' + currentProd.name + ' (' + (currentProd.kit_label || 'kit') + ')' + (notes ? ' | NOTES: ' + notes : '')
     };
 
     db.from('orders').insert(payload).then(function(result){
@@ -403,7 +425,6 @@
         msg.textContent = 'Could not reserve: ' + result.error.message;
         return;
       }
-      /* staff alert email */
       try {
         fetch('https://api.web3forms.com/submit', {
           method: 'POST',
@@ -416,7 +437,7 @@
             email: currentUser.email,
             bot: '',
             'Order Reference': ref,
-            'Buy': currentBuy.code + ' — ' + currentBuy.product,
+            'Buy': currentBuy.code + ' — ' + currentProd.name,
             'Kits Reserved': kits,
             'Customer': payload.customer_name + ' <' + currentUser.email + '>',
             'Payment Coin': payload.coin,
@@ -434,7 +455,6 @@
     });
   });
 
-  /* init: session + profile, then buys */
   db.auth.getSession().then(function(r){
     if(r.data.session){
       currentUser = r.data.session.user;
