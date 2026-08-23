@@ -22,11 +22,17 @@
   .admin-bar h1 span.tint{color:var(--rust-deep);}
   .h-flag{display:inline-block; width:36px; height:18px; background:var(--flag) center/cover no-repeat; border-radius:2px; box-shadow:0 0 0 1px rgba(0,0,0,0.15);}
   .admin-actions{display:flex; gap:8px; flex-wrap:wrap;}
-  .login-wrap{max-width:420px; margin:60px auto; padding:0 18px;}
+  .login-wrap{max-width:440px; margin:60px auto; padding:0 18px;}
   .login-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 24px;}
   .login-card h2{margin-bottom:18px;}
   .login-card .field-input{margin-bottom:14px;}
   .login-err{color:var(--rust-deep); font-size:0.82rem; font-weight:700; margin-top:10px; min-height:1em;}
+  .invite-card{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:24px; margin-top:16px;}
+  .invite-card h3{font-size:1.05rem; margin-bottom:6px;}
+  .invite-card p{font-size:0.76rem; color:var(--ink-soft); font-weight:500; margin-bottom:12px; line-height:1.45;}
+  .invite-card .field-input{margin-bottom:12px;}
+  .inv-msg{font-size:0.8rem; font-weight:700; color:var(--rust-deep); margin-top:10px; min-height:1em;}
+  .inv-msg.ok{color:var(--ink-soft);}
   .dash-wrap{max-width:1100px; margin:0 auto; padding:22px 18px 60px;}
   .admin-tabs{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;}
   .admin-tab{font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; padding:12px 24px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--panel); color:var(--ink-soft); transition:all .15s;}
@@ -84,9 +90,21 @@
   .uc-email{font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem;}
   .uc-badge{font-family:'Space Mono',monospace; font-size:0.58rem; font-weight:700; padding:4px 10px; border-radius:var(--r-pill); background:var(--rust); color:#fff;}
   .uc-badge.staff{background:var(--rust-deep);}
+  .uc-badge.owner{background:var(--plum);}
   .uc-sub{font-size:0.76rem; color:var(--ink-soft); margin-top:6px; font-weight:500;}
-  .uc-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .uc-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center;}
   .uc-actions .btn{padding:8px 16px; font-size:0.78rem; width:auto; min-height:auto;}
+  .uc-protected{font-family:'Space Mono',monospace; font-size:0.58rem; font-weight:700; padding:6px 12px; border-radius:var(--r-pill); background:var(--plum); color:#fff; letter-spacing:0.04em;}
+  .owner-panel{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:20px 22px; margin-bottom:20px;}
+  .owner-panel h3{font-size:1.05rem; margin-bottom:4px;}
+  .owner-panel .op-sub{font-size:0.76rem; color:var(--ink-soft); font-weight:500; margin-bottom:14px; line-height:1.45;}
+  .invite-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--bg); border:2px solid var(--ink); border-radius:var(--r-md); padding:12px 16px; margin-top:10px;}
+  .inv-code{font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem;}
+  .inv-state{font-family:'Space Mono',monospace; font-size:0.56rem; font-weight:700; padding:4px 10px; border-radius:var(--r-pill); letter-spacing:0.04em;}
+  .inv-state.open{background:var(--rust); color:#fff;}
+  .inv-state.used{background:var(--bg); color:var(--ink-soft); border:1px solid var(--ink-soft);}
+  .inv-date{font-family:'Space Mono',monospace; font-size:0.58rem; color:var(--ink-soft); margin-left:auto;}
+  .inv-revoke{padding:7px 14px; font-size:0.72rem; width:auto; min-height:auto;}
   .sp-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:18px 20px; margin-bottom:14px;}
   .sp-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   @media (max-width:640px){ .sp-grid{grid-template-columns:1fr;} }
@@ -99,9 +117,9 @@
   .bp-hint{font-size:0.72rem; color:var(--ink-soft); font-weight:500; margin-bottom:14px;}
   .confirm-overlay{position:fixed; inset:0; background:rgba(23,15,15,0.55); display:none; align-items:center; justify-content:center; z-index:300; padding:18px;}
   .confirm-overlay[data-open="true"]{display:flex;}
-  .confirm-pop{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:28px 26px 24px; width:100%; max-width:400px; box-shadow:0 18px 50px rgba(0,0,0,0.35);}
+  .confirm-pop{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:28px 26px 24px; width:100%; max-width:420px; box-shadow:0 18px 50px rgba(0,0,0,0.35);}
   .confirm-pop h3{font-size:1.2rem; margin-bottom:8px;}
-  .confirm-pop p{color:var(--ink-soft); font-size:0.86rem; font-weight:500; line-height:1.5; margin-bottom:18px;}
+  .confirm-pop p{color:var(--ink-soft); font-size:0.86rem; font-weight:500; line-height:1.5; margin-bottom:18px; word-break:break-word;}
   .cf-actions{display:flex; gap:10px; justify-content:flex-end;}
   .cf-actions .btn{width:auto; min-height:auto; padding:10px 20px; font-size:0.84rem;}
   #cf-ok{background:var(--rust-deep); color:#fff; border-color:var(--rust-deep);}
@@ -124,8 +142,18 @@
     <h2>Staff sign-in</h2>
     <input class="field-input" id="login-email" type="email" placeholder="Admin email" autocomplete="username">
     <input class="field-input" id="login-pass" type="password" placeholder="Password" autocomplete="current-password">
+    <input class="field-input" id="login-pin" type="password" placeholder="Admin PIN" autocomplete="off" inputmode="numeric">
     <button class="btn btn-primary" id="login-btn" style="width:100%;">Sign in</button>
     <div class="login-err" id="login-err"></div>
+  </div>
+
+  <div class="invite-card">
+    <h3>Have an admin invite code?</h3>
+    <p>First create your regular account and sign in to the site (Account bubble, top-right). Then redeem the owner's invite code here and choose your own admin PIN.</p>
+    <input class="field-input" id="inv-code" type="text" maxlength="20" placeholder="Invite code (ADM-XXXXXX)">
+    <input class="field-input" id="inv-pin" type="password" placeholder="Choose your admin PIN (min 4 chars)" autocomplete="off">
+    <button class="btn btn-ghost btn-sm" id="redeem-btn" type="button">Redeem invite</button>
+    <div class="inv-msg" id="inv-msg"></div>
   </div>
 </div>
 
@@ -137,7 +165,6 @@
     <button class="admin-tab" id="tab-products-btn" type="button">Bulk products</button>
   </div>
 
-  <!-- INCOMING ORDERS -->
   <div id="orders-tab">
     <div class="pills" id="status-pills">
       <button class="pill active" type="button" data-filter="all">Total <span class="cnt">0</span></button>
@@ -153,7 +180,6 @@
     <div id="orders-list"><div class="empty-note">Loading…</div></div>
   </div>
 
-  <!-- GROUP BUYS -->
   <div id="buys-tab" style="display:none;">
     <div class="panel">
       <h2>Launch a new buy</h2>
@@ -183,15 +209,19 @@
     <div id="buys-list"><div class="empty-note">Loading…</div></div>
   </div>
 
-  <!-- BULK PRODUCTS -->
   <div id="products-tab" style="display:none;">
     <p class="bp-hint">These products appear on the public <b>Bulk Orders</b> page. Leave price blank to show <b>$--</b>. Changes go live the moment you save.</p>
     <button class="btn btn-primary btn-sm" id="add-product-btn" style="margin-bottom:16px;">+ Add product</button>
     <div id="products-list"><div class="empty-note">Loading…</div></div>
   </div>
 
-  <!-- USER ACCOUNTS -->
   <div id="users-tab" style="display:none;">
+    <div class="owner-panel" id="owner-panel" style="display:none;">
+      <h3>Admin invite codes</h3>
+      <p class="op-sub">Only you (the owner) can create these. Share a code privately with someone you trust — they sign up on the site, redeem it, and become staff. Each code works once.</p>
+      <button class="btn btn-primary btn-sm" id="create-invite-btn" type="button">+ Create invite code</button>
+      <div id="invites-list"></div>
+    </div>
     <div id="users-list"><div class="empty-note">Loading…</div></div>
   </div>
 </div>
@@ -210,7 +240,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Admin v4 — one page: incoming orders + group buys + bulk products + user accounts */
+/* Admin v5 — PIN sign-in, invite-only staff, protected owner */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -233,6 +263,8 @@
   var dashView = document.getElementById('dash-view');
   var allOrders = [];
   var activeFilter = 'all';
+  var currentUserId = null;
+  var currentUserIsOwner = false;
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -272,7 +304,29 @@
   document.getElementById('tab-products-btn').addEventListener('click', function(){ switchTab('products'); });
   document.getElementById('users-bar-btn').addEventListener('click', function(){ switchTab('users'); window.scrollTo({top:0, behavior:'smooth'}); });
 
-  /* ---- orders: pills (delegated — one listener, always works) ---- */
+  /* ---- invite redemption (new staff with a one-time code) ---- */
+  document.getElementById('redeem-btn').addEventListener('click', function(){
+    var code = document.getElementById('inv-code').value.trim().toUpperCase();
+    var pin = document.getElementById('inv-pin').value.trim();
+    var msg = document.getElementById('inv-msg');
+    msg.classList.remove('ok'); msg.textContent = '';
+    if(!code || !pin){ msg.textContent = 'Enter the invite code and choose a PIN.'; return; }
+    db.auth.getSession().then(function(r){
+      if(!r.data || !r.data.session){
+        msg.textContent = 'Sign in to the site first (Account bubble, top-right), then come back.';
+        return;
+      }
+      db.rpc('redeem_staff_invite', { p_code: code, p_pin: pin }).then(function(res){
+        if(res.error){ msg.textContent = res.error.message; return; }
+        msg.classList.add('ok');
+        msg.textContent = 'Done — you are staff now. Sign in above with your email, password, and your new PIN.';
+        document.getElementById('inv-code').value = '';
+        document.getElementById('inv-pin').value = '';
+      });
+    });
+  });
+
+  /* ---- orders pills ---- */
   function updateCounts(){
     var counts = {'all':allOrders.length,'pending':0,'awaiting payment':0,'paid':0,'packing':0,'shipped':0,'delivered':0,'cancelled':0,'problem':0};
     allOrders.forEach(function(o){ if(counts.hasOwnProperty(o.status)) counts[o.status]++; });
@@ -358,7 +412,7 @@
     });
   }
 
-  /* ---- group buys: launch form (multi-product) ---- */
+  /* ---- group buys ---- */
   var buyProdList = document.getElementById('buy-product-list');
   function renumberBuyProds(){
     buyProdList.querySelectorAll('.prod-card').forEach(function(c, i){
@@ -447,7 +501,6 @@
     });
   });
 
-  /* ---- group buys: manage list ---- */
   function renderBuysList(buysData, fills){
     var list = document.getElementById('buys-list');
     var codeEl = document.getElementById('nb-code');
@@ -518,7 +571,7 @@
     });
   }
 
-  /* ---- bulk products (per-card wiring) ---- */
+  /* ---- bulk products ---- */
   function buildProductCard(p){
     var card = document.createElement('div');
     card.className = 'sp-card';
@@ -612,6 +665,58 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
+  /* ---- owner invite codes ---- */
+  function makeInviteCode(){
+    var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    var out = '';
+    for(var i=0;i<6;i++){ out += chars.charAt(Math.floor(Math.random()*chars.length)); }
+    return 'ADM-' + out;
+  }
+  function renderOwnerPanel(){
+    var panel = document.getElementById('owner-panel');
+    if(currentUserIsOwner){
+      panel.style.display = 'block';
+      loadInvites();
+    } else {
+      panel.style.display = 'none';
+    }
+  }
+  function loadInvites(){
+    var box = document.getElementById('invites-list');
+    db.from('staff_invites').select('*').order('created_at', { ascending: false }).limit(50).then(function(r){
+      if(r.error){ box.innerHTML = '<div class="empty-note">Could not load invites: ' + esc(r.error.message) + '</div>'; return; }
+      var items = r.data || [];
+      if(!items.length){ box.innerHTML = '<div class="empty-note" style="padding:18px; margin-top:10px;">No invite codes yet, eh. Create one when you want to add a new admin.</div>'; return; }
+      box.innerHTML = items.map(function(inv){
+        return '<div class="invite-row">' +
+          '<span class="inv-code">' + esc(inv.code) + '</span>' +
+          (inv.used_by ? '<span class="inv-state used">USED</span>' : '<span class="inv-state open">AVAILABLE</span>') +
+          '<span class="inv-date">' + esc(fmtDate(inv.created_at)) + '</span>' +
+          (!inv.used_by ? '<button class="btn btn-ghost btn-sm oc-del inv-revoke" data-invid="' + inv.id + '" type="button">Revoke</button>' : '') +
+        '</div>';
+      }).join('');
+      box.querySelectorAll('.inv-revoke').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var id = btn.getAttribute('data-invid');
+          askConfirm('Revoke invite', 'Revoke this invite code? It will stop working immediately.', function(){
+            db.from('staff_invites').delete().eq('id', id).then(function(r){
+              if(r.error){ askConfirm('Could not revoke', r.error.message, function(){}); return; }
+              loadInvites();
+            });
+          });
+        });
+      });
+    });
+  }
+  document.getElementById('create-invite-btn').addEventListener('click', function(){
+    var code = makeInviteCode();
+    db.from('staff_invites').insert({ code: code }).then(function(r){
+      if(r.error){ askConfirm('Could not create invite', r.error.message, function(){}); return; }
+      loadInvites();
+      askConfirm('Invite created', 'New invite code:  ' + code + '  — share it privately with your new admin. It works once.', function(){});
+    });
+  });
+
   /* ---- user accounts ---- */
   function loadUsers(){
     var list = document.getElementById('users-list');
@@ -621,10 +726,14 @@
       var users = r.data || [];
       if(!users.length){ list.innerHTML = '<div class="empty-note">No accounts yet, eh.</div>'; return; }
       list.innerHTML = users.map(function(u){
+        var badge = u.is_owner ? '<span class="uc-badge owner">OWNER</span>'
+                  : (u.is_staff ? '<span class="uc-badge staff">STAFF</span>'
+                  : '<span class="uc-badge">CUSTOMER</span>');
+        var protectedRow = u.is_owner || u.id === currentUserId;
         return '<div class="user-card">' +
           '<div class="uc-head">' +
             '<span class="uc-email">' + esc(u.email || u.id) + '</span>' +
-            '<span class="uc-badge' + (u.is_staff ? ' staff' : '') + '">' + (u.is_staff ? 'STAFF' : 'CUSTOMER') + '</span>' +
+            badge +
           '</div>' +
           '<div class="uc-sub">' +
             (u.display_name ? 'Name: ' + esc(u.display_name) + ' · ' : '') +
@@ -632,7 +741,9 @@
           '</div>' +
           '<div class="uc-actions">' +
             '<button class="btn btn-ghost btn-sm" data-reset="' + esc(u.email || '') + '">Send password reset</button>' +
-            '<button class="btn btn-ghost btn-sm oc-del" data-deluser="' + u.id + '">Delete account data</button>' +
+            (protectedRow
+              ? '<span class="uc-protected">PROTECTED</span>'
+              : '<button class="btn btn-ghost btn-sm oc-del" data-deluser="' + u.id + '">Delete account data</button>') +
           '</div>' +
         '</div>';
       }).join('');
@@ -666,24 +777,59 @@
 
   /* ---- auth ---- */
   function loadEverything(){ loadOrders(); loadBuys(); loadProducts(); loadUsers(); if(buyProdList && !buyProdList.children.length){ addBuyProd(); } }
+
+  function enterDash(profileRow){
+    currentUserIsOwner = !!(profileRow && profileRow.is_owner);
+    showDash();
+    renderOwnerPanel();
+    loadEverything();
+  }
+
   document.getElementById('login-btn').addEventListener('click', function(){
     var email = document.getElementById('login-email').value.trim();
     var pass = document.getElementById('login-pass').value;
+    var pin = document.getElementById('login-pin').value.trim();
     var errEl = document.getElementById('login-err');
     errEl.textContent = '';
     db.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
       if(r.error){ errEl.textContent = 'Could not sign in — check the email and password.'; return; }
-      showDash();
-      loadEverything();
+      currentUserId = r.data.user.id;
+      db.from('profiles').select('is_staff, is_owner, admin_pin').eq('id', currentUserId).maybeSingle().then(function(p){
+        if(!p.data || !p.data.is_staff){
+          errEl.textContent = 'This account is not staff.';
+          db.auth.signOut();
+          return;
+        }
+        if(p.data.admin_pin && pin !== p.data.admin_pin){
+          errEl.textContent = 'Incorrect admin PIN.';
+          db.auth.signOut();
+          return;
+        }
+        enterDash(p.data);
+      });
     });
   });
-  document.getElementById('signout-btn').addEventListener('click', function(){ db.auth.signOut().then(function(){ showLogin(); }); });
+
+  document.getElementById('signout-btn').addEventListener('click', function(){
+    db.auth.signOut().then(function(){
+      currentUserId = null;
+      currentUserIsOwner = false;
+      showLogin();
+    });
+  });
   document.getElementById('refresh-btn').addEventListener('click', loadEverything);
-  document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-btn').click(); } });
+  document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-pin').focus(); } });
+  document.getElementById('login-pin').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-btn').click(); } });
 
   showLogin();
   db.auth.getSession().then(function(r){
-    if(r.data && r.data.session){ showDash(); loadEverything(); }
+    if(r.data && r.data.session){
+      currentUserId = r.data.session.user.id;
+      db.from('profiles').select('is_staff, is_owner').eq('id', currentUserId).maybeSingle().then(function(p){
+        if(p.data && p.data.is_staff){ enterDash(p.data); }
+        else { showLogin(); }
+      });
+    }
   }).catch(function(){ /* stay on sign-in */ });
 })();
 </script>
