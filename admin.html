@@ -17,44 +17,63 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .admin-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; max-width:1000px; margin:20px auto 0; padding:0 18px;}
-  .admin-bar h1{font-size:1.3rem;}
-  .admin-bar h1 span{color:var(--rust-deep);}
-  .admin-actions{display:flex; gap:8px;}
+  .admin-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; max-width:1100px; margin:20px auto 0; padding:0 18px;}
+  .admin-bar h1{font-size:1.3rem; display:flex; align-items:center; gap:10px;}
+  .admin-bar h1 span.tint{color:var(--rust-deep);}
+  .h-flag{display:inline-block; width:36px; height:18px; background:var(--flag) center/cover no-repeat; border-radius:2px; box-shadow:0 0 0 1px rgba(0,0,0,0.15);}
+  .admin-actions{display:flex; gap:8px; flex-wrap:wrap;}
   .login-wrap{max-width:420px; margin:60px auto; padding:0 18px;}
   .login-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 24px;}
   .login-card h2{margin-bottom:18px;}
   .login-card .field-input{margin-bottom:14px;}
   .login-err{color:var(--rust-deep); font-size:0.82rem; font-weight:700; margin-top:10px; min-height:1em;}
-  .dash-wrap{max-width:1000px; margin:0 auto; padding:22px 18px 60px;}
-  .summary{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;}
-  .sum-chip{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-pill); padding:8px 16px; color:var(--ink-soft);}
-  .sum-chip b{color:var(--rust-deep);}
-  .order-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:20px 20px 16px; margin-bottom:16px;}
-  .oc-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
-  .oc-ref{font-family:'Space Mono',monospace; font-weight:700; font-size:1rem; color:var(--ink);}
-  .oc-date{font-family:'Space Mono',monospace; font-size:0.66rem; color:var(--ink-soft);}
+  .dash-wrap{max-width:1100px; margin:0 auto; padding:22px 18px 60px;}
+
+  .pills{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .pill{
+    font-family:'Space Mono',monospace; font-size:0.7rem; font-weight:700; cursor:pointer;
+    padding:9px 16px; border-radius:var(--r-pill); border:2px solid var(--ink);
+    background:var(--panel); color:var(--ink-soft); transition:all .15s;
+  }
+  .pill .cnt{margin-left:6px; color:var(--rust-deep);}
+  .pill.active{background:var(--rust-deep); color:#fff; border-color:var(--rust-deep);}
+  .pill.active .cnt{color:#fff;}
+
+  .order-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:18px 20px; margin-bottom:14px;}
+  .oc-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .oc-ref{font-family:'Space Mono',monospace; font-weight:700; font-size:1rem;}
+  .oc-date{font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--ink-soft);}
   .oc-grid{display:grid; grid-template-columns:1fr 1fr; gap:4px 24px;}
   @media (max-width:640px){ .oc-grid{grid-template-columns:1fr;} }
-  .oc-row{display:flex; justify-content:space-between; gap:14px; padding:7px 0; border-bottom:1px dashed rgba(122,43,43,0.2); font-size:0.84rem;}
-  .oc-row span:first-child{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft); padding-top:2px; white-space:nowrap;}
+  .oc-row{display:flex; justify-content:space-between; gap:14px; padding:6px 0; border-bottom:1px dashed rgba(122,43,43,0.2); font-size:0.84rem;}
+  .oc-row span:first-child{font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft); padding-top:2px; white-space:nowrap;}
   .oc-row span:last-child{font-weight:600; text-align:right; word-break:break-word;}
-  .oc-status-row{display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
-  .oc-status-row label{font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft);}
-  .oc-status{padding:9px 14px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--bg); color:var(--ink); font-family:'Space Mono',monospace; font-size:0.72rem; font-weight:700; cursor:pointer;}
-  .oc-delete{color:var(--rust-deep); border:2px solid var(--rust-deep);}
-  .oc-delete:hover{background:var(--rust-deep); color:#fff;}
-  .oc-notes{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
-  .oc-notes textarea{flex:1; min-width:220px; border-radius:var(--r-md); border:2px solid var(--ink); background:var(--bg); color:var(--ink); padding:10px 14px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; font-weight:500; min-height:44px; resize:vertical;}
-  .empty-note{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:36px 24px; text-align:center; color:var(--ink-soft); font-weight:500;}
-  .saved-flash{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; color:var(--rust-deep); opacity:0; transition:opacity .3s;}
+  .oc-controls{display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap;}
+  .oc-controls label{font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; color:var(--ink-soft);}
+  .oc-status{padding:9px 14px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--bg); color:var(--ink); font-family:'Space Mono',monospace; font-size:0.7rem; font-weight:700; cursor:pointer;}
+  .oc-del{color:var(--rust-deep); border:2px solid var(--rust-deep);}
+  .oc-del:hover{background:var(--rust-deep); color:#fff;}
+  .saved-flash{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; color:var(--rust-deep); opacity:0; transition:opacity .3s;}
   .saved-flash.show{opacity:1;}
+  .empty-note{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:36px 24px; text-align:center; color:var(--ink-soft); font-weight:500;}
+
+  .sect-title{font-size:1.15rem; margin:30px 0 14px;}
+  .user-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:16px 20px; margin-bottom:12px;}
+  .uc-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .uc-email{font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem;}
+  .uc-badge{font-family:'Space Mono',monospace; font-size:0.58rem; font-weight:700; padding:4px 10px; border-radius:var(--r-pill); background:var(--rust); color:#fff;}
+  .uc-badge.staff{background:var(--rust-deep);}
+  .uc-sub{font-size:0.76rem; color:var(--ink-soft); margin-top:6px; font-weight:500;}
+  .uc-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .uc-actions .btn{padding:8px 16px; font-size:0.78rem; width:auto; min-height:auto;}
+  .uc-msg{font-size:0.74rem; font-weight:700; color:var(--ink-soft); margin-top:8px; min-height:1em;}
+  .uc-msg.err{color:var(--rust-deep);}
 </style>
 </head>
 <body>
 
 <div class="admin-bar" id="admin-bar" style="display:none;">
-  <h1>🇨🇦 CanadaEhPeps <span>· Orders</span></h1>
+  <h1><span class="h-flag"></span> CanadaEhPeps <span class="tint">· Bulk Orders</span></h1>
   <div class="admin-actions">
     <a class="btn btn-ghost btn-sm" href="buys-admin.html?key=maple2026">Group buys</a>
     <button class="btn btn-ghost btn-sm" id="refresh-btn">Refresh</button>
@@ -74,13 +93,25 @@
 </div>
 
 <div class="dash-wrap" id="dash-view" style="display:none;">
-  <div class="summary" id="summary"></div>
-  <div id="orders-list"></div>
+
+  <div class="pills" id="status-pills">
+    <button class="pill active" data-filter="all">Total <span class="cnt" id="cnt-all">0</span></button>
+    <button class="pill" data-filter="pending">Pending <span class="cnt" id="cnt-pending">0</span></button>
+    <button class="pill" data-filter="awaiting_payment">Awaiting payment <span class="cnt" id="cnt-awaiting_payment">0</span></button>
+    <button class="pill" data-filter="paid_packing">Paid / packing <span class="cnt" id="cnt-paid_packing">0</span></button>
+    <button class="pill" data-filter="shipped">Shipped <span class="cnt" id="cnt-shipped">0</span></button>
+  </div>
+
+  <div id="orders-list"><div class="empty-note">Loading…</div></div>
+
+  <h2 class="sect-title">User accounts</h2>
+  <div id="users-list"><div class="empty-note">Loading…</div></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
+/* Bulk orders admin — title, real flag, clickable status pills, user accounts */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -100,12 +131,14 @@
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  var STATUSES = ['pending','awaiting payment','paid','packing','shipped','delivered','cancelled','problem'];
+  var STATUSES = ['pending','awaiting_payment','paid_packing','shipped','delivered','cancelled','problem'];
+  var STATUS_LABEL = { pending:'pending', awaiting_payment:'awaiting payment', paid_packing:'paid / packing', shipped:'shipped', delivered:'delivered', cancelled:'cancelled', problem:'problem' };
+
   var adminBar = document.getElementById('admin-bar');
   var loginView = document.getElementById('login-view');
   var dashView = document.getElementById('dash-view');
-  var refreshBtn = document.getElementById('refresh-btn');
-  var signoutBtn = document.getElementById('signout-btn');
+  var allOrders = [];
+  var activeFilter = 'all';
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -116,104 +149,173 @@
   function showDash(){ adminBar.style.display='flex'; loginView.style.display='none'; dashView.style.display='block'; }
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
 
-  function renderSummary(orders){
-    var total=orders.length;
-    var pend=orders.filter(function(o){return o.status==='pending';}).length;
-    var aw=orders.filter(function(o){return o.status==='awaiting payment';}).length;
-    var paid=orders.filter(function(o){return o.status==='paid'||o.status==='packing';}).length;
-    var shipped=orders.filter(function(o){return o.status==='shipped';}).length;
-    document.getElementById('summary').innerHTML =
-      '<span class="sum-chip">TOTAL <b>'+total+'</b></span>'+
-      '<span class="sum-chip">PENDING <b>'+pend+'</b></span>'+
-      '<span class="sum-chip">AWAITING PAYMENT <b>'+aw+'</b></span>'+
-      '<span class="sum-chip">PAID/PACKING <b>'+paid+'</b></span>'+
-      '<span class="sum-chip">SHIPPED <b>'+shipped+'</b></span>';
+  /* ---- status filter pills ---- */
+  function updateCounts(){
+    var counts = { all: allOrders.length, pending:0, awaiting_payment:0, paid_packing:0, shipped:0 };
+    allOrders.forEach(function(o){
+      if(counts.hasOwnProperty(o.status)) counts[o.status]++;
+    });
+    document.getElementById('cnt-all').textContent = counts.all;
+    document.getElementById('cnt-pending').textContent = counts.pending;
+    document.getElementById('cnt-awaiting_payment').textContent = counts.awaiting_payment;
+    document.getElementById('cnt-paid_packing').textContent = counts.paid_packing;
+    document.getElementById('cnt-shipped').textContent = counts.shipped;
   }
+  document.querySelectorAll('#status-pills .pill').forEach(function(pill){
+    pill.addEventListener('click', function(){
+      activeFilter = pill.getAttribute('data-filter');
+      document.querySelectorAll('#status-pills .pill').forEach(function(p){ p.classList.remove('active'); });
+      pill.classList.add('active');
+      renderOrders();
+    });
+  });
 
-  function renderOrders(orders){
-    var list=document.getElementById('orders-list');
-    if(!orders.length){
-      list.innerHTML='<div class="empty-note">No orders yet, eh. When a customer submits the order form, it lands here instantly.</div>';
+  /* ---- orders ---- */
+  function renderOrders(){
+    var list = document.getElementById('orders-list');
+    var filtered = activeFilter === 'all' ? allOrders : allOrders.filter(function(o){ return o.status === activeFilter; });
+    if(!filtered.length){
+      list.innerHTML = '<div class="empty-note">' + (allOrders.length ? 'No orders in this status, eh.' : 'No orders yet, eh.') + '</div>';
       return;
     }
-    list.innerHTML = orders.map(function(o){
-      var opts=STATUSES.map(function(s){ return '<option value="'+s+'"'+(o.status===s?' selected':'')+'>'+s+'</option>'; }).join('');
-      return '<div class="order-card">'+
-        '<div class="oc-head"><span class="oc-ref">'+esc(o.order_ref||'(no ref)')+'</span><span class="oc-date">'+esc(fmtDate(o.created_at))+'</span></div>'+
-        '<div class="oc-grid">'+
-          '<div class="oc-row"><span>Name</span><span>'+esc(o.customer_name)+'</span></div>'+
-          '<div class="oc-row"><span>Email</span><span>'+esc(o.email)+'</span></div>'+
-          '<div class="oc-row"><span>Telegram</span><span>'+esc(o.telegram||'—')+'</span></div>'+
-          '<div class="oc-row"><span>Product</span><span>'+esc(o.product)+' × '+esc(o.quantity)+'</span></div>'+
-          '<div class="oc-row"><span>Coin</span><span>'+esc(o.coin||'—')+'</span></div>'+
-          '<div class="oc-row"><span>TXID</span><span>'+(o.txid?esc(o.txid):'—')+'</span></div>'+
-          '<div class="oc-row"><span>Ship to</span><span>'+esc(o.ship_address)+', '+esc(o.ship_city)+', '+esc(o.ship_province||'')+' '+esc(o.ship_postal)+', '+esc(o.ship_country)+'</span></div>'+
-        '</div>'+
-        '<div class="oc-status-row"><label>Status</label><select class="oc-status" data-id="'+o.id+'">'+opts+'</select><span class="saved-flash" id="flash-'+o.id+'">SAVED ✓</span><button class="btn btn-ghost btn-sm oc-delete" data-del-id="'+o.id+'" style="margin-left:auto;">Delete</button></div>'+
-        '<div class="oc-notes"><textarea data-notes-id="'+o.id+'" placeholder="Private notes (only you see these)">'+esc(o.admin_notes||'')+'</textarea><button class="btn btn-ghost btn-sm" data-save-id="'+o.id+'">Save notes</button></div>'+
+    list.innerHTML = filtered.map(function(o){
+      var opts = STATUSES.map(function(s){
+        return '<option value="' + s + '"' + (o.status === s ? ' selected' : '') + '>' + STATUS_LABEL[s] + '</option>';
+      }).join('');
+      return '<div class="order-card">' +
+        '<div class="oc-head"><span class="oc-ref">' + esc(o.order_ref) + '</span><span class="oc-date">' + esc(fmtDate(o.created_at)) + '</span></div>' +
+        '<div class="oc-grid">' +
+          '<div class="oc-row"><span>Product</span><span>' + esc(o.product) + '</span></div>' +
+          '<div class="oc-row"><span>Qty</span><span>' + esc(o.quantity) + '</span></div>' +
+          '<div class="oc-row"><span>Customer</span><span>' + esc(o.customer_name) + '</span></div>' +
+          '<div class="oc-row"><span>Email</span><span>' + esc(o.email) + '</span></div>' +
+          '<div class="oc-row"><span>Coin</span><span>' + esc(o.coin || '—') + '</span></div>' +
+          '<div class="oc-row"><span>TXID</span><span>' + esc(o.txid || '—') + '</span></div>' +
+          '<div class="oc-row"><span>Ship to</span><span>' + esc([o.ship_address, o.ship_city, o.ship_postal, o.ship_country].filter(Boolean).join(', ') || '—') + '</span></div>' +
+          (o.buy_code ? '<div class="oc-row"><span>Buy</span><span>' + esc(o.buy_code) + '</span></div>' : '') +
+        '</div>' +
+        (o.admin_notes ? '<div class="oc-row" style="border-bottom:none;"><span>Notes</span><span>' + esc(o.admin_notes) + '</span></div>' : '') +
+        '<div class="oc-controls">' +
+          '<label>Status</label>' +
+          '<select class="oc-status" data-id="' + o.id + '">' + opts + '</select>' +
+          '<span class="saved-flash" id="flash-' + o.id + '">SAVED ✓</span>' +
+          '<button class="btn btn-ghost btn-sm oc-del" data-del-id="' + o.id + '" style="margin-left:auto;">Delete</button>' +
+        '</div>' +
       '</div>';
     }).join('');
 
     list.querySelectorAll('.oc-status').forEach(function(sel){
-      sel.addEventListener('change',function(){
-        var id=sel.getAttribute('data-id');
-        db.from('orders').update({status:sel.value}).eq('id',id).then(function(r){ if(!r.error){flash(id);} });
+      sel.addEventListener('change', function(){
+        var id = sel.getAttribute('data-id');
+        db.from('orders').update({ status: sel.value }).eq('id', id).then(function(r){
+          if(!r.error){
+            var el = document.getElementById('flash-' + id);
+            if(el){ el.classList.add('show'); setTimeout(function(){ el.classList.remove('show'); }, 1600); }
+            loadOrders();
+          } else { alert('Could not update: ' + r.error.message); }
+        });
       });
     });
-    list.querySelectorAll('[data-save-id]').forEach(function(btn){
-      btn.addEventListener('click',function(){
-        var id=btn.getAttribute('data-save-id');
-        var ta=list.querySelector('[data-notes-id="'+id+'"]');
-        db.from('orders').update({admin_notes:ta.value}).eq('id',id).then(function(r){ if(!r.error){flash(id);} });
-      });
-    });
-    list.querySelectorAll('[data-del-id]').forEach(function(btn){
-      btn.addEventListener('click',function(){
-        var id=btn.getAttribute('data-del-id');
+    list.querySelectorAll('.oc-del').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-del-id');
         if(!confirm('Delete this order permanently? This cannot be undone.')) return;
-        btn.disabled=true; btn.textContent='Deleting…';
-        db.from('orders').delete().eq('id',id).then(function(r){
-          if(r.error){ btn.disabled=false; btn.textContent='Delete'; alert('Could not delete: '+r.error.message); return; }
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        db.from('orders').delete().eq('id', id).then(function(r){
+          if(r.error){ btn.disabled = false; btn.textContent = 'Delete'; alert('Could not delete: ' + r.error.message); return; }
           loadOrders();
         });
       });
     });
   }
 
-  function flash(id){
-    var el=document.getElementById('flash-'+id);
-    if(!el) return;
-    el.classList.add('show');
-    setTimeout(function(){ el.classList.remove('show'); },1600);
-  }
-
   function loadOrders(){
-    document.getElementById('orders-list').innerHTML='<div class="empty-note">Loading orders…</div>';
-    db.from('orders').select('*').order('created_at',{ascending:false}).limit(300).then(function(r){
-      if(r.error){ document.getElementById('orders-list').innerHTML='<div class="empty-note">Could not load orders: '+esc(r.error.message)+'</div>'; return; }
-      renderSummary(r.data||[]);
-      renderOrders(r.data||[]);
+    var list = document.getElementById('orders-list');
+    list.innerHTML = '<div class="empty-note">Loading…</div>';
+    db.from('orders').select('*').order('created_at', { ascending: false }).limit(200).then(function(r){
+      if(r.error){ list.innerHTML = '<div class="empty-note">Could not load orders: ' + esc(r.error.message) + '</div>'; return; }
+      allOrders = r.data || [];
+      updateCounts();
+      renderOrders();
     });
   }
 
-  document.getElementById('login-btn').addEventListener('click',function(){
-    var email=document.getElementById('login-email').value.trim();
-    var pass=document.getElementById('login-pass').value;
-    var errEl=document.getElementById('login-err');
-    errEl.textContent='';
-    db.auth.signInWithPassword({email:email,password:pass}).then(function(r){
-      if(r.error){ errEl.textContent='Could not sign in — check the email and password.'; return; }
-      showDash(); loadOrders();
+  /* ---- user accounts ---- */
+  function loadUsers(){
+    var list = document.getElementById('users-list');
+    list.innerHTML = '<div class="empty-note">Loading…</div>';
+    db.from('profiles').select('*').order('created_at', { ascending: false }).limit(300).then(function(r){
+      if(r.error){ list.innerHTML = '<div class="empty-note">Could not load accounts: ' + esc(r.error.message) + '</div>'; return; }
+      var users = r.data || [];
+      if(!users.length){ list.innerHTML = '<div class="empty-note">No accounts yet, eh.</div>'; return; }
+      list.innerHTML = users.map(function(u){
+        return '<div class="user-card">' +
+          '<div class="uc-head">' +
+            '<span class="uc-email">' + esc(u.email || u.id) + '</span>' +
+            '<span class="uc-badge' + (u.is_staff ? ' staff' : '') + '">' + (u.is_staff ? 'STAFF' : 'CUSTOMER') + '</span>' +
+          '</div>' +
+          '<div class="uc-sub">' +
+            (u.display_name ? 'Name: ' + esc(u.display_name) + ' · ' : '') +
+            'Joined ' + esc(fmtDate(u.created_at)) +
+          '</div>' +
+          '<div class="uc-actions">' +
+            '<button class="btn btn-ghost btn-sm" data-reset="' + esc(u.email || '') + '">Send password reset</button>' +
+            '<button class="btn btn-ghost btn-sm oc-del" data-deluser="' + u.id + '">Delete account data</button>' +
+          '</div>' +
+          '<div class="uc-msg" id="umsg-' + u.id + '"></div>' +
+        '</div>';
+      }).join('');
+
+      list.querySelectorAll('[data-reset]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var email = btn.getAttribute('data-reset');
+          if(!email){ alert('This account has no email on file.'); return; }
+          btn.disabled = true; btn.textContent = 'Sending…';
+          db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/account.html' }).then(function(r){
+            btn.disabled = false; btn.textContent = 'Send password reset';
+            if(r.error){ alert('Could not send reset: ' + r.error.message); return; }
+            alert('Password reset email sent to ' + email + '.');
+          });
+        });
+      });
+      list.querySelectorAll('[data-deluser]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var id = btn.getAttribute('data-deluser');
+          if(!confirm('Delete this account\'s profile and order data? This cannot be undone.')) return;
+          btn.disabled = true; btn.textContent = 'Deleting…';
+          db.from('orders').delete().eq('user_id', id).then(function(){
+            db.from('profiles').delete().eq('id', id).then(function(r){
+              if(r.error){ btn.disabled = false; btn.textContent = 'Delete account data'; alert('Could not delete: ' + r.error.message); return; }
+              loadUsers();
+            });
+          });
+        });
+      });
+    });
+  }
+
+  /* ---- auth ---- */
+  document.getElementById('login-btn').addEventListener('click', function(){
+    var email = document.getElementById('login-email').value.trim();
+    var pass = document.getElementById('login-pass').value;
+    var errEl = document.getElementById('login-err');
+    errEl.textContent = '';
+    db.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
+      if(r.error){ errEl.textContent = 'Could not sign in — check the email and password.'; return; }
+      showDash();
+      loadOrders();
+      loadUsers();
     });
   });
+  document.getElementById('signout-btn').addEventListener('click', function(){ db.auth.signOut().then(function(){ showLogin(); }); });
+  document.getElementById('refresh-btn').addEventListener('click', function(){ loadOrders(); loadUsers(); });
+  document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-btn').click(); } });
 
-  signoutBtn.addEventListener('click',function(){ db.auth.signOut().then(function(){ showLogin(); }); });
-  refreshBtn.addEventListener('click',loadOrders);
-  document.getElementById('login-pass').addEventListener('keydown',function(e){ if(e.key==='Enter'){ document.getElementById('login-btn').click(); } });
-
+  /* Simple session check — page is never blank. */
+  showLogin();
   db.auth.getSession().then(function(r){
-    if(r.data && r.data.session){ showDash(); loadOrders(); } else { showLogin(); }
-  });
+    if(r.data && r.data.session){ showDash(); loadOrders(); loadUsers(); }
+  }).catch(function(){ /* stay on sign-in */ });
 })();
 </script>
 </body>
