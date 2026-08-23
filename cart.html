@@ -104,7 +104,6 @@
         <p>Bulk products and group-buy kits together, eh. Review, estimate shipping, and place the order — nothing is owed until we confirm.</p>
       </div>
 
-      <!-- CART VIEW -->
       <div id="cart-view">
         <div class="cart-box">
           <div id="cart-lines"><p class="cart-empty">Loading…</p></div>
@@ -140,7 +139,6 @@
         <p style="margin-top:12px; max-width:760px;"><a href="bulk-orders.html" style="color:var(--rust-deep); font-weight:700; text-decoration:underline; text-underline-offset:3px;">← Keep shopping</a></p>
       </div>
 
-      <!-- CHECKOUT VIEW -->
       <div id="checkout-view" style="display:none;">
         <div class="cart-box">
           <h3 style="margin-bottom:14px;">Checkout</h3>
@@ -170,7 +168,6 @@
         <p style="max-width:760px;"><button class="btn btn-ghost btn-sm" id="back-cart-btn" type="button">← Back to cart</button></p>
       </div>
 
-      <!-- SUCCESS VIEW -->
       <div id="success-view" style="display:none;">
         <div class="cart-box" style="text-align:center;">
           <h3>Order placed. Eh, nice one. 🇨🇦</h3>
@@ -226,7 +223,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Cart — bulk + group-buy kits, finalized as orders at checkout */
+/* Cart — bulk + group-buy kits, products listed clearly in the order */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
@@ -271,7 +268,6 @@
     return 'CEP-' + out;
   }
 
-  /* ---------- render cart ---------- */
   function renderCart(){
     var cart = getCart();
     var box = document.getElementById('cart-lines');
@@ -296,6 +292,7 @@
         var cart = getCart();
         if(!cart[i]) return;
         cart[i].qty = clampQty(cart[i].qty + d);
+        if(cart[i].max){ cart[i].qty = Math.min(cart[i].qty, cart[i].max); }
         saveCart(cart);
         renderCart();
       });
@@ -311,7 +308,6 @@
     });
   }
 
-  /* ---------- shipping estimate ---------- */
   document.getElementById('est-btn').addEventListener('click', function(){
     var region = document.getElementById('est-region').value;
     var el = document.getElementById('est-result');
@@ -319,7 +315,6 @@
     el.textContent = 'Estimated shipping to ' + region + ': $' + RATES[region].toFixed(2) + ' CAD · Canada Post, tracked';
   });
 
-  /* ---------- checkout gate ---------- */
   document.getElementById('checkout-btn').addEventListener('click', function(){
     db.auth.getSession().then(function(r){
       if(!r.data.session){
@@ -350,7 +345,6 @@
     document.getElementById('cart-view').style.display = 'block';
   });
 
-  /* ---------- validate group-buy items ---------- */
   function validateBuyItems(cart, cb){
     var buyItems = cart.filter(function(it){ return it.buy_code; });
     if(!buyItems.length){ cb(null); return; }
@@ -381,7 +375,6 @@
     });
   }
 
-  /* ---------- sequential inserts ---------- */
   function insertAll(payloads, i, onDone, onErr){
     if(i >= payloads.length){ onDone(); return; }
     db.from('orders').insert(payloads[i]).then(function(r){
@@ -390,7 +383,6 @@
     });
   }
 
-  /* ---------- place order ---------- */
   document.getElementById('place-btn').addEventListener('click', function(){
     var btn = document.getElementById('place-btn');
     var msg = document.getElementById('place-msg');
@@ -448,23 +440,24 @@
 
       if(bulkItems.length){
         var bulkQty = bulkItems.reduce(function(s, it){ return s + it.qty; }, 0);
-        var bulkName = bulkItems.length === 1 ? bulkItems[0].name : 'Bulk order — ' + bulkItems.length + ' products';
+        var bulkName = bulkItems.map(function(it){ return it.name + ' x' + it.qty; }).join(' + ');
+        if(bulkName.length > 290){ bulkName = bulkName.slice(0, 287) + '…'; }
         var p = {};
         for(var k in base){ p[k] = base[k]; }
         p.product = bulkName;
         p.quantity = bulkQty;
         p.buy_code = null;
-        p.admin_notes = 'CONTENTS: ' + bulkItems.map(function(it){ return it.name + ' x' + it.qty; }).join(', ') + (notes ? ' | NOTES: ' + notes : '');
+        p.admin_notes = notes ? 'NOTES: ' + notes : null;
         payloads.push(p);
       }
 
       buyItems.forEach(function(it){
         var p = {};
         for(var k in base){ p[k] = base[k]; }
-        p.product = it.buy_product;
+        p.product = it.buy_product + ' x' + it.qty;
         p.quantity = it.qty;
         p.buy_code = it.buy_code;
-        p.admin_notes = 'GROUP BUY RESERVATION ' + it.buy_code + ' — ' + it.buy_product + ' (' + (it.buy_kit || 'kit') + ')' + (notes ? ' | NOTES: ' + notes : '');
+        p.admin_notes = 'GROUP BUY RESERVATION ' + it.buy_code + (notes ? ' | NOTES: ' + notes : '');
         payloads.push(p);
       });
 
@@ -472,7 +465,6 @@
         localStorage.setItem('cep_last_order', String(Date.now()));
         localStorage.setItem('cep_cart', '[]');
         updateBadge();
-        /* staff alert email */
         try {
           var lines = cart.map(function(it){
             return (it.buy_code ? '[GB ' + it.buy_code + '] ' : '') + it.name + ' x' + it.qty;
