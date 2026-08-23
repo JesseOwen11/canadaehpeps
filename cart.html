@@ -454,7 +454,7 @@
         p.product = bulkName;
         p.quantity = bulkQty;
         p.buy_code = null;
-        p.admin_notes = notes ? 'NOTES: ' + notes : null;
+        p.admin_notes = 'CONTENTS: ' + bulkItems.map(function(it){ return it.name + ' x' + it.qty; }).join(', ') + (notes ? ' | NOTES: ' + notes : '');
         payloads.push(p);
       }
 
