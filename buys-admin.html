@@ -131,11 +131,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Group buy manager — written in older-style JavaScript for maximum browser compatibility */
+/* Group buy manager — fail-safe: always shows sign-in first, upgrades to dashboard if staff */
 (function(){
-  /* SECRET KEY — keep this private */
   var STAFF_KEY = 'maple2026';
-
   var urlKey = new URLSearchParams(window.location.search).get('key');
 
   if(urlKey !== STAFF_KEY){
@@ -154,7 +152,6 @@
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var STATUSES = ['open','closed','shipping','delivered','failed'];
-
   var adminBar = document.getElementById('admin-bar');
   var loginView = document.getElementById('login-view');
   var dashView = document.getElementById('dash-view');
@@ -164,13 +161,9 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-
   function showLogin(){ adminBar.style.display='none'; loginView.style.display='block'; dashView.style.display='none'; }
   function showDash(){ adminBar.style.display='flex'; loginView.style.display='none'; dashView.style.display='block'; }
-
-  function fmtDate(iso){
-    try { return new Date(iso).toLocaleString(); } catch(e){ return iso; }
-  }
+  function fmtDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
 
   function suggestCode(count){
     var n = String(count + 1);
@@ -180,17 +173,12 @@
 
   function renderBuys(buysData, fills){
     var list = document.getElementById('buys-list');
-
     var codeEl = document.getElementById('nb-code');
-    if(!codeEl.value.trim()){
-      codeEl.value = suggestCode(buysData.length);
-    }
-
+    if(!codeEl.value.trim()){ codeEl.value = suggestCode(buysData.length); }
     if(!buysData.length){
       list.innerHTML = '<div class="empty-note">No buys yet, eh. Launch your first one above — it appears on the Group Buys page instantly.</div>';
       return;
     }
-
     list.innerHTML = buysData.map(function(buy){
       var reserved = fills[buy.code] || 0;
       var opts = STATUSES.map(function(s){
@@ -222,26 +210,17 @@
           if(!r.error){
             var el = document.getElementById('flash-' + id);
             if(el){ el.classList.add('show'); setTimeout(function(){ el.classList.remove('show'); }, 1600); }
-          } else {
-            alert('Could not update: ' + r.error.message);
-          }
+          } else { alert('Could not update: ' + r.error.message); }
         });
       });
     });
-
     list.querySelectorAll('.bm-del').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-del-id');
         if(!confirm('Delete this buy permanently? Reservations already placed will remain as orders.')) return;
-        btn.disabled = true;
-        btn.textContent = 'Deleting…';
+        btn.disabled = true; btn.textContent = 'Deleting…';
         db.from('buys').delete().eq('id', id).then(function(r){
-          if(r.error){
-            btn.disabled = false;
-            btn.textContent = 'Delete';
-            alert('Could not delete: ' + r.error.message);
-            return;
-          }
+          if(r.error){ btn.disabled = false; btn.textContent = 'Delete'; alert('Could not delete: ' + r.error.message); return; }
           loadBuys();
         });
       });
@@ -252,10 +231,7 @@
     var list = document.getElementById('buys-list');
     list.innerHTML = '<div class="empty-note">Loading…</div>';
     db.from('buys').select('*').order('created_at', { ascending: false }).limit(100).then(function(b){
-      if(b.error){
-        list.innerHTML = '<div class="empty-note">Could not load buys: ' + esc(b.error.message) + '</div>';
-        return;
-      }
+      if(b.error){ list.innerHTML = '<div class="empty-note">Could not load buys: ' + esc(b.error.message) + '</div>'; return; }
       var buysData = b.data || [];
       db.rpc('buy_fills').then(function(f){
         var fills = {};
@@ -268,9 +244,7 @@
   document.getElementById('launch-btn').addEventListener('click', function(){
     var btn = document.getElementById('launch-btn');
     var msgEl = document.getElementById('launch-msg');
-    msgEl.classList.remove('ok');
-    msgEl.textContent = '';
-
+    msgEl.classList.remove('ok'); msgEl.textContent = '';
     var code = document.getElementById('nb-code').value.trim().toUpperCase();
     var product = document.getElementById('nb-product').value.trim();
     var kit = document.getElementById('nb-kit').value.trim() || 'kit';
@@ -279,7 +253,6 @@
     var total = parseInt(document.getElementById('nb-total').value, 10);
     var deadlineRaw = document.getElementById('nb-deadline').value;
     var desc = document.getElementById('nb-desc').value.trim() || null;
-
     if(!code || !product){ msgEl.textContent = 'Code and product are required.'; return; }
     if(isNaN(price) || price < 0){ msgEl.textContent = 'Enter a valid price.'; return; }
     if(isNaN(total) || total < 1){ msgEl.textContent = 'Enter how many kits are available.'; return; }
@@ -287,36 +260,13 @@
     var deadline = new Date(deadlineRaw);
     if(isNaN(deadline.getTime())){ msgEl.textContent = 'Deadline looks invalid.'; return; }
     if(deadline.getTime() <= Date.now()){ msgEl.textContent = 'Deadline must be in the future.'; return; }
-
-    btn.disabled = true;
-    btn.textContent = 'Launching…';
-    db.from('buys').insert({
-      code: code,
-      product: product,
-      kit_label: kit,
-      description: desc,
-      price_cad: price,
-      total_units: total,
-      deadline: deadline.toISOString(),
-      status: 'open',
-      vendor: vendor
-    }).then(function(r){
-      btn.disabled = false;
-      btn.textContent = 'Launch buy';
-      if(r.error){
-        msgEl.textContent = 'Could not launch: ' + r.error.message;
-        return;
-      }
+    btn.disabled = true; btn.textContent = 'Launching…';
+    db.from('buys').insert({ code: code, product: product, kit_label: kit, description: desc, price_cad: price, total_units: total, deadline: deadline.toISOString(), status: 'open', vendor: vendor }).then(function(r){
+      btn.disabled = false; btn.textContent = 'Launch buy';
+      if(r.error){ msgEl.textContent = 'Could not launch: ' + r.error.message; return; }
       msgEl.classList.add('ok');
       msgEl.textContent = code + ' is LIVE, eh. Check the Group Buys page.';
-      document.getElementById('nb-product').value = '';
-      document.getElementById('nb-kit').value = '';
-      document.getElementById('nb-vendor').value = '';
-      document.getElementById('nb-price').value = '';
-      document.getElementById('nb-total').value = '';
-      document.getElementById('nb-deadline').value = '';
-      document.getElementById('nb-desc').value = '';
-      document.getElementById('nb-code').value = '';
+      ['nb-product','nb-kit','nb-vendor','nb-price','nb-total','nb-deadline','nb-desc','nb-code'].forEach(function(id){ document.getElementById(id).value = ''; });
       loadBuys();
     });
   });
@@ -327,46 +277,28 @@
     var errEl = document.getElementById('login-err');
     errEl.textContent = '';
     db.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
-      if(r.error){
-        errEl.textContent = 'Could not sign in — check the email and password.';
-        return;
-      }
+      if(r.error){ errEl.textContent = 'Could not sign in — check the email and password.'; return; }
       db.from('profiles').select('is_staff').eq('id', r.data.user.id).maybeSingle().then(function(p){
-        if(!p.data || !p.data.is_staff){
-          errEl.textContent = 'This account is not staff.';
-          db.auth.signOut();
-          return;
-        }
-        showDash();
-        loadBuys();
+        if(!p.error && p.data && p.data.is_staff){ showDash(); loadBuys(); }
+        else { errEl.textContent = 'This account is not staff.'; db.auth.signOut(); }
       });
     });
   });
 
-  document.getElementById('signout-btn').addEventListener('click', function(){
-    db.auth.signOut().then(function(){ showLogin(); });
-  });
-
+  document.getElementById('signout-btn').addEventListener('click', function(){ db.auth.signOut().then(function(){ showLogin(); }); });
   document.getElementById('refresh-btn').addEventListener('click', loadBuys);
+  document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-btn').click(); } });
 
-  document.getElementById('login-pass').addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ document.getElementById('login-btn').click(); }
-  });
-
+  /* FAIL-SAFE INIT: show the sign-in box first, so the page is never blank.
+     Then, if there's already a logged-in staff session, upgrade to the dashboard. */
+  showLogin();
   db.auth.getSession().then(function(r){
     if(r.data && r.data.session){
-      db.from('profiles').select('is_staff').eq('id', r.data.user.id).maybeSingle().then(function(p){
-        if(p.data && p.data.is_staff){
-          showDash();
-          loadBuys();
-        } else {
-          showLogin();
-        }
-      });
-    } else {
-      showLogin();
+      db.from('profiles').select('is_staff').eq('id', r.data.session.user.id).maybeSingle().then(function(p){
+        if(!p.error && p.data && p.data.is_staff){ showDash(); loadBuys(); }
+      }).catch(function(){ /* stay on sign-in */ });
     }
-  });
+  }).catch(function(){ /* stay on sign-in */ });
 })();
 </script>
 </body>
