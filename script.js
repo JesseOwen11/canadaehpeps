@@ -1,4 +1,24 @@
-/* CanadaEhPeps — script.js (theme + hamburger + support + account UI) */
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  background-color: white; /* Ensure the iframe has a white background */
+                }
+
+                
+              </style>
+                        </head>
+                        <body>
+                                  <div class="acct-card" id="gate-card" style="text-align:center;">
+      <div class="acct-card" id="gate-card" style="display:none; text-align:center;">
+
+
+              <script>
+                              /* CanadaEhPeps — script.js (theme + hamburger + support + account UI + logout) */
 
 /* theme toggle */
 (function(){
@@ -41,7 +61,7 @@
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 })();
 
-/* support popup — anchored under the clicked Support link */
+/* support popup */
 (function(){
   var o = document.getElementById('support-overlay');
   var pop = document.getElementById('support-pop');
@@ -79,17 +99,17 @@
   window.addEventListener('resize', function(){ if(isOpen()) close(); });
 })();
 
-/* account UI — labeled nav pill + centered sign-in popup (site-wide) */
+/* account UI — labeled nav pill + centered sign-in popup + logout (site-wide) */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
 
-  /* styles injected once — applies on every page */
   var css =
   'a.acct-pill{display:inline-flex; align-items:center; gap:7px; width:auto; height:auto; padding:8px 15px; border:2px solid var(--ink); border-radius:999px; background:var(--panel); transition:all .15s;}' +
   'a.acct-pill:hover{background:var(--plum); border-color:var(--plum); color:#fff;}' +
   'a.acct-pill svg{width:15px; height:15px;}' +
   '.acct-pill-label{font-family:"Space Mono",monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:inherit;}' +
+  'a.acct-logout{background:var(--bg);}' +
   '.authm-overlay{position:fixed; inset:0; background:rgba(23,15,15,0.55); display:none; align-items:center; justify-content:center; z-index:200; padding:18px;}' +
   '.authm-overlay[data-open="true"]{display:flex;}' +
   '.authm{position:relative; background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 26px 26px; width:100%; max-width:410px; box-shadow:0 18px 50px rgba(0,0,0,0.35);}' +
@@ -106,7 +126,6 @@
   styleEl.textContent = css;
   document.head.appendChild(styleEl);
 
-  /* label the nav account bubble */
   var acctLink = document.querySelector('a.icon-btn[href="account.html"]');
   if(acctLink){
     acctLink.classList.add('acct-pill');
@@ -117,7 +136,6 @@
     acctLink.setAttribute('title', 'Your account');
   }
 
-  /* build the centered popup bubble */
   var overlay = document.createElement('div');
   overlay.className = 'authm-overlay';
   overlay.id = 'authm-overlay';
@@ -223,10 +241,41 @@
     if(e.key === 'Enter'){ authBtn.click(); }
   });
 
-  /* if this page has no supabase yet, load it so the popup works everywhere */
+  /* Log out pill beside Account — only shows when signed in */
+  function setupLogout(){
+    var d = getDb();
+    if(!d || !acctLink) return;
+    d.auth.getSession().then(function(r){
+      if(!r.data || !r.data.session) return;
+      if(document.querySelector('a.acct-logout')) return;
+      var out = document.createElement('a');
+      out.href = '#';
+      out.className = 'acct-pill acct-logout';
+      out.setAttribute('title', 'Log out');
+      var lbl = document.createElement('span');
+      lbl.className = 'acct-pill-label';
+      lbl.textContent = 'Log out';
+      out.appendChild(lbl);
+      out.addEventListener('click', function(e){
+        e.preventDefault();
+        out.style.opacity = '0.5';
+        d.auth.signOut().then(function(){ window.location.reload(); });
+      });
+      acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
+    });
+  }
+  setupLogout();
+
   if(!window.supabase){
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload = function(){ setupLogout(); };
     document.head.appendChild(s);
   }
 })();
+
+
+              </script>
+                        </body>
+                        </html>
+                    
