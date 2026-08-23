@@ -29,10 +29,18 @@
   .login-err{color:var(--rust-deep); font-size:0.82rem; font-weight:700; margin-top:10px; min-height:1em;}
   .dash-wrap{max-width:1100px; margin:0 auto; padding:22px 18px 60px;}
 
+  .admin-tabs{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;}
+  .admin-tab{
+    font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700; cursor:pointer;
+    padding:12px 24px; border-radius:var(--r-pill); border:2px solid var(--ink);
+    background:var(--panel); color:var(--ink-soft); transition:all .15s;
+  }
+  .admin-tab.active{background:var(--plum); color:#fff; border-color:var(--plum);}
+
   .pills{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
   .pill{
-    font-family:'Space Mono',monospace; font-size:0.7rem; font-weight:700; cursor:pointer;
-    padding:9px 16px; border-radius:var(--r-pill); border:2px solid var(--ink);
+    font-family:'Space Mono',monospace; font-size:0.68rem; font-weight:700; cursor:pointer;
+    padding:9px 14px; border-radius:var(--r-pill); border:2px solid var(--ink);
     background:var(--panel); color:var(--ink-soft); transition:all .15s;
   }
   .pill .cnt{margin-left:6px; color:var(--rust-deep);}
@@ -57,7 +65,6 @@
   .saved-flash.show{opacity:1;}
   .empty-note{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:36px 24px; text-align:center; color:var(--ink-soft); font-weight:500;}
 
-  .sect-title{font-size:1.15rem; margin:30px 0 14px;}
   .user-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:16px 20px; margin-bottom:12px;}
   .uc-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
   .uc-email{font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem;}
@@ -94,24 +101,36 @@
 
 <div class="dash-wrap" id="dash-view" style="display:none;">
 
-  <div class="pills" id="status-pills">
-    <button class="pill active" data-filter="all">Total <span class="cnt" id="cnt-all">0</span></button>
-    <button class="pill" data-filter="pending">Pending <span class="cnt" id="cnt-pending">0</span></button>
-    <button class="pill" data-filter="awaiting_payment">Awaiting payment <span class="cnt" id="cnt-awaiting_payment">0</span></button>
-    <button class="pill" data-filter="paid_packing">Paid / packing <span class="cnt" id="cnt-paid_packing">0</span></button>
-    <button class="pill" data-filter="shipped">Shipped <span class="cnt" id="cnt-shipped">0</span></button>
+  <div class="admin-tabs">
+    <button class="admin-tab active" id="tab-orders-btn" type="button">Bulk orders</button>
+    <button class="admin-tab" id="tab-users-btn" type="button">User accounts</button>
   </div>
 
-  <div id="orders-list"><div class="empty-note">Loading…</div></div>
+  <!-- BULK ORDERS TAB -->
+  <div id="orders-tab">
+    <div class="pills" id="status-pills">
+      <button class="pill active" data-filter="all">Total <span class="cnt">0</span></button>
+      <button class="pill" data-filter="pending">Pending <span class="cnt">0</span></button>
+      <button class="pill" data-filter="awaiting payment">Awaiting payment <span class="cnt">0</span></button>
+      <button class="pill" data-filter="paid">Paid <span class="cnt">0</span></button>
+      <button class="pill" data-filter="packing">Packing <span class="cnt">0</span></button>
+      <button class="pill" data-filter="shipped">Shipped <span class="cnt">0</span></button>
+      <button class="pill" data-filter="delivered">Delivered <span class="cnt">0</span></button>
+    </div>
+    <div id="orders-list"><div class="empty-note">Loading…</div></div>
+  </div>
 
-  <h2 class="sect-title">User accounts</h2>
-  <div id="users-list"><div class="empty-note">Loading…</div></div>
+  <!-- USER ACCOUNTS TAB -->
+  <div id="users-tab" style="display:none;">
+    <div id="users-list"><div class="empty-note">Loading…</div></div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Bulk orders admin — title, real flag, clickable status pills, user accounts */
+/* Bulk orders admin — tabs, correct statuses, user accounts */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -131,8 +150,18 @@
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  var STATUSES = ['pending','awaiting_payment','paid_packing','shipped','delivered','cancelled','problem'];
-  var STATUS_LABEL = { pending:'pending', awaiting_payment:'awaiting payment', paid_packing:'paid / packing', shipped:'shipped', delivered:'delivered', cancelled:'cancelled', problem:'problem' };
+  /* EXACT statuses the database allows — do not change spellings */
+  var STATUSES = ['pending','awaiting payment','paid','packing','shipped','delivered','cancelled','problem'];
+  var STATUS_LABEL = {
+    'pending':'Pending',
+    'awaiting payment':'Awaiting payment',
+    'paid':'Paid',
+    'packing':'Packing',
+    'shipped':'Shipped',
+    'delivered':'Delivered',
+    'cancelled':'Cancelled',
+    'problem':'Problem'
+  };
 
   var adminBar = document.getElementById('admin-bar');
   var loginView = document.getElementById('login-view');
@@ -149,17 +178,30 @@
   function showDash(){ adminBar.style.display='flex'; loginView.style.display='none'; dashView.style.display='block'; }
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
 
+  /* ---- tabs ---- */
+  document.getElementById('tab-orders-btn').addEventListener('click', function(){
+    document.getElementById('orders-tab').style.display = 'block';
+    document.getElementById('users-tab').style.display = 'none';
+    this.classList.add('active');
+    document.getElementById('tab-users-btn').classList.remove('active');
+  });
+  document.getElementById('tab-users-btn').addEventListener('click', function(){
+    document.getElementById('orders-tab').style.display = 'none';
+    document.getElementById('users-tab').style.display = 'block';
+    this.classList.add('active');
+    document.getElementById('tab-orders-btn').classList.remove('active');
+  });
+
   /* ---- status filter pills ---- */
   function updateCounts(){
-    var counts = { all: allOrders.length, pending:0, awaiting_payment:0, paid_packing:0, shipped:0 };
+    var counts = { 'all': allOrders.length, 'pending':0, 'awaiting payment':0, 'paid':0, 'packing':0, 'shipped':0, 'delivered':0 };
     allOrders.forEach(function(o){
       if(counts.hasOwnProperty(o.status)) counts[o.status]++;
     });
-    document.getElementById('cnt-all').textContent = counts.all;
-    document.getElementById('cnt-pending').textContent = counts.pending;
-    document.getElementById('cnt-awaiting_payment').textContent = counts.awaiting_payment;
-    document.getElementById('cnt-paid_packing').textContent = counts.paid_packing;
-    document.getElementById('cnt-shipped').textContent = counts.shipped;
+    document.querySelectorAll('#status-pills .pill').forEach(function(pill){
+      var f = pill.getAttribute('data-filter');
+      pill.querySelector('.cnt').textContent = counts[f];
+    });
   }
   document.querySelectorAll('#status-pills .pill').forEach(function(pill){
     pill.addEventListener('click', function(){
