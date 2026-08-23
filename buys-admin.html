@@ -131,7 +131,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Group buy manager — hidden behind secret key + staff login */
+/* Group buy manager — written in older-style JavaScript for maximum browser compatibility */
 (function(){
   /* SECRET KEY — keep this private */
   var STAFF_KEY = 'maple2026';
@@ -173,32 +173,25 @@
   }
 
   function suggestCode(count){
-    return 'GB-' + String(count + 1).padStart(4, '0');
+    var n = String(count + 1);
+    while(n.length < 4){ n = '0' + n; }
+    return 'GB-' + n;
   }
 
-  async function loadBuys(){
+  function renderBuys(buysData, fills){
     var list = document.getElementById('buys-list');
-    list.innerHTML = '<div class="empty-note">Loading…</div>';
-    var b = await db.from('buys').select('*').order('created_at', { ascending: false }).limit(100);
-    if(b.error){
-      list.innerHTML = '<div class="empty-note">Could not load buys: ' + esc(b.error.message) + '</div>';
-      return;
-    }
-    var f = await db.rpc('buy_fills');
-    var fills = {};
-    (f.data || []).forEach(function(r){ fills[r.code] = Number(r.reserved); });
 
     var codeEl = document.getElementById('nb-code');
     if(!codeEl.value.trim()){
-      codeEl.value = suggestCode((b.data || []).length);
+      codeEl.value = suggestCode(buysData.length);
     }
 
-    if(!b.data || !b.data.length){
+    if(!buysData.length){
       list.innerHTML = '<div class="empty-note">No buys yet, eh. Launch your first one above — it appears on the Group Buys page instantly.</div>';
       return;
     }
 
-    list.innerHTML = b.data.map(function(buy){
+    list.innerHTML = buysData.map(function(buy){
       var reserved = fills[buy.code] || 0;
       var opts = STATUSES.map(function(s){
         return '<option value="' + s + '"' + (buy.status === s ? ' selected' : '') + '>' + s + '</option>';
@@ -251,6 +244,23 @@
           }
           loadBuys();
         });
+      });
+    });
+  }
+
+  function loadBuys(){
+    var list = document.getElementById('buys-list');
+    list.innerHTML = '<div class="empty-note">Loading…</div>';
+    db.from('buys').select('*').order('created_at', { ascending: false }).limit(100).then(function(b){
+      if(b.error){
+        list.innerHTML = '<div class="empty-note">Could not load buys: ' + esc(b.error.message) + '</div>';
+        return;
+      }
+      var buysData = b.data || [];
+      db.rpc('buy_fills').then(function(f){
+        var fills = {};
+        (f.data || []).forEach(function(r){ fills[r.code] = Number(r.reserved); });
+        renderBuys(buysData, fills);
       });
     });
   }
