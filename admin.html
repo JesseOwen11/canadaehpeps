@@ -123,6 +123,17 @@
   .cf-actions{display:flex; gap:10px; justify-content:flex-end;}
   .cf-actions .btn{width:auto; min-height:auto; padding:10px 20px; font-size:0.84rem;}
   #cf-ok{background:var(--rust-deep); color:#fff; border-color:var(--rust-deep);}
+    /* ---- pill clarity: only the pill in use is highlighted ---- */
+  .pill{background:var(--panel); border:2px solid var(--ink); color:var(--ink-soft); box-shadow:none;}
+  .pill .cnt{color:var(--rust-deep);}
+  .pill:hover{color:var(--ink); border-color:var(--rust-deep);}
+  .pill.active{background:var(--rust-deep); border-color:var(--rust-deep); color:#fff; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
+  .pill.active .cnt{color:#fff;}
+  .pill:focus:not(:focus-visible){outline:none;}
+  .admin-tab{background:var(--panel); border:2px solid var(--ink); color:var(--ink-soft); box-shadow:none;}
+  .admin-tab:hover{color:var(--ink); border-color:var(--rust-deep);}
+  .admin-tab.active{background:var(--plum); border-color:var(--plum); color:#fff; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
+  .admin-tab:focus:not(:focus-visible){outline:none;}
 </style>
 </head>
 <body>
