@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#170F0F">
-<title>Your cart — CanadaEhPeps</title>
+<title>Cart — CanadaEhPeps</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/600.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2/700.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans/500.css">
@@ -16,34 +16,31 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .cart-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:24px 22px; max-width:680px; margin-bottom:18px;}
-  .cart-line{display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:14px 0; border-bottom:1px dashed rgba(122,43,43,0.2);}
+  .cart-box{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:24px 22px; max-width:760px; margin-bottom:16px;}
+  .cart-line{display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px dashed rgba(122,43,43,0.2);}
   .cart-line:last-child{border-bottom:none;}
-  .cl-name{font-weight:700; flex:1; min-width:150px;}
-  .cl-qty{display:flex; align-items:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg);}
-  .cl-btn{width:32px; height:34px; border:none; background:transparent; color:var(--ink); font-size:1rem; font-weight:700; cursor:pointer;}
-  .cl-btn:hover{background:var(--plum); color:#fff;}
-  .cl-num{width:44px; text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.85rem;}
-  .cl-remove{border:none; background:none; color:var(--rust-deep); font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; cursor:pointer; text-decoration:underline;}
-  .est-box{background:var(--bg); border:2px dashed var(--ink); border-radius:var(--r-md); padding:16px; margin-top:16px;}
-  .est-box h4{font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin-bottom:10px;}
+  .cl-name{flex:1; font-weight:600; font-size:0.92rem;}
+  .cl-tag{display:inline-block; font-family:'Space Mono',monospace; font-size:0.54rem; font-weight:700; background:var(--plum); color:#fff; border-radius:var(--r-pill); padding:3px 8px; margin-left:8px; vertical-align:middle; letter-spacing:0.04em;}
+  .cl-stepper{display:flex; align-items:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg);}
+  .cl-step{width:30px; height:32px; border:none; background:transparent; color:var(--ink); font-size:1rem; font-weight:700; cursor:pointer;}
+  .cl-step:hover{background:var(--plum); color:#fff;}
+  .cl-qty{width:40px; text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.82rem;}
+  .cl-remove{border:none; background:none; color:var(--rust-deep); font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; cursor:pointer; text-decoration:underline;}
+  .cart-empty{color:var(--ink-soft); font-weight:500; padding:14px 0;}
+  .est-box{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:20px 22px; max-width:760px; margin-bottom:16px;}
+  .est-box h3{font-size:1.05rem; margin-bottom:10px;}
   .est-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
-  .est-row input{flex:1; min-width:180px;}
-  .est-result{margin-top:12px; font-weight:700; font-size:0.92rem;}
-  .est-result span{display:block; font-family:'Space Mono',monospace; font-size:0.64rem; font-weight:400; color:var(--ink-soft); margin-top:5px; line-height:1.5;}
-  .co-field{margin-bottom:14px;}
-  .co-label{display:block; font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:0 0 6px 14px;}
-  .two{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  @media (max-width:520px){ .two{grid-template-columns:1fr;} }
-  select.field-input{appearance:none; cursor:pointer;}
-  textarea.field-input{border-radius:var(--r-md); min-height:60px; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-weight:500;}
-  .empty-cart{text-align:center; padding:30px 10px; color:var(--ink-soft); font-weight:500;}
-  .success-card{display:none; background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:40px 26px; max-width:680px; text-align:center;}
-  .success-card h3{font-size:1.6rem; margin-bottom:8px;}
-  .success-card p{color:var(--ink-soft); font-size:0.92rem; font-weight:500; max-width:460px; margin:0 auto;}
-  .order-ref{display:inline-block; font-family:'Space Mono',monospace; font-weight:700; font-size:1.35rem; background:var(--plum); color:#fff; padding:13px 28px; border-radius:var(--r-pill); margin:18px 0; letter-spacing:0.06em;}
+  select.field-input{appearance:none; cursor:pointer; width:auto; min-width:220px;}
+  .est-result{font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700; color:var(--rust-deep); margin-top:10px; min-height:1em;}
+  .est-fine{font-size:0.72rem; color:var(--ink-soft); font-weight:500; margin-top:8px; line-height:1.45;}
+  .ship-summary{background:var(--bg); border:2px dashed var(--ink); border-radius:var(--r-md); padding:14px 16px; font-size:0.84rem; font-weight:600; line-height:1.55; margin-bottom:14px;}
+  .ship-summary a{color:var(--rust-deep); font-weight:700; font-size:0.74rem;}
+  .ck-label{display:block; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:12px 0 6px 2px;}
+  textarea.field-input{border-radius:var(--r-md); min-height:54px; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-weight:500;}
+  .place-msg{color:var(--rust-deep); font-size:0.82rem; font-weight:700; margin-top:10px; min-height:1em;}
+  .place-msg.ok{color:var(--ink-soft);}
+  .order-ref{display:inline-block; font-family:'Space Mono',monospace; font-weight:700; font-size:1.3rem; background:var(--plum); color:#fff; padding:12px 28px; border-radius:var(--r-pill); margin:16px 0; letter-spacing:0.06em;}
   .cart-badge{position:absolute; top:-6px; right:-8px; min-width:18px; height:18px; border-radius:999px; background:var(--rust-deep); color:#fff; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1;}
-  .co-note{font-size:0.78rem; color:var(--ink-soft); margin:14px 4px 0; font-weight:500; line-height:1.5;}
 </style>
 </head>
 <body>
@@ -104,103 +101,86 @@
       <div class="section-head">
         <span class="section-tag">Cart</span>
         <h2>Your cart.</h2>
-        <p>Review your items, estimate shipping, and check out. Browsing and estimating are open to everyone — checkout needs a free account.</p>
+        <p>Bulk products and group-buy kits together, eh. Review, estimate shipping, and place the order — nothing is owed until we confirm.</p>
       </div>
 
       <!-- CART VIEW -->
       <div id="cart-view">
-        <div class="cart-card">
-          <div id="cart-lines"></div>
-
-          <div class="est-box" id="est-box">
-            <h4>🇨🇦 Canada Post shipping estimate — no account needed</h4>
-            <div class="est-row">
-              <input class="field-input" id="est-postal" type="text" maxlength="20" placeholder="Destination postal / ZIP code">
-              <button class="btn btn-ghost btn-sm" id="est-btn" type="button">Estimate</button>
-            </div>
-            <div class="est-result" id="est-result"></div>
-          </div>
-
-          <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <button class="btn btn-primary" id="checkout-btn">Proceed to checkout</button>
-            <a class="btn btn-ghost" href="bulk-orders.html">← Keep shopping</a>
-          </div>
-          <p class="co-note">Checkout requires a free account — your shipping details get saved to it. Nothing is owed until we confirm your order and send payment instructions.</p>
+        <div class="cart-box">
+          <div id="cart-lines"><p class="cart-empty">Loading…</p></div>
         </div>
+
+        <div class="est-box">
+          <h3>Shipping estimate</h3>
+          <div class="est-row">
+            <select class="field-input" id="est-region">
+              <option value="" disabled selected>Choose destination…</option>
+              <option>Ontario</option>
+              <option>Quebec</option>
+              <option>British Columbia</option>
+              <option>Alberta</option>
+              <option>Saskatchewan</option>
+              <option>Manitoba</option>
+              <option>Nova Scotia</option>
+              <option>New Brunswick</option>
+              <option>Prince Edward Island</option>
+              <option>Newfoundland and Labrador</option>
+              <option>Yukon</option>
+              <option>Northwest Territories</option>
+              <option>Nunavut</option>
+              <option>United States</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="est-btn" type="button">Estimate</button>
+          </div>
+          <div class="est-result" id="est-result"></div>
+          <p class="est-fine">Canada Post, tracked, discreet packaging. Final shipping cost is confirmed with your order — this is a close estimate, eh.</p>
+        </div>
+
+        <button class="btn btn-primary" id="checkout-btn" style="max-width:760px;">Check out →</button>
+        <p style="margin-top:12px; max-width:760px;"><a href="bulk-orders.html" style="color:var(--rust-deep); font-weight:700; text-decoration:underline; text-underline-offset:3px;">← Keep shopping</a></p>
       </div>
 
       <!-- CHECKOUT VIEW -->
-      <div class="cart-card" id="checkout-view" style="display:none;">
-        <h3 style="margin-bottom:4px;">Checkout</h3>
-        <p class="co-note" style="margin:0 0 18px;">Shipping details come from your account — update them here any time and they'll be saved.</p>
+      <div id="checkout-view" style="display:none;">
+        <div class="cart-box">
+          <h3 style="margin-bottom:14px;">Checkout</h3>
 
-        <div class="co-field">
-          <label class="co-label" for="c-name">Name *</label>
-          <input class="field-input" id="c-name" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
-        </div>
-        <div class="co-field">
-          <label class="co-label" for="c-addr">Street address *</label>
-          <input class="field-input" id="c-addr" type="text" maxlength="200" autocomplete="street-address" placeholder="123 Example St, Unit 4">
-        </div>
-        <div class="two">
-          <div class="co-field">
-            <label class="co-label" for="c-city">City *</label>
-            <input class="field-input" id="c-city" type="text" maxlength="80" autocomplete="address-level2" placeholder="City">
-          </div>
-          <div class="co-field">
-            <label class="co-label" for="c-prov">Province / State</label>
-            <input class="field-input" id="c-prov" type="text" maxlength="60" autocomplete="address-level1" placeholder="ON / BC / etc.">
-          </div>
-        </div>
-        <div class="two">
-          <div class="co-field">
-            <label class="co-label" for="c-postal">Postal / ZIP code *</label>
-            <input class="field-input" id="c-postal" type="text" maxlength="20" autocomplete="postal-code" placeholder="M5V 2T6">
-          </div>
-          <div class="co-field">
-            <label class="co-label" for="c-country">Country *</label>
-            <select class="field-input" id="c-country">
-              <option selected>Canada</option>
-              <option>United States</option>
-              <option>United Kingdom</option>
-              <option>Other</option>
-            </select>
-          </div>
-        </div>
+          <label class="ck-label">Shipping to</label>
+          <div class="ship-summary" id="ship-summary">—</div>
 
-        <div class="est-result" id="co-est" style="margin-bottom:16px;"></div>
+          <label class="ck-label">Telegram / Signal handle (optional)</label>
+          <input class="field-input" id="ck-telegram" type="text" maxlength="80" placeholder="@yourhandle">
 
-        <div class="two">
-          <div class="co-field">
-            <label class="co-label" for="c-coin">Payment coin</label>
-            <select class="field-input" id="c-coin">
-              <option value="" disabled selected>Choose…</option>
-              <option>Bitcoin (BTC)</option>
-              <option>USDC — Ethereum network</option>
-              <option>USDC — Solana network</option>
-              <option>Not sure yet</option>
-            </select>
-          </div>
-          <div class="co-field">
-            <label class="co-label" for="c-notes">Order notes (optional)</label>
-            <textarea class="field-input" id="c-notes" maxlength="400" placeholder="Anything we should know"></textarea>
-          </div>
-        </div>
+          <label class="ck-label">Payment coin</label>
+          <select class="field-input" id="ck-coin" style="width:100%;">
+            <option value="" disabled selected>Choose…</option>
+            <option>Bitcoin (BTC)</option>
+            <option>USDC — Ethereum network</option>
+            <option>USDC — Solana network</option>
+            <option>Not sure yet</option>
+          </select>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btn-primary" id="place-btn">Place order</button>
-          <button class="btn btn-ghost" id="back-btn" type="button">← Back to cart</button>
+          <label class="ck-label">Order notes (optional)</label>
+          <textarea class="field-input" id="ck-notes" maxlength="400" placeholder="Anything we should know"></textarea>
+
+          <button class="btn btn-primary" id="place-btn" style="width:100%; margin-top:16px;">Place order</button>
+          <div class="place-msg" id="place-msg"></div>
+          <p style="font-size:0.72rem; color:var(--ink-soft); font-weight:500; margin-top:12px; line-height:1.45;">Placing the order reserves your spot — nothing is owed until we confirm and send payment details by email. Group-buy kits are held for you; if a buy closes before checkout, we'll flag it here.</p>
         </div>
+        <p style="max-width:760px;"><button class="btn btn-ghost btn-sm" id="back-cart-btn" type="button">← Back to cart</button></p>
       </div>
 
       <!-- SUCCESS VIEW -->
-      <div class="success-card" id="success-view">
-        <h3>Order placed. Eh, nice one. 🇨🇦</h3>
-        <p>Your order reference:</p>
-        <div class="order-ref" id="success-ref">CEP-00000</div>
-        <p>Save that reference — you'll find this order in your account too. We'll email you to confirm and send payment details. Nothing is owed until we confirm.</p>
-        <div style="margin-top:22px;"><a class="btn btn-ghost" href="account.html">View my orders</a></div>
+      <div id="success-view" style="display:none;">
+        <div class="cart-box" style="text-align:center;">
+          <h3>Order placed. Eh, nice one. 🇨🇦</h3>
+          <p style="color:var(--ink-soft); font-weight:500;">Your order reference:</p>
+          <div class="order-ref" id="success-ref">CEP-00000</div>
+          <p style="color:var(--ink-soft); font-weight:500;">We'll confirm your order by email and send payment details. Track it anytime with your reference.</p>
+          <a class="btn btn-ghost btn-sm" href="track.html" style="margin-top:16px;">Track order</a>
+        </div>
       </div>
+
     </div>
   </section>
 </main>
@@ -246,149 +226,44 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Cart page: items, Canada Post estimator, account-required checkout */
+/* Cart — bulk + group-buy kits, finalized as orders at checkout */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
   var WEB3FORMS_KEY = 'ec3741b6-dfd0-40d0-a6ed-1cfca868658d';
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   var currentUser = null;
+  var profile = null;
 
-  function getCart(){ try{ return JSON.parse(localStorage.getItem('cep_cart') || '[]'); }catch(e){ return []; } }
-  function saveCart(c){ localStorage.setItem('cep_cart', JSON.stringify(c)); updateBadge(); }
-  function totalUnits(){ return getCart().reduce(function(s,it){ return s + (it.qty||0); }, 0); }
-  function updateBadge(){
-    var b = document.getElementById('cart-badge');
-    if(!b) return;
-    var n = totalUnits();
-    b.textContent = n > 99 ? '99+' : n;
-    b.style.display = n > 0 ? 'flex' : 'none';
-  }
-  function clampQty(n){ n = parseInt(n,10); if(isNaN(n)||n<1) return 1; if(n>999) return 999; return n; }
-
-  function renderCart(){
-    var cart = getCart();
-    var box = document.getElementById('cart-lines');
-    if(!cart.length){
-      box.innerHTML = '<div class="empty-cart">Your cart is empty, eh.<br><br><a class="btn btn-primary btn-sm" href="bulk-orders.html">Browse bulk products</a></div>';
-      document.getElementById('est-box').style.display = 'none';
-      document.getElementById('checkout-btn').style.display = 'none';
-      return;
-    }
-    box.innerHTML = cart.map(function(it, i){
-      return '<div class="cart-line">' +
-        '<span class="cl-name">' + esc(it.name) + '</span>' +
-        '<div class="cl-qty"><button class="cl-btn" data-i="'+i+'" data-d="-1" type="button">−</button><span class="cl-num">'+it.qty+'</span><button class="cl-btn" data-i="'+i+'" data-d="1" type="button">+</button></div>' +
-        '<button class="cl-remove" data-i="'+i+'" type="button">remove</button>' +
-      '</div>';
-    }).join('');
-    box.querySelectorAll('.cl-btn').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var c = getCart();
-        var i = parseInt(btn.getAttribute('data-i'),10);
-        c[i].qty = clampQty(c[i].qty + parseInt(btn.getAttribute('data-d'),10));
-        saveCart(c); renderCart();
-      });
-    });
-    box.querySelectorAll('.cl-remove').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var c = getCart();
-        c.splice(parseInt(btn.getAttribute('data-i'),10), 1);
-        saveCart(c); renderCart();
-      });
-    });
-  }
+  var RATES = {
+    'Ontario': 9.99, 'Quebec': 12.99,
+    'British Columbia': 15.99, 'Alberta': 15.99, 'Saskatchewan': 15.99, 'Manitoba': 15.99,
+    'Nova Scotia': 16.99, 'New Brunswick': 16.99, 'Prince Edward Island': 16.99, 'Newfoundland and Labrador': 16.99,
+    'Yukon': 19.99, 'Northwest Territories': 19.99, 'Nunavut': 19.99,
+    'United States': 24.99
+  };
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-
-  var FSA = {A:'NL',B:'NS',C:'PE',E:'NB',G:'QC',H:'QC',J:'QC',K:'ON',L:'ON',M:'ON',N:'ON',P:'ON',R:'MB',S:'SK',T:'AB',V:'BC',X:'NT',Y:'YT'};
-  var ZONES = {
-    ON:{rate:[9,13], days:[1,4], label:'Ontario'},
-    QC:{rate:[11,16], days:[2,6], label:'Quebec'},
-    MB:{rate:[11,16], days:[2,6], label:'Manitoba'},
-    NB:{rate:[13,18], days:[3,7], label:'New Brunswick'},
-    NS:{rate:[13,18], days:[3,7], label:'Nova Scotia'},
-    PE:{rate:[13,18], days:[3,7], label:'PEI'},
-    NL:{rate:[14,19], days:[3,8], label:'Newfoundland'},
-    AB:{rate:[13,19], days:[3,8], label:'Alberta'},
-    SK:{rate:[13,19], days:[3,8], label:'Saskatchewan'},
-    BC:{range:null, rate:[14,20], days:[3,8], label:'British Columbia'},
-    NT:{rate:[18,30], days:[5,12], label:'the Territories'},
-    NU:{rate:[18,30], days:[5,12], label:'the Territories'},
-    YT:{rate:[18,30], days:[5,12], label:'the Territories'},
-    US:{rate:[20,35], days:[4,10], label:'the United States'},
-    INTL:{rate:[35,60], days:[7,21], label:'international'}
-  };
-
-  function zoneFor(code){
-    code = code.trim().toUpperCase();
-    if(/^\d{5}(-\d{4})?$/.test(code)) return 'US';
-    if(/^[A-Z]/.test(code) && code.length >= 3){
-      var prov = FSA[code.charAt(0)];
-      if(prov) return prov;
-    }
-    return 'INTL';
+  function getCart(){ try{ return JSON.parse(localStorage.getItem('cep_cart') || '[]'); }catch(e){ return []; } }
+  function saveCart(c){ localStorage.setItem('cep_cart', JSON.stringify(c)); updateBadge(); }
+  function updateBadge(){
+    var b = document.getElementById('cart-badge');
+    if(!b) return;
+    var n = getCart().reduce(function(s, it){ return s + (it.qty || 0); }, 0);
+    b.textContent = n > 99 ? '99+' : n;
+    b.style.display = n > 0 ? 'flex' : 'none';
   }
-
-  function estimateHtml(code){
-    if(!code || code.trim().length < 3) return '<span style="color:var(--rust-deep);">Enter a postal / ZIP code to estimate.</span>';
-    var z = ZONES[zoneFor(code)];
-    var units = totalUnits() || 1;
-    var weight = 150 + units * 25;
-    var extra = 0;
-    if(weight <= 500){ extra = 0; }
-    else if(weight <= 1000){ extra = 4; }
-    else if(weight <= 2000){ extra = 8; }
-    else { return '$— custom quote<span>That\'s a big order, eh — contact us and we\'ll quote shipping directly.</span>'; }
-    var lo = z.rate[0] + extra, hi = z.rate[1] + extra;
-    return '$' + lo + '–$' + hi + ' CAD · ' + z.days[0] + '–' + z.days[1] + ' business days' +
-      '<span>Approx. ' + Math.round(weight/10)*10 + 'g parcel to ' + z.label + ', ships from Ontario via Canada Post. Estimate only — final rate is calculated at shipping time.</span>';
+  function clampQty(n){
+    n = parseInt(n, 10);
+    if(isNaN(n) || n < 1) return 1;
+    if(n > 999) return 999;
+    return n;
   }
-
-  document.getElementById('est-btn').addEventListener('click', function(){
-    document.getElementById('est-result').innerHTML = estimateHtml(document.getElementById('est-postal').value);
-  });
-  document.getElementById('est-postal').addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('est-btn').click(); }
-  });
-
-  document.getElementById('checkout-btn').addEventListener('click', function(){
-    db.auth.getSession().then(function(r){
-      if(!r.data.session){
-        window.location.href = 'account.html?next=cart.html';
-        return;
-      }
-      currentUser = r.data.session.user;
-      db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle().then(function(p){
-        if(p.data){
-          document.getElementById('c-name').value = p.data.display_name || '';
-          document.getElementById('c-addr').value = p.data.ship_address || '';
-          document.getElementById('c-city').value = p.data.ship_city || '';
-          document.getElementById('c-prov').value = p.data.ship_province || '';
-          document.getElementById('c-postal').value = p.data.ship_postal || '';
-          document.getElementById('c-country').value = p.data.ship_country || 'Canada';
-        }
-        document.getElementById('co-est').innerHTML = estimateHtml(document.getElementById('c-postal').value);
-        document.getElementById('cart-view').style.display = 'none';
-        document.getElementById('checkout-view').style.display = 'block';
-        window.scrollTo({top:0, behavior:'smooth'});
-      });
-    });
-  });
-
-  document.getElementById('c-postal').addEventListener('change', function(){
-    document.getElementById('co-est').innerHTML = estimateHtml(this.value);
-  });
-
-  document.getElementById('back-btn').addEventListener('click', function(){
-    document.getElementById('checkout-view').style.display = 'none';
-    document.getElementById('cart-view').style.display = 'block';
-  });
-
   function makeRef(){
     var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     var out = '';
@@ -396,106 +271,242 @@
     return 'CEP-' + out;
   }
 
-  function sendStaffEmail(ref, lines, ship, coin, notes){
-    try {
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: 'New order ' + ref + ' — account order',
-          from_name: 'CanadaEhPeps Cart',
-          name: ship.name,
-          email: currentUser.email,
-          bot: '',
-          'Order Reference': ref,
-          'Customer': ship.name + ' <' + currentUser.email + '>',
-          'Cart': lines,
-          'Payment Coin': coin,
-          'Ship To': ship.addr + ', ' + ship.city + ', ' + ship.prov + ' ' + ship.postal + ', ' + ship.country,
-          'Notes': notes || 'none',
-          'Status': 'pending'
-        })
-      }).catch(function(){});
-    } catch(err){}
+  /* ---------- render cart ---------- */
+  function renderCart(){
+    var cart = getCart();
+    var box = document.getElementById('cart-lines');
+    if(!cart.length){
+      box.innerHTML = '<p class="cart-empty">Your cart is empty, eh. <a href="bulk-orders.html" style="color:var(--rust-deep); font-weight:700;">Browse bulk</a> or <a href="group-buys.html" style="color:var(--rust-deep); font-weight:700;">join a group buy</a>.</p>';
+      document.getElementById('checkout-btn').style.display = 'none';
+      return;
+    }
+    document.getElementById('checkout-btn').style.display = 'inline-flex';
+    box.innerHTML = cart.map(function(it, i){
+      return '<div class="cart-line">' +
+        '<span class="cl-name">' + esc(it.name) + (it.buy_code ? '<span class="cl-tag">GB ' + esc(it.buy_code) + '</span>' : '') + '</span>' +
+        '<div class="cl-stepper"><button class="cl-step" data-i="' + i + '" data-d="-1" type="button">−</button><span class="cl-qty">' + esc(it.qty) + '</span><button class="cl-step" data-i="' + i + '" data-d="1" type="button">+</button></div>' +
+        '<button class="cl-remove" data-i="' + i + '" type="button">remove</button>' +
+      '</div>';
+    }).join('');
+
+    box.querySelectorAll('.cl-step').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-i'), 10);
+        var d = parseInt(btn.getAttribute('data-d'), 10);
+        var cart = getCart();
+        if(!cart[i]) return;
+        cart[i].qty = clampQty(cart[i].qty + d);
+        saveCart(cart);
+        renderCart();
+      });
+    });
+    box.querySelectorAll('.cl-remove').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-i'), 10);
+        var cart = getCart();
+        cart.splice(i, 1);
+        saveCart(cart);
+        renderCart();
+      });
+    });
   }
 
+  /* ---------- shipping estimate ---------- */
+  document.getElementById('est-btn').addEventListener('click', function(){
+    var region = document.getElementById('est-region').value;
+    var el = document.getElementById('est-result');
+    if(!region || !RATES.hasOwnProperty(region)){ el.textContent = ''; return; }
+    el.textContent = 'Estimated shipping to ' + region + ': $' + RATES[region].toFixed(2) + ' CAD · Canada Post, tracked';
+  });
+
+  /* ---------- checkout gate ---------- */
+  document.getElementById('checkout-btn').addEventListener('click', function(){
+    db.auth.getSession().then(function(r){
+      if(!r.data.session){
+        var pill = document.querySelector('a.acct-pill');
+        if(pill){ pill.click(); }
+        return;
+      }
+      currentUser = r.data.session.user;
+      db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle().then(function(p){
+        profile = p.data;
+        var sum = document.getElementById('ship-summary');
+        if(!profile || !profile.ship_address || !profile.ship_city || !profile.ship_postal){
+          sum.innerHTML = 'No shipping address on your account yet, eh. <a href="account.html">Add your address first →</a>';
+        } else {
+          sum.innerHTML = esc(profile.display_name || currentUser.email) + '<br>' +
+            esc(profile.ship_address) + ', ' + esc(profile.ship_city) + ', ' +
+            esc(profile.ship_province || '') + ' ' + esc(profile.ship_postal) + ', ' + esc(profile.ship_country || 'Canada') +
+            '<br><a href="account.html">Change address</a>';
+        }
+        document.getElementById('cart-view').style.display = 'none';
+        document.getElementById('checkout-view').style.display = 'block';
+      });
+    });
+  });
+
+  document.getElementById('back-cart-btn').addEventListener('click', function(){
+    document.getElementById('checkout-view').style.display = 'none';
+    document.getElementById('cart-view').style.display = 'block';
+  });
+
+  /* ---------- validate group-buy items ---------- */
+  function validateBuyItems(cart, cb){
+    var buyItems = cart.filter(function(it){ return it.buy_code; });
+    if(!buyItems.length){ cb(null); return; }
+    db.from('buys').select('*').then(function(b){
+      var buysMap = {};
+      (b.data || []).forEach(function(x){ buysMap[x.code] = x; });
+      db.rpc('buy_fills_detail').then(function(f){
+        var fills = {};
+        (f.data || []).forEach(function(r){ fills[r.code + '|' + r.product_name] = Number(r.reserved); });
+        for(var i=0;i<buyItems.length;i++){
+          var it = buyItems[i];
+          var buy = buysMap[it.buy_code];
+          if(!buy){ cb(it.name + ' — that group buy no longer exists. Remove it from your cart, eh.'); return; }
+          if(buy.status !== 'open' || new Date(buy.deadline).getTime() <= Date.now()){
+            cb(it.name + ' — buy ' + buy.code + ' has closed. Remove it from your cart, eh.');
+            return;
+          }
+          var prods = (buy.products && buy.products.length) ? buy.products : [{ name: buy.product, total_units: buy.total_units }];
+          var prod = null;
+          for(var j=0;j<prods.length;j++){ if(prods[j].name === it.buy_product){ prod = prods[j]; break; } }
+          if(!prod){ cb(it.name + ' — that product was removed from buy ' + buy.code + '. Remove it from your cart, eh.'); return; }
+          var reserved = fills[it.buy_code + '|' + it.buy_product] || 0;
+          var left = (prod.total_units || 0) - reserved;
+          if(it.qty > left){ cb('Only ' + left + ' kit' + (left === 1 ? '' : 's') + ' of ' + it.name + ' left — adjust your cart.'); return; }
+        }
+        cb(null);
+      });
+    });
+  }
+
+  /* ---------- sequential inserts ---------- */
+  function insertAll(payloads, i, onDone, onErr){
+    if(i >= payloads.length){ onDone(); return; }
+    db.from('orders').insert(payloads[i]).then(function(r){
+      if(r.error){ onErr(r.error); return; }
+      insertAll(payloads, i + 1, onDone, onErr);
+    });
+  }
+
+  /* ---------- place order ---------- */
   document.getElementById('place-btn').addEventListener('click', function(){
     var btn = document.getElementById('place-btn');
-    var cart = getCart();
-    if(!cart.length){ alert('Your cart is empty.'); return; }
-    if(!currentUser){ alert('Please sign in first.'); return; }
+    var msg = document.getElementById('place-msg');
+    msg.classList.remove('ok');
+    msg.textContent = '';
 
-    var ship = {
-      name: document.getElementById('c-name').value.trim(),
-      addr: document.getElementById('c-addr').value.trim(),
-      city: document.getElementById('c-city').value.trim(),
-      prov: document.getElementById('c-prov').value.trim(),
-      postal: document.getElementById('c-postal').value.trim(),
-      country: document.getElementById('c-country').value
-    };
-    if(!ship.name || !ship.addr || !ship.city || !ship.postal){
-      alert('Please fill in name, address, city, and postal code.');
+    var cart = getCart();
+    if(!cart.length){ msg.textContent = 'Your cart is empty, eh.'; return; }
+    if(!currentUser || !profile || !profile.ship_address || !profile.ship_city || !profile.ship_postal){
+      msg.textContent = 'Add your shipping address on your account page first.';
       return;
     }
 
-    var now = Date.now();
-    var last = 0;
-    try { last = parseInt(localStorage.getItem('cep_last_order') || '0', 10); } catch(err){}
-    if(now - last < 30000){ alert('Please wait a moment before placing another order.'); return; }
+    var last = parseInt(localStorage.getItem('cep_last_order') || '0', 10);
+    if(Date.now() - last < 15000){
+      msg.textContent = 'One moment, eh — your last order is still processing. Try again in a few seconds.';
+      return;
+    }
 
     btn.disabled = true;
     btn.textContent = 'Placing…';
 
-    var units = totalUnits();
-    var lines = cart.map(function(it){ return it.name + ' x' + it.qty; }).join(' | ');
-    var productField = cart.length === 1 ? cart[0].name : 'Bulk order — ' + cart.length + ' products';
-    var userNotes = document.getElementById('c-notes').value.trim();
-    var ref = makeRef();
+    validateBuyItems(cart, function(err){
+      if(err){
+        btn.disabled = false;
+        btn.textContent = 'Place order';
+        msg.textContent = err;
+        return;
+      }
 
-    db.from('profiles').update({
-      display_name: ship.name,
-      ship_address: ship.addr,
-      ship_city: ship.city,
-      ship_province: ship.prov || null,
-      ship_postal: ship.postal,
-      ship_country: ship.country
-    }).eq('id', currentUser.id).then(function(){
+      var ref = makeRef();
+      var telegram = document.getElementById('ck-telegram').value.trim() || 'none';
+      var coin = document.getElementById('ck-coin').value || 'not sure yet';
+      var notes = document.getElementById('ck-notes').value.trim();
 
-      var payload = {
+      var bulkItems = cart.filter(function(it){ return !it.buy_code; });
+      var buyItems = cart.filter(function(it){ return it.buy_code; });
+      var payloads = [];
+
+      var base = {
         order_ref: ref,
         user_id: currentUser.id,
-        customer_name: ship.name,
+        customer_name: profile.display_name || currentUser.email,
         email: currentUser.email,
-        telegram: 'none',
-        product: productField,
-        quantity: units,
-        coin: document.getElementById('c-coin').value || 'not sure yet',
+        telegram: telegram,
+        coin: coin,
         txid: null,
-        ship_address: ship.addr,
-        ship_city: ship.city,
-        ship_province: ship.prov || null,
-        ship_postal: ship.postal,
-        ship_country: ship.country,
-        status: 'pending',
-        admin_notes: 'CART: ' + lines + (userNotes ? ' | NOTES: ' + userNotes : '')
+        ship_address: profile.ship_address,
+        ship_city: profile.ship_city,
+        ship_province: profile.ship_province || null,
+        ship_postal: profile.ship_postal,
+        ship_country: profile.ship_country || 'Canada',
+        status: 'pending'
       };
 
-      db.from('orders').insert(payload).then(function(result){
-        if(result.error){
-          btn.disabled = false;
-          btn.textContent = 'Place order';
-          alert('Could not place order: ' + result.error.message);
-          return;
-        }
-        try { localStorage.setItem('cep_last_order', String(now)); } catch(err){}
-        sendStaffEmail(ref, lines, ship, payload.coin, userNotes);
-        localStorage.removeItem('cep_cart');
+      if(bulkItems.length){
+        var bulkQty = bulkItems.reduce(function(s, it){ return s + it.qty; }, 0);
+        var bulkName = bulkItems.length === 1 ? bulkItems[0].name : 'Bulk order — ' + bulkItems.length + ' products';
+        var p = {};
+        for(var k in base){ p[k] = base[k]; }
+        p.product = bulkName;
+        p.quantity = bulkQty;
+        p.buy_code = null;
+        p.admin_notes = notes ? 'NOTES: ' + notes : null;
+        payloads.push(p);
+      }
+
+      buyItems.forEach(function(it){
+        var p = {};
+        for(var k in base){ p[k] = base[k]; }
+        p.product = it.buy_product;
+        p.quantity = it.qty;
+        p.buy_code = it.buy_code;
+        p.admin_notes = 'GROUP BUY RESERVATION ' + it.buy_code + ' — ' + it.buy_product + ' (' + (it.buy_kit || 'kit') + ')' + (notes ? ' | NOTES: ' + notes : '');
+        payloads.push(p);
+      });
+
+      insertAll(payloads, 0, function(){
+        localStorage.setItem('cep_last_order', String(Date.now()));
+        localStorage.setItem('cep_cart', '[]');
         updateBadge();
+        /* staff alert email */
+        try {
+          var lines = cart.map(function(it){
+            return (it.buy_code ? '[GB ' + it.buy_code + '] ' : '') + it.name + ' x' + it.qty;
+          }).join('\n');
+          fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              access_key: WEB3FORMS_KEY,
+              subject: 'New order ' + ref + ' — CanadaEhPeps',
+              from_name: 'CanadaEhPeps Cart',
+              name: base.customer_name,
+              email: currentUser.email,
+              bot: '',
+              'Order Reference': ref,
+              'Items': lines,
+              'Customer': base.customer_name + ' <' + currentUser.email + '>',
+              'Payment Coin': coin,
+              'Telegram': telegram,
+              'Ship To': [base.ship_address, base.ship_city, base.ship_postal, base.ship_country].filter(Boolean).join(', '),
+              'Notes': notes || 'none',
+              'Status': 'pending'
+            })
+          }).catch(function(){});
+        } catch(e2){}
         document.getElementById('checkout-view').style.display = 'none';
-        document.getElementById('success-ref').textContent = ref;
         document.getElementById('success-view').style.display = 'block';
-        window.scrollTo({top:0, behavior:'smooth'});
+        document.getElementById('success-ref').textContent = ref;
+        btn.disabled = false;
+        btn.textContent = 'Place order';
+      }, function(error){
+        btn.disabled = false;
+        btn.textContent = 'Place order';
+        msg.textContent = 'Could not place order: ' + error.message;
       });
     });
   });
