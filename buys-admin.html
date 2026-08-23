@@ -18,8 +18,9 @@
 <link rel="stylesheet" href="styles.css">
 <style>
   .admin-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; max-width:1000px; margin:20px auto 0; padding:0 18px;}
-  .admin-bar h1{font-size:1.3rem;}
+  .admin-bar h1{font-size:1.3rem; display:flex; align-items:center; gap:10px;}
   .admin-bar h1 span{color:var(--rust-deep);}
+  .h-flag{flex:0 0 auto; border-radius:3px;}
   .admin-actions{display:flex; gap:8px; flex-wrap:wrap;}
   .login-wrap{max-width:420px; margin:60px auto; padding:0 18px;}
   .login-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 24px;}
@@ -59,9 +60,9 @@
 <body>
 
 <div class="admin-bar" id="admin-bar" style="display:none;">
-  <h1>🇨🇦 CanadaEhPeps <span>· Group Buys</span></h1>
+  <h1><svg class="h-flag" width="34" height="17" viewBox="0 0 40 20" aria-hidden="true"><rect width="40" height="20" fill="#FFFFFF"/><rect width="10" height="20" fill="#DA291C"/><rect x="30" width="10" height="20" fill="#DA291C"/><path fill="#DA291C" transform="translate(20,10)" d="M0,-8 L1.1,-5.2 L3.8,-6.2 L2.9,-3.3 L6.4,-4.1 L5.2,-1.4 L8,-0.5 L4.7,0.7 L5.6,3.3 L2.5,2.3 L1.2,3.2 L1.2,7.6 L-1.2,7.6 L-1.2,3.2 L-2.5,2.3 L-5.6,3.3 L-4.7,0.7 L-8,-0.5 L-5.2,-1.4 L-6.4,-4.1 L-2.9,-3.3 L-3.8,-6.2 L-1.1,-5.2 Z"/></svg> CanadaEhPeps <span>· Group Buys</span></h1>
   <div class="admin-actions">
-    <a class="btn btn-ghost btn-sm" href="admin.html?key=maple2026">Orders dashboard</a>
+    <a class="btn btn-ghost btn-sm" href="admin.html?key=maple2026">Bulk orders</a>
     <button class="btn btn-ghost btn-sm" id="refresh-btn">Refresh</button>
     <button class="btn btn-primary btn-sm" id="signout-btn">Sign out</button>
     <button class="icon-btn" id="theme-toggle" aria-label="Toggle light / dark theme" aria-pressed="true"><span class="theme-toggle-icon">☽</span></button>
@@ -88,19 +89,13 @@
         <input class="field-input" id="nb-code" type="text" maxlength="20" placeholder="GB-0001">
       </div>
       <div class="f-field">
-        <label class="lab" for="nb-product">Product</label>
-        <input class="field-input" id="nb-product" type="text" maxlength="100" placeholder="MOTS-C">
-      </div>
-    </div>
-    <div class="two">
-      <div class="f-field">
         <label class="lab" for="nb-kit">Kit label</label>
         <input class="field-input" id="nb-kit" type="text" maxlength="80" placeholder="kit · 10 vials">
       </div>
-      <div class="f-field">
-        <label class="lab" for="nb-vendor">Vendor (optional)</label>
-        <input class="field-input" id="nb-vendor" type="text" maxlength="80" placeholder="Vendor / factory">
-      </div>
+    </div>
+    <div class="f-field">
+      <label class="lab" for="nb-product">Products (one per line)</label>
+      <textarea class="field-input" id="nb-product" rows="4" maxlength="1000" placeholder="MOTS-C — 10mg&#10;BPC-157 — 10mg&#10;TB-500 — 10mg"></textarea>
     </div>
     <div class="two">
       <div class="f-field">
@@ -112,9 +107,15 @@
         <input class="field-input" id="nb-total" type="number" min="1" max="9999" placeholder="20">
       </div>
     </div>
-    <div class="f-field">
-      <label class="lab" for="nb-deadline">Deadline (buy closes)</label>
-      <input class="field-input" id="nb-deadline" type="datetime-local">
+    <div class="two">
+      <div class="f-field">
+        <label class="lab" for="nb-deadline">Deadline (buy closes)</label>
+        <input class="field-input" id="nb-deadline" type="datetime-local">
+      </div>
+      <div class="f-field">
+        <label class="lab" for="nb-vendor">Vendor (optional)</label>
+        <input class="field-input" id="nb-vendor" type="text" maxlength="80" placeholder="Vendor / factory">
+      </div>
     </div>
     <div class="f-field">
       <label class="lab" for="nb-desc">Description shown to customers</label>
@@ -131,7 +132,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Group buy manager — same simple session check as the orders page (no extra gate) */
+/* Group buy manager — multi-product, correct flag, simple session check */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -187,7 +188,7 @@
       return '<div class="buy-mgmt">' +
         '<div class="bm-head"><span class="bm-code">' + esc(buy.code) + '</span><span class="bm-date">deadline: ' + esc(fmtDate(buy.deadline)) + '</span></div>' +
         '<div class="bm-grid">' +
-          '<div class="bm-row"><span>Product</span><span>' + esc(buy.product) + '</span></div>' +
+          '<div class="bm-row"><span>Products</span><span>' + esc(buy.product).replace(/\n/g,'<br>') + '</span></div>' +
           '<div class="bm-row"><span>Kit</span><span>' + esc(buy.kit_label) + '</span></div>' +
           '<div class="bm-row"><span>Price</span><span>$' + Number(buy.price_cad) + ' CAD</span></div>' +
           '<div class="bm-row"><span>Reserved</span><span>' + reserved + ' / ' + buy.total_units + '</span></div>' +
@@ -253,7 +254,7 @@
     var total = parseInt(document.getElementById('nb-total').value, 10);
     var deadlineRaw = document.getElementById('nb-deadline').value;
     var desc = document.getElementById('nb-desc').value.trim() || null;
-    if(!code || !product){ msgEl.textContent = 'Code and product are required.'; return; }
+    if(!code || !product){ msgEl.textContent = 'Code and at least one product are required.'; return; }
     if(isNaN(price) || price < 0){ msgEl.textContent = 'Enter a valid price.'; return; }
     if(isNaN(total) || total < 1){ msgEl.textContent = 'Enter how many kits are available.'; return; }
     if(!deadlineRaw){ msgEl.textContent = 'Pick a deadline.'; return; }
@@ -287,8 +288,7 @@
   document.getElementById('refresh-btn').addEventListener('click', loadBuys);
   document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ document.getElementById('login-btn').click(); } });
 
-  /* Simple session check — identical to the orders page.
-     Sign in once, move between both pages freely. Page is never blank. */
+  /* Simple session check — identical to the orders page. Page is never blank. */
   showLogin();
   db.auth.getSession().then(function(r){
     if(r.data && r.data.session){
