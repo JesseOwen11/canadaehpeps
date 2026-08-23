@@ -456,6 +456,26 @@
   else { boot(); }
 })();
 </script>
-
+<script>
+/* Keep the change-email field truthful — defeat browser autofill */
+(function(){
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  function fixEmailField(){
+    var dbx = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    dbx.auth.getSession().then(function(r){
+      if(!r.data || !r.data.session) return;
+      var scope = document.getElementById('dash') || document;
+      var em = scope.querySelector('input[type="email"]');
+      if(em){
+        em.setAttribute('autocomplete', 'off');
+        em.value = r.data.session.user.email;
+      }
+    });
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', fixEmailField); }
+  else { setTimeout(fixEmailField, 800); }
+})();
+</script>
 </body>
 </html>
