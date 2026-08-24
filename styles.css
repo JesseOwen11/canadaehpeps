@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v5: #6d0000 pills) */
+/* CanadaEhPeps — styles.css (v6: solid = clickable, outlined = label) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -459,25 +459,19 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 }
 
 /* ============================================================
-   PILL RULE — every pill: #6d0000 unselected, white selected
+   PILLS & CHIPS — solid #6d0000 = clickable · outlined = label
    ============================================================ */
+
+/* CLICKABLE pills — solid #6d0000, white when selected */
 .navlinks a{background:#6d0000 !important; color:#fff !important;}
 .navlinks a:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .navlinks a.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 #mobile-menu a.nav-active{background:#6d0000 !important; color:#fff !important;}
-.section-tag{background:#6d0000 !important; color:#fff !important;}
-.eyebrow{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 .tradition-pill{background:#6d0000 !important; color:#fff !important;}
 .tradition-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink);}
 a.acct-pill{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
 a.acct-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .acct-pill-label{color:inherit !important;}
-.buy-code{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
-.buy-status{background:#6d0000 !important; color:#fff !important;}
-.past-status{background:#6d0000 !important; color:#fff !important;}
-.cl-tag{background:#6d0000 !important; color:#fff !important;}
-.cart-badge{background:#6d0000 !important;}
-/* admin pills */
 .pill{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 .pill .cnt{color:#fff !important;}
 .pill:hover{color:#fff !important; border-color:#fff !important; filter:brightness(1.25);}
@@ -487,5 +481,15 @@ a.acct-pill:hover{background:#fff !important; color:#6d0000 !important; box-shad
 .admin-tab:hover{color:#fff !important; filter:brightness(1.25);}
 .admin-tab.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
 .oc-status,.bm-status{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
-.uc-badge,.uc-badge.staff,.uc-badge.owner,.uc-protected{background:#6d0000 !important; color:#fff !important;}
-.inv-state.open,.inv-state.used{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
+
+/* NON-CLICKABLE chips/tags/badges — outlined: white fill, #6d0000 border + text */
+.section-tag{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.eyebrow{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.buy-code{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.buy-status{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.past-status{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.cl-tag{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.cart-badge{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.ticket-price .fill{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.uc-badge,.uc-badge.staff,.uc-badge.owner,.uc-protected{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+.inv-state.open,.inv-state.used{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
