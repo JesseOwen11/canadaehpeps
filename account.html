@@ -201,6 +201,11 @@
               <input class="field-input" id="new-email" type="email" maxlength="150" placeholder="New email address" autocomplete="off">
               <button class="btn btn-ghost btn-sm" id="upd-email-btn">Update email</button>
             </div>
+            <div class="set-row" id="email-confirm-row" style="display:none; margin-top:10px;">
+              <input class="field-input" id="email-code" type="text" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="Enter 6-digit code">
+              <button class="btn btn-primary btn-sm" id="email-confirm-btn">Confirm change</button>
+              <button class="btn btn-ghost btn-sm" id="email-cancel-btn">Cancel</button>
+            </div>
             <div class="set-msg" id="email-msg"></div>
           </div>
 
@@ -210,6 +215,11 @@
               <input class="field-input" id="new-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
               <input class="field-input" id="new-pass2" type="password" autocomplete="new-password" placeholder="Repeat it">
               <button class="btn btn-ghost btn-sm" id="upd-pass-btn">Update password</button>
+            </div>
+            <div class="set-row" id="pass-confirm-row" style="display:none; margin-top:10px;">
+              <input class="field-input" id="pass-code" type="text" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="Enter 6-digit code">
+              <button class="btn btn-primary btn-sm" id="pass-confirm-btn">Confirm change</button>
+              <button class="btn btn-ghost btn-sm" id="pass-cancel-btn">Cancel</button>
             </div>
             <div class="set-msg" id="pass-msg"></div>
           </div>
@@ -264,13 +274,26 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="script.js"></script>
 <script>
-/* Account dashboard: email, orders, address, settings, password recovery */
+/* Account dashboard: email, orders, address, settings, password recovery, security-confirm */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* EmailJS — sends the security code to the customer */
+  var EMAILJS_SERVICE = 'service_q2b4yak';
+  var EMAILJS_TEMPLATE = 'template_8dnp3gb';
+  emailjs.init({ publicKey: 'ViBB_YLRng7tDW6g0' });
+  function sendSecurityCode(toEmail, code, cb){
+    try{
+      emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { code: code, to_email: toEmail })
+        .then(function(){ cb(null); }, function(err){ cb(err); });
+    }catch(e){ cb(e); }
+  }
+  function makeCode(){ return String(Math.floor(100000 + Math.random() * 900000)); }
 
   var gate = document.getElementById('gate-card');
   var dash = document.getElementById('dash');
@@ -310,7 +333,6 @@
     recoveryCard.style.display = 'block';
   }
 
-  /* gate button opens the site-wide sign-in popup */
   document.getElementById('gate-btn').addEventListener('click', function(){
     var pill = document.querySelector('a.acct-pill');
     if(pill){ pill.click(); } else { window.location.reload(); }
@@ -385,34 +407,78 @@
     db.auth.signOut().then(function(){ showGate(); });
   });
 
-  /* settings — change email */
-  document.getElementById('upd-email-btn').addEventListener('click', async function(){
+  /* ===== CHANGE EMAIL — with security code confirmation ===== */
+  var pendingEmail = null;
+
+  document.getElementById('upd-email-btn').addEventListener('click', function(){
     var msgEl = document.getElementById('email-msg');
     var em = document.getElementById('new-email').value.trim();
     msgEl.classList.remove('err');
     msgEl.textContent = '';
+    if(!currentUser){ msgEl.classList.add('err'); msgEl.textContent = 'Sign in first.'; return; }
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
       msgEl.classList.add('err');
       msgEl.textContent = 'Enter a valid email address.';
       return;
     }
-    var r = await db.auth.updateUser({ email: em });
+    var code = makeCode();
+    pendingEmail = { newEmail: em, code: code };
+    msgEl.textContent = 'Sending security code…';
+    sendSecurityCode(currentUser.email, code, function(err){
+      if(err){
+        pendingEmail = null;
+        msgEl.classList.add('err');
+        msgEl.textContent = 'Could not send the security code. Try again in a moment.';
+        return;
+      }
+      msgEl.textContent = 'We sent a 6-digit code to ' + currentUser.email + '. Enter it below to confirm this change. If this wasn\'t you, contact admin.';
+      document.getElementById('email-confirm-row').style.display = 'flex';
+      document.getElementById('upd-email-btn').style.display = 'none';
+    });
+  });
+
+  document.getElementById('email-confirm-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('email-msg');
+    var entered = document.getElementById('email-code').value.trim();
+    if(!pendingEmail){ msgEl.textContent = 'Nothing to confirm.'; return; }
+    if(entered !== pendingEmail.code){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'That code doesn\'t match. Check the email and try again.';
+      return;
+    }
+    var r = await db.auth.updateUser({ email: pendingEmail.newEmail });
     if(r.error){
       msgEl.classList.add('err');
       msgEl.textContent = 'Could not update: ' + r.error.message;
     } else {
-      msgEl.textContent = 'Confirmation link sent to ' + em + ' — click it to finish the change.';
+      msgEl.classList.remove('err');
+      msgEl.textContent = 'Confirmed — a confirmation link was sent to ' + pendingEmail.newEmail + '. Click it to finish the change.';
       document.getElementById('new-email').value = '';
+      document.getElementById('email-code').value = '';
+      document.getElementById('email-confirm-row').style.display = 'none';
+      document.getElementById('upd-email-btn').style.display = '';
+      pendingEmail = null;
     }
   });
 
-  /* settings — change password */
-  document.getElementById('upd-pass-btn').addEventListener('click', async function(){
+  document.getElementById('email-cancel-btn').addEventListener('click', function(){
+    pendingEmail = null;
+    document.getElementById('email-code').value = '';
+    document.getElementById('email-confirm-row').style.display = 'none';
+    document.getElementById('upd-email-btn').style.display = '';
+    document.getElementById('email-msg').textContent = 'Cancelled — no change was made.';
+  });
+
+  /* ===== CHANGE PASSWORD — with security code confirmation ===== */
+  var pendingPass = null;
+
+  document.getElementById('upd-pass-btn').addEventListener('click', function(){
     var msgEl = document.getElementById('pass-msg');
     var p1 = document.getElementById('new-pass').value;
     var p2 = document.getElementById('new-pass2').value;
     msgEl.classList.remove('err');
     msgEl.textContent = '';
+    if(!currentUser){ msgEl.classList.add('err'); msgEl.textContent = 'Sign in first.'; return; }
     if(p1.length < 8){
       msgEl.classList.add('err');
       msgEl.textContent = 'Password must be at least 8 characters.';
@@ -423,15 +489,53 @@
       msgEl.textContent = 'The two passwords don\'t match.';
       return;
     }
-    var r = await db.auth.updateUser({ password: p1 });
+    var code = makeCode();
+    pendingPass = { newPass: p1, code: code };
+    msgEl.textContent = 'Sending security code…';
+    sendSecurityCode(currentUser.email, code, function(err){
+      if(err){
+        pendingPass = null;
+        msgEl.classList.add('err');
+        msgEl.textContent = 'Could not send the security code. Try again in a moment.';
+        return;
+      }
+      msgEl.textContent = 'We sent a 6-digit code to ' + currentUser.email + '. Enter it below to confirm this change. If this wasn\'t you, contact admin.';
+      document.getElementById('pass-confirm-row').style.display = 'flex';
+      document.getElementById('upd-pass-btn').style.display = 'none';
+    });
+  });
+
+  document.getElementById('pass-confirm-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('pass-msg');
+    var entered = document.getElementById('pass-code').value.trim();
+    if(!pendingPass){ msgEl.textContent = 'Nothing to confirm.'; return; }
+    if(entered !== pendingPass.code){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'That code doesn\'t match. Check the email and try again.';
+      return;
+    }
+    var r = await db.auth.updateUser({ password: pendingPass.newPass });
     if(r.error){
       msgEl.classList.add('err');
       msgEl.textContent = 'Could not update: ' + r.error.message + ' — if this keeps happening, sign out and back in, then try again.';
     } else {
-      msgEl.textContent = 'Password updated ✓';
+      msgEl.classList.remove('err');
+      msgEl.textContent = 'Password changed ✓';
       document.getElementById('new-pass').value = '';
       document.getElementById('new-pass2').value = '';
+      document.getElementById('pass-code').value = '';
+      document.getElementById('pass-confirm-row').style.display = 'none';
+      document.getElementById('upd-pass-btn').style.display = '';
+      pendingPass = null;
     }
+  });
+
+  document.getElementById('pass-cancel-btn').addEventListener('click', function(){
+    pendingPass = null;
+    document.getElementById('pass-code').value = '';
+    document.getElementById('pass-confirm-row').style.display = 'none';
+    document.getElementById('upd-pass-btn').style.display = '';
+    document.getElementById('pass-msg').textContent = 'Cancelled — no change was made.';
   });
 
   /* password recovery — save the new password after clicking the reset link */
