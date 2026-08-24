@@ -14,6 +14,30 @@
   });
 })();
 
+/* one-click action buttons — solid red (matched by their label) */
+(function(){
+  function mark(){
+    document.querySelectorAll('button').forEach(function(b){
+      var t = (b.textContent || '').trim().toLowerCase();
+      if(t === 'update email' || t === 'update password' || t === 'save address' || t === 'sign out' || t === 'delete my account'){
+        b.classList.add('acct-red-btn');
+      }
+    });
+  }
+  mark();
+  setTimeout(mark, 300);
+})();
+
+/* admin top bar — User accounts button turns white while its view is open */
+(function(){
+  var barBtn = document.getElementById('users-bar-btn');
+  var usersTab = document.getElementById('users-tab');
+  if(!barBtn || !usersTab) return;
+  new MutationObserver(function(){
+    barBtn.classList.toggle('bar-active', usersTab.style.display !== 'none');
+  }).observe(usersTab, { attributes: true, attributeFilter: ['style'] });
+})();
+
 /* theme toggle */
 (function(){
   var root = document.documentElement;
