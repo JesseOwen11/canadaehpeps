@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v11: black text on all red pills/buttons) */
+/* CanadaEhPeps — styles.css (v12: account pill no longer hidden/reloaded) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -459,8 +459,7 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 }
 
 /* ============================================================
-   RED PILLS/BUTTONS = BLACK TEXT (visible on hover too)
-   LABELS = BLACK/BRIGHT-RED
+   RED PILLS/BUTTONS = BLACK TEXT  ·  LABELS = BLACK/BRIGHT-RED
    ============================================================ */
 
 /* nav links */
@@ -494,7 +493,7 @@ html[data-theme="dark"] .btn-ghost{color:#000 !important; border-color:#6d0000 !
 html[data-theme="dark"] .authm-tab{color:#FF2B2B !important; border-color:#FF2B2B !important;}
 html[data-theme="dark"] .authm-tab.active{background:#6d0000 !important; color:#000 !important;}
 
-/* icon buttons — cart, dark mode, hamburger, account, close buttons */
+/* icon buttons — cart, dark mode, hamburger, close buttons */
 .icon-btn{background:#6d0000 !important; color:#000 !important;}
 .icon-btn:hover{background:#fff !important; color:#000 !important;}
 
@@ -503,7 +502,6 @@ a.acct-pill{background:#6d0000 !important; color:#000 !important; border-color:#
 a.acct-pill:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 a.acct-pill.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .acct-pill-label{color:inherit !important;}
-a.icon-btn[href="account.html"]:not(.acct-pill){visibility:hidden;}
 
 /* misc clickable bits */
 .tradition-pill{background:#6d0000 !important; color:#000 !important;}
@@ -518,7 +516,7 @@ html[data-theme="dark"] .crosslink a,html[data-theme="dark"] .past-link,html[dat
 .prod-remove,.cl-remove{color:#6d0000 !important;}
 html[data-theme="dark"] .prod-remove,html[data-theme="dark"] .cl-remove{color:#FF2B2B !important;}
 
-/* admin pills & tabs — red with black text; selected stays white/red */
+/* admin pills & tabs */
 .pill{background:#6d0000 !important; color:#000 !important; border-color:#fff !important;}
 .pill .cnt{color:#000 !important;}
 .pill:hover{color:#000 !important; border-color:#fff !important; filter:brightness(1.25);}
@@ -529,7 +527,7 @@ html[data-theme="dark"] .prod-remove,html[data-theme="dark"] .cl-remove{color:#F
 .admin-tab.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
 .oc-status,.bm-status{background:#6d0000 !important; color:#000 !important; border-color:#fff !important;}
 
-/* LABEL-ONLY chips — black fill, bright red border + text (unchanged) */
+/* LABEL-ONLY chips — black fill, bright red border + text */
 .section-tag{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
 .eyebrow{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
 .buy-code{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
