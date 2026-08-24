@@ -14,7 +14,7 @@
   });
 })();
 
-/* one-click action buttons — solid red with black text (matched by label) */
+/* one-click action buttons — solid red with white text (matched by label) */
 (function(){
   function mark(){
     document.querySelectorAll('button, input[type="submit"], input[type="button"]').forEach(function(b){
@@ -37,6 +37,36 @@
   new MutationObserver(function(){
     barBtn.classList.toggle('bar-active', usersTab.style.display !== 'none');
   }).observe(usersTab, { attributes: true, attributeFilter: ['style'] });
+})();
+
+/* View cart button — make sure Group Buys has one, and it's always readable */
+(function(){
+  var path = window.location.pathname.split('/').pop() || 'index.html';
+  if(path !== 'bulk-orders.html' && path !== 'group-buys.html') return;
+
+  /* if a View cart link already exists (bulk page), tag it so the readable styles apply */
+  var existing = null;
+  document.querySelectorAll('a').forEach(function(a){
+    if((a.textContent || '').trim().toLowerCase().indexOf('view cart') !== -1){ existing = a; }
+  });
+  if(existing){ existing.classList.add('view-cart-btn'); return; }
+
+  /* otherwise (Group Buys), add one near the bottom of the page */
+  var footer = document.querySelector('footer');
+  if(!footer) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'wrap';
+  wrap.style.paddingTop = '10px';
+  wrap.style.paddingBottom = '46px';
+  var cta = document.createElement('div');
+  cta.className = 'cart-cta';
+  var link = document.createElement('a');
+  link.className = 'btn btn-ghost view-cart-btn';
+  link.href = 'cart.html';
+  link.textContent = 'View cart →';
+  cta.appendChild(link);
+  wrap.appendChild(cta);
+  footer.parentNode.insertBefore(wrap, footer);
 })();
 
 /* theme toggle */
@@ -123,7 +153,6 @@
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
 
-  /* read signed-in state synchronously from the browser — no network wait */
   function loggedInSync(){
     try{
       for(var i=0;i<localStorage.length;i++){
