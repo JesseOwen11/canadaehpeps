@@ -14,11 +14,11 @@
   });
 })();
 
-/* one-click action buttons — solid red (matched by their label) */
+/* one-click action buttons — solid red with white text (matched by label) */
 (function(){
   function mark(){
-    document.querySelectorAll('button').forEach(function(b){
-      var t = (b.textContent || '').trim().toLowerCase();
+    document.querySelectorAll('button, input[type="submit"], input[type="button"]').forEach(function(b){
+      var t = ((b.textContent || '') + ' ' + (b.value || '')).trim().toLowerCase();
       if(t === 'update email' || t === 'update password' || t === 'save address' || t === 'sign out' || t === 'delete my account'){
         b.classList.add('acct-red-btn');
       }
@@ -26,6 +26,7 @@
   }
   mark();
   setTimeout(mark, 300);
+  setTimeout(mark, 1000);
 })();
 
 /* admin top bar — User accounts button turns white while its view is open */
