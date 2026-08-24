@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v9) */
+/* CanadaEhPeps — styles.css (v10: every button solid red with white text) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -459,7 +459,7 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 }
 
 /* ============================================================
-   CLICKABLE = RED  ·  LABELS = BLACK/BRIGHT-RED
+   EVERY BUTTON: SOLID RED + WHITE TEXT  ·  LABELS: BLACK/RED
    ============================================================ */
 
 /* nav links */
@@ -468,20 +468,24 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 .navlinks a.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 #mobile-menu a.nav-active{background:#6d0000 !important; color:#fff !important;}
 
-/* buttons — primary solid red; ghost red-outlined, hover flips white */
-.btn-primary{background:#6d0000 !important; color:#fff !important;}
-.btn-primary:hover{background:#fff !important; color:#6d0000 !important; filter:none !important; box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink) !important;}
-.btn-ghost{background:transparent !important; color:#6d0000 !important; border-color:#6d0000 !important;}
-.btn-ghost:hover,.btn-ghost:active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
-html[data-theme="dark"] .btn-ghost{color:#FF2B2B !important; border-color:#FF2B2B !important;}
-html[data-theme="dark"] .btn-ghost:hover,html[data-theme="dark"] .btn-ghost:active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+/* ALL .btn buttons (public + admin) — solid red, white text, hover flips white */
+.btn{border-color:#6d0000 !important;}
+.btn-primary,.btn-ghost{background:#6d0000 !important; color:#fff !important;}
+.btn-primary:hover,.btn-ghost:hover,.btn-primary:active,.btn-ghost:active{
+ background:#fff !important; color:#6d0000 !important; filter:none !important;
+ box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink) !important;
+}
+/* delete-style buttons */
+.oc-del{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
+.oc-del:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset !important;}
+html[data-theme="dark"] .btn-ghost{color:#fff !important; border-color:#6d0000 !important;}
 
 /* admin top bar: User accounts stays white while its view is open */
 .bar-active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 3px 3px 0 rgba(0,0,0,0.28);}
 
-/* one-click action buttons (account page) — solid red, no white flip */
+/* one-click action buttons (account page) — solid red, white text, no flip */
 .acct-red-btn{background:#6d0000 !important; color:#fff !important; border:2px solid #6d0000 !important; border-radius:100px !important; cursor:pointer;}
-.acct-red-btn:hover,.acct-red-btn:active{background:#6d0000 !important; color:#fff !important; box-shadow:none !important;}
+.acct-red-btn:hover,.acct-red-btn:active{background:#6d0000 !important; color:#fff !important; box-shadow:none !important; transform:none !important;}
 
 /* sign-in popup tabs */
 .authm-tab{background:transparent !important; color:#6d0000 !important; border-color:#6d0000 !important;}
