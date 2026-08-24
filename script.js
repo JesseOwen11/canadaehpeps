@@ -14,7 +14,7 @@
   });
 })();
 
-/* one-click action buttons — solid red with white text (matched by label) */
+/* one-click action buttons — solid red with black text (matched by label) */
 (function(){
   function mark(){
     document.querySelectorAll('button, input[type="submit"], input[type="button"]').forEach(function(b){
@@ -118,10 +118,24 @@
   window.addEventListener('resize', function(){ if(isOpen()) close(); });
 })();
 
-/* account UI — labeled nav pill + centered sign-in popup + logout (site-wide) */
+/* account UI — Account + Log out pills render INSTANTLY (no pop-in) */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+
+  /* read signed-in state synchronously from the browser — no network wait */
+  function loggedInSync(){
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && /^sb-.*-auth-token$/.test(k)){
+          var v = localStorage.getItem(k);
+          if(v && v.indexOf('access_token') !== -1){ return true; }
+        }
+      }
+    }catch(e){}
+    return false;
+  }
 
   var css =
   'a.acct-pill{display:inline-flex; align-items:center; gap:7px; width:auto; height:auto; padding:8px 15px; border:2px solid var(--ink); border-radius:999px; background:var(--panel); transition:all .15s;}' +
@@ -129,6 +143,7 @@
   'a.acct-pill svg{width:15px; height:15px;}' +
   '.acct-pill-label{font-family:"Space Mono",monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:inherit;}' +
   'a.acct-logout{background:var(--bg);}' +
+  'a.icon-btn[href="account.html"]:not(.acct-pill){visibility:visible !important;}' +
   '.authm-overlay{position:fixed; inset:0; background:rgba(23,15,15,0.55); display:none; align-items:center; justify-content:center; z-index:200; padding:18px;}' +
   '.authm-overlay[data-open="true"]{display:flex;}' +
   '.authm{position:relative; background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:30px 26px 26px; width:100%; max-width:410px; box-shadow:0 18px 50px rgba(0,0,0,0.35);}' +
@@ -260,35 +275,41 @@
     if(e.key === 'Enter'){ authBtn.click(); }
   });
 
-  /* Log out pill beside Account — only shows when signed in */
-  function setupLogout(){
+  /* Log out pill — built synchronously so it appears with the page, no pop-in */
+  function buildLogout(){
+    if(!acctLink || document.querySelector('a.acct-logout')) return;
+    var out = document.createElement('a');
+    out.href = '#';
+    out.className = 'acct-pill acct-logout';
+    out.setAttribute('title', 'Log out');
+    var lbl = document.createElement('span');
+    lbl.className = 'acct-pill-label';
+    lbl.textContent = 'Log out';
+    out.appendChild(lbl);
+    out.addEventListener('click', function(e){
+      e.preventDefault();
+      var d = getDb();
+      if(d){ d.auth.signOut().then(function(){ window.location.reload(); }); }
+    });
+    acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
+  }
+  if(loggedInSync()){ buildLogout(); }
+
+  /* background check: reconcile if the instant read and the real session disagree */
+  (function(){
     var d = getDb();
     if(!d || !acctLink) return;
     d.auth.getSession().then(function(r){
-      if(!r.data || !r.data.session) return;
-      if(document.querySelector('a.acct-logout')) return;
-      var out = document.createElement('a');
-      out.href = '#';
-      out.className = 'acct-pill acct-logout';
-      out.setAttribute('title', 'Log out');
-      var lbl = document.createElement('span');
-      lbl.className = 'acct-pill-label';
-      lbl.textContent = 'Log out';
-      out.appendChild(lbl);
-      out.addEventListener('click', function(e){
-        e.preventDefault();
-        out.style.opacity = '0.5';
-        d.auth.signOut().then(function(){ window.location.reload(); });
-      });
-      acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
+      var has = !!(r.data && r.data.session);
+      var el = document.querySelector('a.acct-logout');
+      if(has && !el){ buildLogout(); }
+      else if(!has && el){ el.parentNode.removeChild(el); }
     });
-  }
-  setupLogout();
+  })();
 
   if(!window.supabase){
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    s.onload = function(){ setupLogout(); };
     document.head.appendChild(s);
   }
 })();
