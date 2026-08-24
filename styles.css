@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v4: flag-red pills) */
+/* CanadaEhPeps — styles.css (v5: #6d0000 pills) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -190,7 +190,7 @@ html.js .hamburger-btn{display:inline-flex;}
 .btn-ghost{background:var(--panel); color:var(--ink);}
 .btn-sm{padding:11px 22px; font-size:0.86rem; width:auto; min-height:auto;}
 
-/* TRUST STRIP — equal boxes, text aligned with the dot */
+/* TRUST STRIP */
 .trust-strip{
  position:relative; z-index:1;
  display:grid; grid-template-columns:repeat(2,1fr); gap:12px; max-width:960px;
@@ -231,7 +231,7 @@ section{padding:46px 18px;}
 .list-head{font-size:1.25rem; margin:44px 0 16px; text-align:center;}
 @media (min-width:900px){ section{padding:70px 24px;} .section-head{margin-bottom:44px;} }
 
-/* PROCESS — compact step bubbles */
+/* PROCESS */
 #howitworks{padding-top:60px;}
 .steps{display:grid; grid-template-columns:1fr; gap:12px; max-width:640px; margin:0 auto;}
 .step{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-md); padding:14px;}
@@ -250,7 +250,7 @@ section{padding:46px 18px;}
  .step p{font-size:0.86rem;}
 }
 
-/* AS IS TRADITION — centered, own bubble, more space above */
+/* AS IS TRADITION */
 .tradition-card{
  margin:64px auto 0;
  background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg);
@@ -314,7 +314,7 @@ section{padding:46px 18px;}
 }
 .ticket-cta:hover{background:var(--rust-deep);}
 
-/* BULK — two compact bubbles per row on mobile */
+/* BULK */
 .tickets-bulk{grid-template-columns:repeat(2,1fr); gap:12px;}
 .tickets-bulk .ticket{max-width:none;}
 .ticket-sm{display:flex; flex-direction:column;}
@@ -459,33 +459,33 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 }
 
 /* ============================================================
-   CANADIAN FLAG PILL RULE — every pill: red unselected, white selected
+   PILL RULE — every pill: #6d0000 unselected, white selected
    ============================================================ */
-/* public site pills */
-.navlinks a{background:#DA291C !important; color:#fff !important;}
-.navlinks a:hover{background:#fff !important; color:#2B1512 !important; box-shadow:0 0 0 2px #DA291C inset;}
-.section-tag{background:#DA291C !important; color:#fff !important;}
-.eyebrow{background:#DA291C !important; color:#fff !important; border-color:#fff !important;}
-.tradition-pill{background:#DA291C !important; color:#fff !important;}
-.tradition-pill:hover{background:#fff !important; color:#2B1512 !important; box-shadow:0 0 0 2px #DA291C inset, 4px 4px 0 var(--ink);}
-a.acct-pill{background:#DA291C !important; color:#fff !important; border-color:#DA291C !important;}
-a.acct-pill:hover{background:#fff !important; color:#2B1512 !important; box-shadow:0 0 0 2px #DA291C inset;}
+.navlinks a{background:#6d0000 !important; color:#fff !important;}
+.navlinks a:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+.navlinks a.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+#mobile-menu a.nav-active{background:#6d0000 !important; color:#fff !important;}
+.section-tag{background:#6d0000 !important; color:#fff !important;}
+.eyebrow{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
+.tradition-pill{background:#6d0000 !important; color:#fff !important;}
+.tradition-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink);}
+a.acct-pill{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
+a.acct-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .acct-pill-label{color:inherit !important;}
-.buy-code{background:#DA291C !important; color:#fff !important; border-color:#fff !important;}
-.buy-status{background:#DA291C !important; color:#fff !important;}
-.past-status{background:#DA291C !important; color:#fff !important;}
-.cl-tag{background:#DA291C !important; color:#fff !important;}
-.cart-badge{background:#DA291C !important;}
+.buy-code{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
+.buy-status{background:#6d0000 !important; color:#fff !important;}
+.past-status{background:#6d0000 !important; color:#fff !important;}
+.cl-tag{background:#6d0000 !important; color:#fff !important;}
+.cart-badge{background:#6d0000 !important;}
 /* admin pills */
-.pill{background:#DA291C !important; color:#fff !important; border-color:#fff !important;}
+.pill{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 .pill .cnt{color:#fff !important;}
-.pill:hover{color:#fff !important; border-color:#fff !important; filter:brightness(1.12);}
-.pill.active{background:#fff !important; color:#2B1512 !important; border-color:#2B1512 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-.pill.active .cnt{color:#2B1512 !important;}
-.admin-tab{background:#DA291C !important; color:#fff !important; border-color:#fff !important;}
-.admin-tab:hover{color:#fff !important; filter:brightness(1.12);}
-.admin-tab.active{background:#fff !important; color:#2B1512 !important; border-color:#2B1512 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-.oc-status,.bm-status{background:#DA291C !important; color:#fff !important; border-color:#fff !important;}
-.uc-badge,.uc-badge.staff,.uc-badge.owner,.uc-protected{background:#DA291C !important; color:#fff !important;}
-.inv-state.open,.inv-state.used{background:#DA291C !important; color:#fff !important; border-color:#DA291C !important;}
-.prod-lot{color:var(--ink-soft) !important;}
+.pill:hover{color:#fff !important; border-color:#fff !important; filter:brightness(1.25);}
+.pill.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
+.pill.active .cnt{color:#6d0000 !important;}
+.admin-tab{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
+.admin-tab:hover{color:#fff !important; filter:brightness(1.25);}
+.admin-tab.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
+.oc-status,.bm-status{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
+.uc-badge,.uc-badge.staff,.uc-badge.owner,.uc-protected{background:#6d0000 !important; color:#fff !important;}
+.inv-state.open,.inv-state.used{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
