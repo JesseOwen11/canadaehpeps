@@ -1,32 +1,49 @@
-/* CanadaEhPeps — script.js */
+/* CanadaEhPeps — script.js (theme + hamburger + support + account UI + logout + active nav pill) */
+
+/* active nav pill — the page you're on keeps its white pill */
+(function(){
+  var path = window.location.pathname.split('/').pop() || 'index.html';
+  function samePage(href){
+    if(!href || href.charAt(0) === '#') return false;
+    var file = href.split('/').pop().split('?')[0].split('#')[0];
+    if(file === '') file = 'index.html';
+    return file === path;
+  }
+  document.querySelectorAll('.navlinks a, #mobile-menu a').forEach(function(a){
+    if(samePage(a.getAttribute('href'))){ a.classList.add('nav-active'); }
+  });
+})();
+
+/* theme toggle */
 (function(){
   var root = document.documentElement;
   var btn = document.getElementById('theme-toggle');
-  if(btn){
-    var icon = btn.querySelector('.theme-toggle-icon');
-    var meta = document.querySelector('meta[name="theme-color"]');
-    function applyTheme(t){
-      if(t === 'dark'){
-        root.setAttribute('data-theme','dark'); root.style.colorScheme = 'dark';
-        icon.innerHTML = '☼'; btn.setAttribute('aria-pressed','true');
-        if(meta) meta.setAttribute('content','#170F0F');
-      } else {
-        root.setAttribute('data-theme','light'); root.style.colorScheme = 'light';
-        icon.innerHTML = '☽'; btn.setAttribute('aria-pressed','false');
-        if(meta) meta.setAttribute('content','#F5E7D9');
-      }
+  if(!btn) return;
+  var icon = btn.querySelector('.theme-toggle-icon');
+  var meta = document.querySelector('meta[name="theme-color"]');
+  function applyTheme(t){
+    if(t === 'dark'){
+      root.setAttribute('data-theme','dark'); root.style.colorScheme = 'dark';
+      icon.innerHTML = '☼'; btn.setAttribute('aria-pressed','true');
+      if(meta) meta.setAttribute('content','#170F0F');
+    } else {
+      root.setAttribute('data-theme','light'); root.style.colorScheme = 'light';
+      icon.innerHTML = '☽'; btn.setAttribute('aria-pressed','false');
+      if(meta) meta.setAttribute('content','#F5E7D9');
     }
-    btn.addEventListener('click', function(){
-      var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      var next = current === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      try { localStorage.setItem('cep_theme', next); } catch(e){}
-    });
-    var saved = null;
-    try { saved = localStorage.getItem('cep_theme'); } catch(e){}
-    applyTheme(saved === 'light' ? 'light' : 'dark');
   }
+  btn.addEventListener('click', function(){
+    var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem('cep_theme', next); } catch(e){}
+  });
+  var saved = null;
+  try { saved = localStorage.getItem('cep_theme'); } catch(e){}
+  applyTheme(saved === 'light' ? 'light' : 'dark');
 })();
+
+/* hamburger menu */
 (function(){
   var b = document.getElementById('menu-toggle');
   var p = document.getElementById('mobile-menu');
@@ -37,6 +54,8 @@
   p.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', close); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 })();
+
+/* support popup */
 (function(){
   var o = document.getElementById('support-overlay');
   var pop = document.getElementById('support-pop');
@@ -46,7 +65,9 @@
   function close(){ o.setAttribute('data-open','false'); }
   function positionUnder(el){
     var rectEl = el;
-    if(el.closest && el.closest('#mobile-menu')){ rectEl = document.getElementById('menu-toggle') || el; }
+    if(el.closest && el.closest('#mobile-menu')){
+      rectEl = document.getElementById('menu-toggle') || el;
+    }
     var r = rectEl.getBoundingClientRect();
     var w = Math.min(340, window.innerWidth - 24);
     pop.style.width = w + 'px';
@@ -59,7 +80,11 @@
     pop.style.top = top + 'px';
   }
   document.querySelectorAll('[data-support-open]').forEach(function(a){
-    a.addEventListener('click', function(e){ e.preventDefault(); positionUnder(a); o.setAttribute('data-open','true'); });
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      positionUnder(a);
+      o.setAttribute('data-open','true');
+    });
   });
   cb.addEventListener('click', close);
   o.addEventListener('click', function(e){ if(e.target === o) close(); });
@@ -67,9 +92,12 @@
   window.addEventListener('scroll', function(){ if(isOpen()) close(); }, {passive:true});
   window.addEventListener('resize', function(){ if(isOpen()) close(); });
 })();
+
+/* account UI — labeled nav pill + centered sign-in popup + logout (site-wide) */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+
   var css =
   'a.acct-pill{display:inline-flex; align-items:center; gap:7px; width:auto; height:auto; padding:8px 15px; border:2px solid var(--ink); border-radius:999px; background:var(--panel); transition:all .15s;}' +
   'a.acct-pill:hover{background:var(--plum); border-color:var(--plum); color:#fff;}' +
@@ -91,6 +119,7 @@
   var styleEl = document.createElement('style');
   styleEl.textContent = css;
   document.head.appendChild(styleEl);
+
   var acctLink = document.querySelector('a.icon-btn[href="account.html"]');
   if(acctLink){
     acctLink.classList.add('acct-pill');
@@ -100,6 +129,7 @@
     acctLink.appendChild(label);
     acctLink.setAttribute('title', 'Your account');
   }
+
   var overlay = document.createElement('div');
   overlay.className = 'authm-overlay';
   overlay.id = 'authm-overlay';
@@ -119,14 +149,17 @@
       '<p class="authm-note">Free account — saves your shipping details and order history. No email verification needed. Passwords are at least 8 characters.</p>' +
     '</div>';
   document.body.appendChild(overlay);
+
   var db = null;
   function getDb(){
     if(!db && window.supabase){ db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); }
     return db;
   }
+
   var mode = 'signin';
   var msg = document.getElementById('authm-msg');
   var authBtn = document.getElementById('authm-btn');
+
   function setMode(m){
     mode = m;
     document.getElementById('authm-tab-signin').classList.toggle('active', m === 'signin');
@@ -138,11 +171,13 @@
   }
   function openModal(){ overlay.setAttribute('data-open','true'); msg.textContent=''; }
   function closeModal(){ overlay.setAttribute('data-open','false'); }
+
   document.getElementById('authm-tab-signin').addEventListener('click', function(){ setMode('signin'); });
   document.getElementById('authm-tab-create').addEventListener('click', function(){ setMode('create'); });
   document.getElementById('authm-close').addEventListener('click', closeModal);
   overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
   if(acctLink){
     acctLink.addEventListener('click', function(e){
       e.preventDefault();
@@ -154,6 +189,7 @@
       });
     });
   }
+
   authBtn.addEventListener('click', function(){
     var d = getDb();
     if(!d){ msg.textContent = 'Connection problem — refresh and try again.'; return; }
@@ -164,14 +200,23 @@
     if(!email || !pass){ msg.textContent = 'Enter your email and password.'; return; }
     if(pass.length < 8){ msg.textContent = 'Password must be at least 8 characters.'; return; }
     authBtn.disabled = true;
+
     if(mode === 'signin'){
       d.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
-        if(r.error){ msg.textContent = 'Could not sign in — check your email and password.'; authBtn.disabled = false; return; }
+        if(r.error){
+          msg.textContent = 'Could not sign in — check your email and password.';
+          authBtn.disabled = false;
+          return;
+        }
         window.location.href = 'account.html';
       });
     } else {
       d.auth.signUp({ email: email, password: pass }).then(function(r){
-        if(r.error){ msg.textContent = 'Could not create account: ' + r.error.message; authBtn.disabled = false; return; }
+        if(r.error){
+          msg.textContent = 'Could not create account: ' + r.error.message;
+          authBtn.disabled = false;
+          return;
+        }
         if(r.data.session){
           d.from('profiles').insert({ id: r.data.user.id, email: email }).then(function(){
             window.location.href = 'account.html';
@@ -185,7 +230,12 @@
       });
     }
   });
-  document.getElementById('authm-pass').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ authBtn.click(); } });
+
+  document.getElementById('authm-pass').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ authBtn.click(); }
+  });
+
+  /* Log out pill beside Account — only shows when signed in */
   function setupLogout(){
     var d = getDb();
     if(!d || !acctLink) return;
@@ -209,6 +259,7 @@
     });
   }
   setupLogout();
+
   if(!window.supabase){
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
