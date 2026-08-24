@@ -111,6 +111,22 @@
         <button class="btn btn-primary" id="gate-btn">Sign in / Create account</button>
       </div>
 
+      <!-- password recovery (from reset link) -->
+      <div class="acct-card" id="recovery-card" style="display:none; max-width:480px;">
+        <h3>Set a new password</h3>
+        <p style="color:var(--ink-soft); font-weight:500; font-size:0.86rem; margin:-6px 0 16px;">You clicked a password-reset link. Type a new password below to finish.</p>
+        <div class="acct-field">
+          <label class="acct-label" for="rec-pass">New password</label>
+          <input class="field-input" id="rec-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
+        </div>
+        <div class="acct-field">
+          <label class="acct-label" for="rec-pass2">Repeat it</label>
+          <input class="field-input" id="rec-pass2" type="password" autocomplete="new-password" placeholder="Repeat the new password">
+        </div>
+        <button class="btn btn-primary" id="rec-save-btn" style="width:100%;">Save new password</button>
+        <div class="set-msg" id="rec-msg" style="margin-top:10px;"></div>
+      </div>
+
       <!-- continue-to-checkout banner -->
       <div class="next-banner" id="next-banner" style="display:none;">
         <p>Signed in and ready, eh.</p>
@@ -182,7 +198,7 @@
           <div class="set-block">
             <h4>Change email</h4>
             <div class="set-row">
-              <input class="field-input" id="new-email" type="email" maxlength="150" placeholder="New email address">
+              <input class="field-input" id="new-email" type="email" maxlength="150" placeholder="New email address" autocomplete="off">
               <button class="btn btn-ghost btn-sm" id="upd-email-btn">Update email</button>
             </div>
             <div class="set-msg" id="email-msg"></div>
@@ -250,7 +266,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Account dashboard: email, orders, address, settings */
+/* Account dashboard: email, orders, address, settings, password recovery */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
@@ -259,6 +275,7 @@
   var gate = document.getElementById('gate-card');
   var dash = document.getElementById('dash');
   var nextBanner = document.getElementById('next-banner');
+  var recoveryCard = document.getElementById('recovery-card');
   var hasProfile = false;
   var currentUser = null;
 
@@ -275,14 +292,22 @@
     gate.style.display = 'block';
     dash.style.display = 'none';
     nextBanner.style.display = 'none';
+    recoveryCard.style.display = 'none';
   }
   function showDash(){
     gate.style.display = 'none';
     dash.style.display = 'block';
+    recoveryCard.style.display = 'none';
     if(nextUrl){
       nextBanner.style.display = 'flex';
       document.getElementById('next-btn').setAttribute('href', nextUrl);
     }
+  }
+  function showRecovery(){
+    gate.style.display = 'none';
+    dash.style.display = 'none';
+    nextBanner.style.display = 'none';
+    recoveryCard.style.display = 'block';
   }
 
   /* gate button opens the site-wide sign-in popup */
@@ -409,12 +434,54 @@
     }
   });
 
+  /* password recovery — save the new password after clicking the reset link */
+  document.getElementById('rec-save-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('rec-msg');
+    var p1 = document.getElementById('rec-pass').value;
+    var p2 = document.getElementById('rec-pass2').value;
+    msgEl.classList.remove('err');
+    msgEl.textContent = '';
+    if(p1.length < 8){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Password must be at least 8 characters.';
+      return;
+    }
+    if(p1 !== p2){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'The two passwords don\'t match.';
+      return;
+    }
+    var r = await db.auth.updateUser({ password: p1 });
+    if(r.error){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Could not save: ' + r.error.message;
+    } else {
+      msgEl.textContent = 'Password updated ✓ — taking you to the home page.';
+      setTimeout(function(){ window.location.href = 'index.html'; }, 1600);
+    }
+  });
+
+  /* detect arriving via a password-reset link and show the recovery card */
+  var recoveryHandled = false;
+  function enterRecovery(){
+    if(recoveryHandled) return;
+    recoveryHandled = true;
+    showRecovery();
+  }
+  db.auth.onAuthStateChange(function(event){
+    if(event === 'PASSWORD_RECOVERY'){ enterRecovery(); }
+  });
+  if((window.location.hash || '').indexOf('type=recovery') !== -1){
+    enterRecovery();
+  }
+
   db.auth.getSession().then(function(r){
+    if(recoveryHandled) return;
     if(r.data && r.data.session){ load(); } else { showGate(); }
   });
 })();
 </script>
-  <script>
+<script>
 /* Danger zone — customer self-service account deletion */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
@@ -454,27 +521,6 @@
   }
   if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
   else { boot(); }
-})();
-</script>
-<script>
-/* Keep the change-email field truthful — defeat browser autofill */
-(function(){
-  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
-  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
-  function fixEmailField(){
-    var dbx = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    dbx.auth.getSession().then(function(r){
-      if(!r.data || !r.data.session) return;
-      var scope = document.getElementById('dash') || document;
-      var em = scope.querySelector('input[type="email"]');
-      if(em){
-        em.setAttribute('autocomplete', 'off');
-        em.value = r.data.session.user.email;
-      }
-    });
-  }
-  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', fixEmailField); }
-  else { setTimeout(fixEmailField, 800); }
 })();
 </script>
 </body>
