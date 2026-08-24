@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v14: smooth page transitions — no more nav flicker) */
+/* CanadaEhPeps — styles.css (v15: white text on red, red-on-white when selected, no theme-icon flicker) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -24,8 +24,7 @@ body{
 }
 @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
 
-/* SMOOTH PAGE TRANSITIONS — glides between pages instead of a hard redraw,
-   which is what was causing the nav bar to flicker on every click */
+/* SMOOTH PAGE TRANSITIONS — glides between pages instead of a hard redraw */
 @view-transition{ navigation: same-origin; }
 @keyframes cepPageIn{ from{opacity:0;} to{opacity:1;} }
 @supports not (view-transition-name: none){
@@ -468,47 +467,55 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 }
 
 /* ============================================================
-   RED PILLS/BUTTONS = BLACK TEXT  ·  LABELS = BLACK/BRIGHT-RED
+   THEME ICON — drawn by pure CSS from the page's data-theme so it
+   never waits for JavaScript and never flickers on page load
+   ============================================================ */
+#theme-toggle .theme-toggle-icon{font-size:0 !important; line-height:1;}
+#theme-toggle .theme-toggle-icon::before{content:"☼"; font-size:1.05rem;}
+html[data-theme="light"] #theme-toggle .theme-toggle-icon::before{content:"☽";}
+
+/* ============================================================
+   RED PILLS/BUTTONS = WHITE TEXT  ·  WHEN TURNED WHITE = RED TEXT
+   LABELS = BLACK/BRIGHT-RED
    ============================================================ */
 
 /* nav links */
-.navlinks a{background:#6d0000 !important; color:#000 !important;}
-.navlinks a:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+.navlinks a{background:#6d0000 !important; color:#fff !important;}
+.navlinks a:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .navlinks a.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
-#mobile-menu a.nav-active{background:#6d0000 !important; color:#000 !important;}
+#mobile-menu a.nav-active{background:#6d0000 !important; color:#fff !important;}
 
-/* ALL .btn buttons — solid red, black text, hover flips white (text stays black) */
+/* ALL .btn buttons — solid red, white text; hover flips white with red text */
 .btn{border-color:#6d0000 !important;}
-.btn-primary,.btn-ghost{background:#6d0000 !important; color:#000 !important;}
+.btn-primary,.btn-ghost{background:#6d0000 !important; color:#fff !important;}
 .btn-primary:hover,.btn-ghost:hover,.btn-primary:active,.btn-ghost:active{
- background:#fff !important; color:#000 !important; filter:none !important;
+ background:#fff !important; color:#6d0000 !important; filter:none !important;
  box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink) !important;
 }
-/* delete-style buttons */
-.oc-del{background:#6d0000 !important; color:#000 !important; border-color:#6d0000 !important;}
-.oc-del:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset !important;}
-html[data-theme="dark"] .btn-ghost{color:#000 !important; border-color:#6d0000 !important;}
+.oc-del{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
+.oc-del:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset !important;}
+html[data-theme="dark"] .btn-ghost{color:#fff !important; border-color:#6d0000 !important;}
 
-/* admin top bar: User accounts stays white while its view is open */
+/* admin top bar: User accounts stays white (with red text) while its view is open */
 .bar-active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 3px 3px 0 rgba(0,0,0,0.28);}
 
-/* one-click action buttons (account page) — solid red, black text, no flip */
-.acct-red-btn{background:#6d0000 !important; color:#000 !important; border:2px solid #6d0000 !important; border-radius:100px !important; cursor:pointer;}
-.acct-red-btn:hover,.acct-red-btn:active{background:#6d0000 !important; color:#000 !important; box-shadow:none !important; transform:none !important;}
+/* one-click action buttons (account page) — stay solid red with white text */
+.acct-red-btn{background:#6d0000 !important; color:#fff !important; border:2px solid #6d0000 !important; border-radius:100px !important; cursor:pointer;}
+.acct-red-btn:hover,.acct-red-btn:active{background:#6d0000 !important; color:#fff !important; box-shadow:none !important; transform:none !important;}
 
 /* sign-in popup tabs */
 .authm-tab{background:transparent !important; color:#6d0000 !important; border-color:#6d0000 !important;}
-.authm-tab.active{background:#6d0000 !important; color:#000 !important;}
+.authm-tab.active{background:#6d0000 !important; color:#fff !important;}
 html[data-theme="dark"] .authm-tab{color:#FF2B2B !important; border-color:#FF2B2B !important;}
-html[data-theme="dark"] .authm-tab.active{background:#6d0000 !important; color:#000 !important;}
+html[data-theme="dark"] .authm-tab.active{background:#6d0000 !important; color:#fff !important;}
 
 /* icon buttons — cart, dark mode, hamburger, close buttons */
-.icon-btn{background:#6d0000 !important; color:#000 !important;}
-.icon-btn:hover{background:#fff !important; color:#000 !important;}
+.icon-btn{background:#6d0000 !important; color:#fff !important;}
+.icon-btn:hover{background:#fff !important; color:#6d0000 !important;}
 
 /* Log out pill (built by script.js) */
-a.acct-pill{background:#6d0000 !important; color:#000 !important; border-color:#6d0000 !important;}
-a.acct-pill:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+a.acct-pill{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
+a.acct-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .acct-pill-label{color:inherit !important;}
 
 /* ACCOUNT PILL — drawn complete by pure CSS from the first paint */
@@ -517,42 +524,43 @@ a.icon-btn[href="account.html"]{
   width:auto !important; height:auto !important; padding:8px 15px !important;
   border-radius:999px !important;
   background:#6d0000 !important; border:2px solid #6d0000 !important;
-  color:#000 !important;
+  color:#fff !important;
 }
 a.icon-btn[href="account.html"] svg{width:15px !important; height:15px !important;}
 a.icon-btn[href="account.html"]::after{
   content:"Account";
   font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700;
-  text-transform:uppercase; letter-spacing:0.05em; color:#000;
+  text-transform:uppercase; letter-spacing:0.05em; color:#fff;
 }
 a.icon-btn[href="account.html"] .acct-pill-label{display:none !important;}
-a.icon-btn[href="account.html"]:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+a.icon-btn[href="account.html"]:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+a.icon-btn[href="account.html"]:hover::after{color:#6d0000;}
 a.icon-btn[href="account.html"].nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 a.icon-btn[href="account.html"].nav-active::after{color:#6d0000;}
 
 /* misc clickable bits */
-.tradition-pill{background:#6d0000 !important; color:#000 !important;}
-.tradition-pill:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink);}
-.ticket-cta{background:#6d0000 !important; color:#000 !important;}
-.ticket-cta:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
-.faq-q .plus{background:#6d0000 !important; color:#000 !important;}
-.faq-item[open] .plus{background:#6d0000 !important; color:#000 !important;}
-.step-num{background:#6d0000 !important; color:#000 !important;}
+.tradition-pill{background:#6d0000 !important; color:#fff !important;}
+.tradition-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink);}
+.ticket-cta{background:#6d0000 !important; color:#fff !important;}
+.ticket-cta:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+.faq-q .plus{background:#6d0000 !important; color:#fff !important;}
+.faq-item[open] .plus{background:#6d0000 !important; color:#fff !important;}
+.step-num{background:#6d0000 !important; color:#fff !important;}
 .crosslink a,.past-link,.coa-src{color:#6d0000 !important;}
 html[data-theme="dark"] .crosslink a,html[data-theme="dark"] .past-link,html[data-theme="dark"] .coa-src{color:#FF2B2B !important;}
 .prod-remove,.cl-remove{color:#6d0000 !important;}
 html[data-theme="dark"] .prod-remove,html[data-theme="dark"] .cl-remove{color:#FF2B2B !important;}
 
 /* admin pills & tabs */
-.pill{background:#6d0000 !important; color:#000 !important; border-color:#fff !important;}
-.pill .cnt{color:#000 !important;}
-.pill:hover{color:#000 !important; border-color:#fff !important; filter:brightness(1.25);}
+.pill{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
+.pill .cnt{color:#fff !important;}
+.pill:hover{color:#fff !important; border-color:#fff !important; filter:brightness(1.25);}
 .pill.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
 .pill.active .cnt{color:#6d0000 !important;}
-.admin-tab{background:#6d0000 !important; color:#000 !important; border-color:#fff !important;}
-.admin-tab:hover{color:#000 !important; filter:brightness(1.25);}
+.admin-tab{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
+.admin-tab:hover{color:#fff !important; filter:brightness(1.25);}
 .admin-tab.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-.oc-status,.bm-status{background:#6d0000 !important; color:#000 !important; border-color:#fff !important;}
+.oc-status,.bm-status{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 
 /* LABEL-ONLY chips — black fill, bright red border + text */
 .section-tag{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
