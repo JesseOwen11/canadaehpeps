@@ -243,7 +243,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Admin v8 — sort order 1+, single-button notices, auto-bump on conflict */
+/* Admin v9 — bump actually applies when the notice closes */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -279,12 +279,14 @@
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
 
   var cfCb = null;
+  var cfIsNotice = false;
   var cfOverlay = document.getElementById('confirm-overlay');
   var cfOk = document.getElementById('cf-ok');
   function askConfirm(title, message, cb){
     document.getElementById('cf-title').textContent = title;
     document.getElementById('cf-msg').textContent = message;
     cfOk.style.display = '';
+    cfIsNotice = false;
     cfCb = cb;
     cfOverlay.setAttribute('data-open','true');
   }
@@ -292,16 +294,26 @@
     document.getElementById('cf-title').textContent = title;
     document.getElementById('cf-msg').textContent = message;
     cfOk.style.display = 'none';
+    cfIsNotice = true;
     cfCb = cb || null;
     cfOverlay.setAttribute('data-open','true');
   }
   function closeConfirm(){
+    var cb = cfCb;
+    var wasNotice = cfIsNotice;
     cfOverlay.setAttribute('data-open','false');
     cfCb = null;
+    cfIsNotice = false;
     cfOk.style.display = '';
+    if(wasNotice && cb){ cb(); }
   }
   document.getElementById('cf-cancel').addEventListener('click', closeConfirm);
-  cfOk.addEventListener('click', function(){ var cb = cfCb; closeConfirm(); if(cb) cb(); });
+  cfOk.addEventListener('click', function(){
+    var cb = cfCb;
+    cfIsNotice = false;
+    closeConfirm();
+    if(cb) cb();
+  });
   cfOverlay.addEventListener('click', function(e){ if(e.target === cfOverlay) closeConfirm(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeConfirm(); });
 
@@ -588,13 +600,14 @@
     card.setAttribute('data-id', p ? p.id : '');
     var priceVal = (p && p.price_cad !== null && p.price_cad !== undefined) ? esc(p.price_cad) : '';
     var maxVal = (p && p.max_qty) ? esc(p.max_qty) : '';
+    var sortVal = (p && p.sort && p.sort > 0) ? esc(p.sort) : '';
     card.innerHTML =
       '<div class="sp-grid">' +
         '<div class="sp-field"><label>Product name</label><input class="bp-name" type="text" maxlength="100" value="' + esc(p ? p.name : '') + '" placeholder="MOTS-C"></div>' +
         '<div class="sp-field"><label>Size label</label><input class="bp-size" type="text" maxlength="60" value="' + esc(p ? p.size_label : '') + '" placeholder="10mg vial"></div>' +
         '<div class="sp-field"><label>Price CAD (blank = $--)</label><input class="bp-price" type="number" min="0" step="0.01" value="' + priceVal + '" placeholder="blank = price on request"></div>' +
         '<div class="sp-field"><label>Per-customer purchase cap (blank = unlimited)</label><input class="bp-max" type="number" min="1" max="999" value="' + maxVal + '" placeholder="unlimited"></div>' +
-        '<div class="sp-field"><label>Sort order</label><input class="bp-sort" type="number" min="1" max="999" value="' + (p ? esc(p.sort) : '') + '" placeholder="' + (p ? '' : 'auto') + '"></div>' +
+        '<div class="sp-field"><label>Sort order</label><input class="bp-sort" type="number" min="1" max="999" value="' + sortVal + '" placeholder="' + (p ? '' : 'auto') + '"></div>' +
         '<div class="sp-field wide"><label>Description</label><textarea class="bp-desc" maxlength="300" placeholder="Batch-tested. Price confirmed at order review.">' + esc(p ? (p.description || '') : '') + '</textarea></div>' +
       '</div>' +
       '<div class="sp-actions">' +
