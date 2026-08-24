@@ -29,6 +29,7 @@
   @media (min-width:720px){ .prod-card h3{font-size:1.55rem;} }
   .prod-price{font-family:'Space Mono',monospace; font-weight:700; font-size:1rem; color:var(--rust-deep);}
   .prod-price span{color:var(--ink-soft); font-size:0.6rem; font-weight:400; display:block; margin-top:2px;}
+  .prod-limit{font-family:'Space Mono',monospace; font-size:0.56rem; font-weight:700; color:var(--rust-deep); text-transform:uppercase; letter-spacing:0.04em;}
   .prod-sub{font-size:0.72rem; font-weight:500; color:var(--ink-soft); line-height:1.45; flex:1; margin:2px 0 4px;}
   .prod-buy{display:flex; flex-direction:column; gap:8px; width:100%; margin-top:auto;}
   .stepper{display:flex; align-items:center; justify-content:center; border:2px solid var(--ink); border-radius:var(--r-pill); overflow:hidden; background:var(--bg); width:100%;}
@@ -166,7 +167,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Bulk page — products from the database, cart in the browser */
+/* Bulk page — products from the database, per-customer purchase limits */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
@@ -210,15 +211,17 @@
       var priceHtml = (p.price_cad === null || p.price_cad === undefined)
         ? '$--<span>' + esc(p.size_label) + '</span>'
         : '$' + Number(p.price_cad) + '<span>' + esc(p.size_label) + '</span>';
+      var limitHtml = p.max_qty ? '<span class="prod-limit">Limit ' + Number(p.max_qty) + ' per customer</span>' : '';
       var qid = 'q-' + p.id;
       return '<div class="prod-card">' +
         '<span class="prod-lot">BLK // Always open</span>' +
         '<h3>' + esc(p.name) + '</h3>' +
         '<div class="prod-price">' + priceHtml + '</div>' +
+        limitHtml +
         '<p class="prod-sub">' + esc(p.description || '') + '</p>' +
         '<div class="prod-buy">' +
-          '<div class="stepper"><button class="step-btn" data-step="-1" data-target="' + qid + '" type="button">−</button><input class="step-qty" id="' + qid + '" type="number" min="1" max="999" value="1"><button class="step-btn" data-step="1" data-target="' + qid + '" type="button">+</button></div>' +
-          '<button class="btn btn-primary add-btn" data-id="bulk-' + p.id + '" data-name="' + esc(p.name + ' — ' + p.size_label) + '" data-qty="' + qid + '">Add to cart</button>' +
+          '<div class="stepper"><button class="step-btn" data-step="-1" data-target="' + qid + '" type="button">−</button><input class="step-qty" id="' + qid + '" type="number" min="1" max="' + (p.max_qty || 999) + '" value="1"><button class="step-btn" data-step="1" data-target="' + qid + '" type="button">+</button></div>' +
+          '<button class="btn btn-primary add-btn" data-id="bulk-' + p.id + '" data-name="' + esc(p.name + ' — ' + p.size_label) + '" data-qty="' + qid + '" data-max="' + (p.max_qty || '') + '">Add to cart</button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -228,7 +231,10 @@
         var input = document.getElementById(btn.getAttribute('data-target'));
         if(!input) return;
         var delta = parseInt(btn.getAttribute('data-step'), 10);
-        input.value = clampQty((parseInt(input.value, 10) || 1) + delta);
+        var maxAttr = input.getAttribute('max');
+        var max = maxAttr ? parseInt(maxAttr, 10) : 999;
+        var next = clampQty((parseInt(input.value, 10) || 1) + delta);
+        input.value = Math.min(next, max || 999);
       });
     });
     grid.querySelectorAll('.step-qty').forEach(function(input){
@@ -238,15 +244,27 @@
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-id');
         var name = btn.getAttribute('data-name');
+        var maxAttr = btn.getAttribute('data-max');
+        var max = maxAttr ? parseInt(maxAttr, 10) : 0;
         var qty = clampQty(document.getElementById(btn.getAttribute('data-qty')).value);
+        if(max && qty > max){ qty = max; }
         var cart = getCart();
+        var inCart = 0;
+        cart.forEach(function(it){ if(it.id === id){ inCart = it.qty || 0; } });
+        if(max && inCart + qty > max){
+          var allowed = Math.max(0, max - inCart);
+          if(allowed === 0){ toast('Limit: ' + max + ' per customer — you have them all, eh'); return; }
+          qty = allowed;
+          toast('Limit ' + max + ' per customer — added ' + allowed);
+        } else {
+          toast(name + ' added to cart ✓');
+        }
         var found = false;
         cart.forEach(function(it){
           if(it.id === id){ it.qty = clampQty(it.qty + qty); found = true; }
         });
-        if(!found){ cart.push({ id: id, name: name, qty: qty }); }
+        if(!found){ cart.push({ id: id, name: name, qty: qty, max: max || null }); }
         saveCart(cart);
-        toast(name + ' added to cart ✓');
       });
     });
   }
@@ -264,3 +282,61 @@
 </script>
 </body>
 </html>
+<script>
+/* Purchase-limit control — appears on every saved product in Bulk products */
+(function(){
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  function dbx(){ return window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null; }
+
+  function inject(){
+    var list = document.getElementById('products-list');
+    if(!list) return;
+    list.querySelectorAll('.sp-card').forEach(function(card){
+      if(card.querySelector('.max-wrap')) return;
+      var id = card.getAttribute('data-id');
+      if(!id) return;
+      var grid = card.querySelector('.sp-grid');
+      if(!grid) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'sp-field max-wrap';
+      wrap.innerHTML = '<label>Per-customer purchase cap (blank = unlimited)</label><input class="max-input" type="number" min="1" max="999" placeholder="unlimited">';
+      grid.appendChild(wrap);
+      var input = wrap.querySelector('.max-input');
+      var actions = card.querySelector('.sp-actions');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-ghost btn-sm';
+      btn.textContent = 'Save limit';
+      btn.style.cssText = 'padding:9px 18px; font-size:0.8rem; width:auto; min-height:auto;';
+      if(actions){ actions.insertBefore(btn, actions.lastElementChild); }
+      var d = dbx();
+      if(d){
+        d.from('bulk_products').select('max_qty').eq('id', id).maybeSingle().then(function(r){
+          if(r.data && r.data.max_qty){ input.value = r.data.max_qty; }
+        });
+      }
+      btn.addEventListener('click', function(){
+        var d2 = dbx();
+        if(!d2) return;
+        var raw = input.value.trim();
+        var val = raw === '' ? null : parseInt(raw, 10);
+        if(val !== null && (isNaN(val) || val < 1 || val > 999)){ alert('Enter a number between 1 and 999, or leave blank for unlimited.'); return; }
+        btn.disabled = true; btn.textContent = 'Saving…';
+        d2.from('bulk_products').update({ max_qty: val }).eq('id', id).then(function(r2){
+          btn.disabled = false;
+          if(r2.error){ btn.textContent = 'Save limit'; alert('Could not save: ' + r2.error.message); return; }
+          btn.textContent = 'Saved ✓';
+          setTimeout(function(){ btn.textContent = 'Save limit'; }, 1500);
+        });
+      });
+    });
+  }
+
+  var target = document.getElementById('products-list');
+  if(target){
+    new MutationObserver(function(){ inject(); }).observe(target, { childList: true, subtree: true });
+    inject();
+  }
+})();
+</script>
