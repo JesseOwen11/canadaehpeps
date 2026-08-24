@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v12: account pill no longer hidden/reloaded) */
+/* CanadaEhPeps — styles.css (v13: account pill drawn complete by CSS — zero flicker) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -497,11 +497,31 @@ html[data-theme="dark"] .authm-tab.active{background:#6d0000 !important; color:#
 .icon-btn{background:#6d0000 !important; color:#000 !important;}
 .icon-btn:hover{background:#fff !important; color:#000 !important;}
 
-/* account pill states */
+/* Log out pill (built by script.js) */
 a.acct-pill{background:#6d0000 !important; color:#000 !important; border-color:#6d0000 !important;}
 a.acct-pill:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
-a.acct-pill.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .acct-pill-label{color:inherit !important;}
+
+/* ACCOUNT PILL — drawn complete by pure CSS from the first paint, so it never
+   waits for JavaScript and never flickers/reloads on page changes */
+a.icon-btn[href="account.html"]{
+  display:inline-flex !important; align-items:center; gap:7px;
+  width:auto !important; height:auto !important; padding:8px 15px !important;
+  border-radius:999px !important;
+  background:#6d0000 !important; border:2px solid #6d0000 !important;
+  color:#000 !important;
+}
+a.icon-btn[href="account.html"] svg{width:15px !important; height:15px !important;}
+a.icon-btn[href="account.html"]::after{
+  content:"Account";
+  font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.05em; color:#000;
+}
+/* hide any JavaScript-added duplicate label so the CSS label is the only one */
+a.icon-btn[href="account.html"] .acct-pill-label{display:none !important;}
+a.icon-btn[href="account.html"]:hover{background:#fff !important; color:#000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+a.icon-btn[href="account.html"].nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
+a.icon-btn[href="account.html"].nav-active::after{color:#6d0000;}
 
 /* misc clickable bits */
 .tradition-pill{background:#6d0000 !important; color:#000 !important;}
