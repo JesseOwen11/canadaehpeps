@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v6: solid = clickable, outlined = label) */
+/* CanadaEhPeps — styles.css (v7: black label chips with bright red text) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -459,7 +459,7 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 }
 
 /* ============================================================
-   PILLS & CHIPS — solid #6d0000 = clickable · outlined = label
+   PILLS & CHIPS — solid #6d0000 = clickable · black labels = info only
    ============================================================ */
 
 /* CLICKABLE pills — solid #6d0000, white when selected */
@@ -482,14 +482,14 @@ a.acct-pill:hover{background:#fff !important; color:#6d0000 !important; box-shad
 .admin-tab.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
 .oc-status,.bm-status{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 
-/* NON-CLICKABLE chips/tags/badges — outlined: white fill, #6d0000 border + text */
-.section-tag{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.eyebrow{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.buy-code{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.buy-status{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.past-status{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.cl-tag{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.cart-badge{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.ticket-price .fill{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.uc-badge,.uc-badge.staff,.uc-badge.owner,.uc-protected{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
-.inv-state.open,.inv-state.used{background:#fff !important; color:#6d0000 !important; border:2px solid #6d0000 !important;}
+/* LABEL-ONLY chips — black fill, bright red border + text */
+.section-tag{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.eyebrow{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.buy-code{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.buy-status{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.past-status{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.cl-tag{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.cart-badge{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.ticket-price .fill{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.uc-badge,.uc-badge.staff,.uc-badge.owner,.uc-protected{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
+.inv-state.open,.inv-state.used{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
