@@ -243,7 +243,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Admin v7 — sort-order duplicate guard + steady product cards */
+/* Admin v8 — sort order 1+, single-button notices, auto-bump on conflict */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -280,15 +280,28 @@
 
   var cfCb = null;
   var cfOverlay = document.getElementById('confirm-overlay');
+  var cfOk = document.getElementById('cf-ok');
   function askConfirm(title, message, cb){
     document.getElementById('cf-title').textContent = title;
     document.getElementById('cf-msg').textContent = message;
+    cfOk.style.display = '';
     cfCb = cb;
     cfOverlay.setAttribute('data-open','true');
   }
-  function closeConfirm(){ cfOverlay.setAttribute('data-open','false'); cfCb = null; }
+  function askNotice(title, message, cb){
+    document.getElementById('cf-title').textContent = title;
+    document.getElementById('cf-msg').textContent = message;
+    cfOk.style.display = 'none';
+    cfCb = cb || null;
+    cfOverlay.setAttribute('data-open','true');
+  }
+  function closeConfirm(){
+    cfOverlay.setAttribute('data-open','false');
+    cfCb = null;
+    cfOk.style.display = '';
+  }
   document.getElementById('cf-cancel').addEventListener('click', closeConfirm);
-  document.getElementById('cf-ok').addEventListener('click', function(){ var cb = cfCb; closeConfirm(); if(cb) cb(); });
+  cfOk.addEventListener('click', function(){ var cb = cfCb; closeConfirm(); if(cb) cb(); });
   cfOverlay.addEventListener('click', function(e){ if(e.target === cfOverlay) closeConfirm(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeConfirm(); });
 
@@ -434,7 +447,7 @@
     buyProdList.appendChild(div);
     div.querySelector('.prod-remove').addEventListener('click', function(){
       if(buyProdList.querySelectorAll('.prod-card').length > 1){ div.remove(); renumberBuyProds(); }
-      else { askConfirm('Keep one', 'A buy needs at least one product, eh.', function(){}); }
+      else { askNotice('Keep one', 'A buy needs at least one product, eh.', function(){}); }
     });
     renumberBuyProds();
   }
@@ -569,7 +582,6 @@
     });
   }
 
-  /* ---- bulk products: steady cards, no duplicate sort numbers ---- */
   function buildProductCard(p){
     var card = document.createElement('div');
     card.className = 'sp-card';
@@ -582,7 +594,7 @@
         '<div class="sp-field"><label>Size label</label><input class="bp-size" type="text" maxlength="60" value="' + esc(p ? p.size_label : '') + '" placeholder="10mg vial"></div>' +
         '<div class="sp-field"><label>Price CAD (blank = $--)</label><input class="bp-price" type="number" min="0" step="0.01" value="' + priceVal + '" placeholder="blank = price on request"></div>' +
         '<div class="sp-field"><label>Per-customer purchase cap (blank = unlimited)</label><input class="bp-max" type="number" min="1" max="999" value="' + maxVal + '" placeholder="unlimited"></div>' +
-        '<div class="sp-field"><label>Sort order</label><input class="bp-sort" type="number" min="0" max="999" value="' + (p ? esc(p.sort) : '') + '" placeholder="' + (p ? '' : 'auto') + '"></div>' +
+        '<div class="sp-field"><label>Sort order</label><input class="bp-sort" type="number" min="1" max="999" value="' + (p ? esc(p.sort) : '') + '" placeholder="' + (p ? '' : 'auto') + '"></div>' +
         '<div class="sp-field wide"><label>Description</label><textarea class="bp-desc" maxlength="300" placeholder="Batch-tested. Price confirmed at order review.">' + esc(p ? (p.description || '') : '') + '</textarea></div>' +
       '</div>' +
       '<div class="sp-actions">' +
@@ -599,13 +611,13 @@
       var maxRaw = card.querySelector('.bp-max').value.trim();
       var sortRaw = card.querySelector('.bp-sort').value.trim();
       var desc = card.querySelector('.bp-desc').value.trim() || null;
-      if(!name){ askConfirm('Missing name', 'Give the product a name first, eh.', function(){}); return; }
+      if(!name){ askNotice('Missing name', 'Give the product a name first, eh.', function(){}); return; }
       var price = priceRaw === '' ? null : parseFloat(priceRaw);
-      if(price !== null && (isNaN(price) || price < 0)){ askConfirm('Bad price', 'Price must be a valid number, or left blank.', function(){}); return; }
+      if(price !== null && (isNaN(price) || price < 0)){ askNotice('Bad price', 'Price must be a valid number, or left blank.', function(){}); return; }
       var maxQty = maxRaw === '' ? null : parseInt(maxRaw, 10);
-      if(maxQty !== null && (isNaN(maxQty) || maxQty < 1 || maxQty > 999)){ askConfirm('Bad cap', 'Purchase cap must be 1–999, or left blank for unlimited.', function(){}); return; }
+      if(maxQty !== null && (isNaN(maxQty) || maxQty < 1 || maxQty > 999)){ askNotice('Bad cap', 'Purchase cap must be 1–999, or left blank for unlimited.', function(){}); return; }
       var sort = sortRaw === '' ? null : parseInt(sortRaw, 10);
-      if(sort !== null && (isNaN(sort) || sort < 0)){ sort = null; }
+      if(sort !== null && (isNaN(sort) || sort < 1 || sort > 999)){ askNotice('Bad sort', 'Sort order must be between 1 and 999, or left blank for auto.', function(){}); return; }
       var id = card.getAttribute('data-id');
       btn.disabled = true; btn.textContent = 'Saving…';
       function doSave(payload){
@@ -628,20 +640,26 @@
       } else if(sort !== null){
         db.from('bulk_products').select('id, sort, name').then(function(r){
           var clash = null;
+          var taken = {};
           (r.data || []).forEach(function(x){
-            if(x.id !== id && x.sort === sort){ clash = x; }
+            if(x.id !== id){
+              taken[x.sort] = true;
+              if(x.sort === sort){ clash = x; }
+            }
           });
           if(clash){
             btn.disabled = false; btn.textContent = id ? 'Save changes' : 'Add product';
-            askConfirm('Sort number taken', 'Sort ' + sort + ' is already used by "' + clash.name + '". Pick a different number, eh.', function(){});
+            var bump = sort + 1;
+            while(taken[bump] && bump <= 999){ bump++; }
+            askNotice('Sort number taken', 'Sort ' + sort + ' is already used by "' + clash.name + '". The sort box has been bumped to the next free number for you.', function(){
+              if(bump <= 999){ card.querySelector('.bp-sort').value = bump; }
+            });
             return;
           }
-          var payload = { name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true, sort: sort };
-          doSave(payload);
+          doSave({ name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true, sort: sort });
         });
       } else {
-        var payload2 = { name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true };
-        doSave(payload2);
+        doSave({ name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true });
       }
     });
     if(p){
@@ -766,12 +784,12 @@
       list.querySelectorAll('[data-reset]').forEach(function(btn){
         btn.addEventListener('click', function(){
           var email = btn.getAttribute('data-reset');
-          if(!email){ askConfirm('No email', 'This account has no email on file.', function(){}); return; }
+          if(!email){ askNotice('No email', 'This account has no email on file.', function(){}); return; }
           btn.disabled = true; btn.textContent = 'Sending…';
           db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/account.html' }).then(function(r){
             btn.disabled = false; btn.textContent = 'Send password reset';
-            if(r.error){ askConfirm('Could not send reset', r.error.message, function(){}); return; }
-            askConfirm('Reset sent', 'Password reset email sent to ' + email + '.', function(){});
+            if(r.error){ askNotice('Could not send reset', r.error.message, function(){}); return; }
+            askNotice('Reset sent', 'Password reset email sent to ' + email + '.', function(){});
           });
         });
       });
