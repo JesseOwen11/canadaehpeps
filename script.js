@@ -1,6 +1,6 @@
-/* CanadaEhPeps — script.js (theme + hamburger + support + account UI + logout + active nav pill) */
+/* CanadaEhPeps — script.js */
 
-/* active nav pill — the page you're on keeps its white pill */
+/* active nav pill — the page you're on keeps its white pill (incl. Account) */
 (function(){
   var path = window.location.pathname.split('/').pop() || 'index.html';
   function samePage(href){
@@ -9,7 +9,7 @@
     if(file === '') file = 'index.html';
     return file === path;
   }
-  document.querySelectorAll('.navlinks a, #mobile-menu a').forEach(function(a){
+  document.querySelectorAll('.navlinks a, #mobile-menu a, a.icon-btn[href="account.html"]').forEach(function(a){
     if(samePage(a.getAttribute('href'))){ a.classList.add('nav-active'); }
   });
 })();
