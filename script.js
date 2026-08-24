@@ -44,14 +44,12 @@
   var path = window.location.pathname.split('/').pop() || 'index.html';
   if(path !== 'bulk-orders.html' && path !== 'group-buys.html') return;
 
-  /* if a View cart link already exists (bulk page), tag it so the readable styles apply */
   var existing = null;
   document.querySelectorAll('a').forEach(function(a){
     if((a.textContent || '').trim().toLowerCase().indexOf('view cart') !== -1){ existing = a; }
   });
   if(existing){ existing.classList.add('view-cart-btn'); return; }
 
-  /* otherwise (Group Buys), add one near the bottom of the page */
   var footer = document.querySelector('footer');
   if(!footer) return;
   var wrap = document.createElement('div');
@@ -67,6 +65,35 @@
   cta.appendChild(link);
   wrap.appendChild(cta);
   footer.parentNode.insertBefore(wrap, footer);
+})();
+
+/* REMOVE SHIPPING ESTIMATOR and all shipping-estimate wording */
+(function(){
+  var path = window.location.pathname.split('/').pop() || 'index.html';
+
+  if(path === 'cart.html'){
+    document.querySelectorAll('h3').forEach(function(h){
+      if((h.textContent || '').trim().toLowerCase() === 'shipping estimate'){
+        var box = h.parentElement;
+        if(box){ box.style.display = 'none'; }
+      }
+    });
+    document.querySelectorAll('.section-head p').forEach(function(p){
+      if((p.textContent || '').toLowerCase().indexOf('estimate shipping') !== -1){
+        p.textContent = 'Bulk products and group-buy kits together, eh. Review and place the order — nothing is owed until we confirm.';
+      }
+    });
+  }
+
+  if(path === 'bulk-orders.html'){
+    document.querySelectorAll('h4').forEach(function(h4){
+      if((h4.textContent || '').trim().toLowerCase() === 'shipping'){
+        var term = h4.parentElement;
+        var p = term ? term.querySelector('p') : null;
+        if(p){ p.textContent = 'Canada Post from Ontario, discreet packaging.'; }
+      }
+    });
+  }
 })();
 
 /* theme toggle */
@@ -148,7 +175,7 @@
   window.addEventListener('resize', function(){ if(isOpen()) close(); });
 })();
 
-/* account UI — Account + Log out pills render INSTANTLY (no pop-in) */
+/* account UI — sign-in bubble stays locked until ✕ is clicked or sign-in succeeds */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
@@ -243,9 +270,8 @@
 
   document.getElementById('authm-tab-signin').addEventListener('click', function(){ setMode('signin'); });
   document.getElementById('authm-tab-create').addEventListener('click', function(){ setMode('create'); });
+  /* the ✕ is the ONLY way to dismiss the bubble (besides signing in) */
   document.getElementById('authm-close').addEventListener('click', closeModal);
-  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
 
   if(acctLink){
     acctLink.addEventListener('click', function(e){
@@ -277,7 +303,8 @@
           authBtn.disabled = false;
           return;
         }
-        window.location.href = 'account.html';
+        /* signed in — go straight to the main page */
+        window.location.href = 'index.html';
       });
     } else {
       d.auth.signUp({ email: email, password: pass }).then(function(r){
@@ -288,7 +315,7 @@
         }
         if(r.data.session){
           d.from('profiles').insert({ id: r.data.user.id, email: email }).then(function(){
-            window.location.href = 'account.html';
+            window.location.href = 'index.html';
           });
         } else {
           msg.classList.add('ok');
