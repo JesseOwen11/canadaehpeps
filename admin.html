@@ -36,12 +36,15 @@
   .dash-wrap{max-width:1100px; margin:0 auto; padding:22px 18px 60px;}
   .admin-tabs{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;}
   .admin-tab{font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; padding:12px 24px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--panel); color:var(--ink-soft); transition:all .15s;}
-  .admin-tab.active{background:var(--plum); color:#fff; border-color:var(--plum);}
+  .admin-tab.active{background:#E9A13B; border-color:var(--ink); color:#2B1512; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
+  .admin-tab:focus:not(:focus-visible){outline:none;}
   .pills{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
   .pill{font-family:'Space Mono',monospace; font-size:0.66rem; font-weight:700; cursor:pointer; padding:9px 13px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--panel); color:var(--ink-soft); transition:all .15s;}
   .pill .cnt{margin-left:6px; color:var(--rust-deep);}
-  .pill.active{background:var(--rust-deep); color:#fff; border-color:var(--rust-deep);}
-  .pill.active .cnt{color:#fff;}
+  .pill:hover{color:var(--ink); border-color:var(--rust-deep);}
+  .pill.active{background:#E9A13B; border-color:var(--ink); color:#2B1512; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
+  .pill.active .cnt{color:#2B1512;}
+  .pill:focus:not(:focus-visible){outline:none;}
   .order-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:18px 20px; margin-bottom:14px;}
   .oc-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
   .oc-ref{font-family:'Space Mono',monospace; font-weight:700; font-size:1rem;}
@@ -123,22 +126,6 @@
   .cf-actions{display:flex; gap:10px; justify-content:flex-end;}
   .cf-actions .btn{width:auto; min-height:auto; padding:10px 20px; font-size:0.84rem;}
   #cf-ok{background:var(--rust-deep); color:#fff; border-color:var(--rust-deep);}
-    /* ---- pill clarity: only the pill in use is highlighted ---- */
-  .pill{background:var(--panel); border:2px solid var(--ink); color:var(--ink-soft); box-shadow:none;}
-  .pill .cnt{color:var(--rust-deep);}
-  .pill:hover{color:var(--ink); border-color:var(--rust-deep);}
-  .pill.active{background:var(--rust-deep); border-color:var(--rust-deep); color:#fff; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-  .pill.active .cnt{color:#fff;}
-  .pill:focus:not(:focus-visible){outline:none;}
-  .admin-tab{background:var(--panel); border:2px solid var(--ink); color:var(--ink-soft); box-shadow:none;}
-  .admin-tab:hover{color:var(--ink); border-color:var(--rust-deep);}
-  .admin-tab.active{background:var(--plum); border-color:var(--plum); color:#fff; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-  .admin-tab:focus:not(:focus-visible){outline:none;}
-    /* ---- unified active pill colour: maple amber, always outlined ---- */
-  .pill.active{background:#E9A13B; border-color:var(--ink); color:#2B1512; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-  .pill.active .cnt{color:#2B1512;}
-  .admin-tab.active{background:#E9A13B; border-color:var(--ink); color:#2B1512; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
-  .admin-tab:focus:not(:focus-visible), .pill:focus:not(:focus-visible){outline:none;}
 </style>
 </head>
 <body>
@@ -226,7 +213,7 @@
   </div>
 
   <div id="products-tab" style="display:none;">
-    <p class="bp-hint">These products appear on the public <b>Bulk Orders</b> page. Leave price blank to show <b>$--</b>. Changes go live the moment you save.</p>
+    <p class="bp-hint">These products appear on the public <b>Bulk Orders</b> page. Leave price blank to show <b>$--</b>. Set a purchase cap to limit how many each customer can buy. Changes go live the moment you save.</p>
     <button class="btn btn-primary btn-sm" id="add-product-btn" style="margin-bottom:16px;">+ Add product</button>
     <div id="products-list"><div class="empty-note">Loading…</div></div>
   </div>
@@ -256,7 +243,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Admin v5 — PIN sign-in, invite-only staff, protected owner */
+/* Admin v6 — full file with per-customer purchase caps */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -291,7 +278,6 @@
   function showDash(){ adminBar.style.display='flex'; loginView.style.display='none'; dashView.style.display='block'; }
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
 
-  /* ---- confirm popup ---- */
   var cfCb = null;
   var cfOverlay = document.getElementById('confirm-overlay');
   function askConfirm(title, message, cb){
@@ -306,7 +292,6 @@
   cfOverlay.addEventListener('click', function(e){ if(e.target === cfOverlay) closeConfirm(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeConfirm(); });
 
-  /* ---- tabs ---- */
   function switchTab(name){
     ['orders','buys','products','users'].forEach(function(t){
       document.getElementById(t + '-tab').style.display = (t === name) ? 'block' : 'none';
@@ -320,7 +305,6 @@
   document.getElementById('tab-products-btn').addEventListener('click', function(){ switchTab('products'); });
   document.getElementById('users-bar-btn').addEventListener('click', function(){ switchTab('users'); window.scrollTo({top:0, behavior:'smooth'}); });
 
-  /* ---- invite redemption (new staff with a one-time code) ---- */
   document.getElementById('redeem-btn').addEventListener('click', function(){
     var code = document.getElementById('inv-code').value.trim().toUpperCase();
     var pin = document.getElementById('inv-pin').value.trim();
@@ -342,7 +326,6 @@
     });
   });
 
-  /* ---- orders pills ---- */
   function updateCounts(){
     var counts = {'all':allOrders.length,'pending':0,'awaiting payment':0,'paid':0,'packing':0,'shipped':0,'delivered':0,'cancelled':0,'problem':0};
     allOrders.forEach(function(o){ if(counts.hasOwnProperty(o.status)) counts[o.status]++; });
@@ -428,7 +411,6 @@
     });
   }
 
-  /* ---- group buys ---- */
   var buyProdList = document.getElementById('buy-product-list');
   function renumberBuyProds(){
     buyProdList.querySelectorAll('.prod-card').forEach(function(c, i){
@@ -587,17 +569,18 @@
     });
   }
 
-  /* ---- bulk products ---- */
   function buildProductCard(p){
     var card = document.createElement('div');
     card.className = 'sp-card';
     card.setAttribute('data-id', p ? p.id : '');
     var priceVal = (p && p.price_cad !== null && p.price_cad !== undefined) ? esc(p.price_cad) : '';
+    var maxVal = (p && p.max_qty) ? esc(p.max_qty) : '';
     card.innerHTML =
       '<div class="sp-grid">' +
         '<div class="sp-field"><label>Product name</label><input class="bp-name" type="text" maxlength="100" value="' + esc(p ? p.name : '') + '" placeholder="MOTS-C"></div>' +
         '<div class="sp-field"><label>Size label</label><input class="bp-size" type="text" maxlength="60" value="' + esc(p ? p.size_label : '') + '" placeholder="10mg vial"></div>' +
         '<div class="sp-field"><label>Price CAD (blank = $--)</label><input class="bp-price" type="number" min="0" step="0.01" value="' + priceVal + '" placeholder="blank = price on request"></div>' +
+        '<div class="sp-field"><label>Per-customer purchase cap (blank = unlimited)</label><input class="bp-max" type="number" min="1" max="999" value="' + maxVal + '" placeholder="unlimited"></div>' +
         '<div class="sp-field"><label>Sort order</label><input class="bp-sort" type="number" min="0" max="999" value="' + (p ? esc(p.sort) : '') + '" placeholder="' + (p ? '' : 'auto') + '"></div>' +
         '<div class="sp-field wide"><label>Description</label><textarea class="bp-desc" maxlength="300" placeholder="Batch-tested. Price confirmed at order review.">' + esc(p ? (p.description || '') : '') + '</textarea></div>' +
       '</div>' +
@@ -612,11 +595,14 @@
       var name = card.querySelector('.bp-name').value.trim();
       var size = card.querySelector('.bp-size').value.trim() || '10mg vial';
       var priceRaw = card.querySelector('.bp-price').value.trim();
+      var maxRaw = card.querySelector('.bp-max').value.trim();
       var sortRaw = card.querySelector('.bp-sort').value.trim();
       var desc = card.querySelector('.bp-desc').value.trim() || null;
       if(!name){ askConfirm('Missing name', 'Give the product a name first, eh.', function(){}); return; }
       var price = priceRaw === '' ? null : parseFloat(priceRaw);
       if(price !== null && (isNaN(price) || price < 0)){ askConfirm('Bad price', 'Price must be a valid number, or left blank.', function(){}); return; }
+      var maxQty = maxRaw === '' ? null : parseInt(maxRaw, 10);
+      if(maxQty !== null && (isNaN(maxQty) || maxQty < 1 || maxQty > 999)){ askConfirm('Bad cap', 'Purchase cap must be 1–999, or left blank for unlimited.', function(){}); return; }
       var sort = sortRaw === '' ? null : parseInt(sortRaw, 10);
       if(sort !== null && (isNaN(sort) || sort < 0)){ sort = null; }
       var id = card.getAttribute('data-id');
@@ -636,10 +622,10 @@
         db.from('bulk_products').select('sort').order('sort', { ascending: false }).limit(1).then(function(r){
           var next = 1;
           if(r.data && r.data.length && r.data[0].sort !== null){ next = Number(r.data[0].sort) + 1; }
-          doSave({ name: name, size_label: size, price_cad: price, description: desc, sort: next, active: true });
+          doSave({ name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, sort: next, active: true });
         });
       } else {
-        var payload = { name: name, size_label: size, price_cad: price, description: desc, active: true };
+        var payload = { name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true };
         if(sort !== null){ payload.sort = sort; }
         doSave(payload);
       }
@@ -681,7 +667,6 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  /* ---- owner invite codes ---- */
   function makeInviteCode(){
     var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     var out = '';
@@ -733,7 +718,6 @@
     });
   });
 
-  /* ---- user accounts ---- */
   function loadUsers(){
     var list = document.getElementById('users-list');
     list.innerHTML = '<div class="empty-note">Loading…</div>';
@@ -791,7 +775,6 @@
     });
   }
 
-  /* ---- auth ---- */
   function loadEverything(){ loadOrders(); loadBuys(); loadProducts(); loadUsers(); if(buyProdList && !buyProdList.children.length){ addBuyProd(); } }
 
   function enterDash(profileRow){
