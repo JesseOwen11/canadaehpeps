@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v15: white text on red, red-on-white when selected, no theme-icon flicker) */
+/* CanadaEhPeps — styles.css (v16: always-readable View cart buttons) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -473,6 +473,19 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
 #theme-toggle .theme-toggle-icon{font-size:0 !important; line-height:1;}
 #theme-toggle .theme-toggle-icon::before{content:"☼"; font-size:1.05rem;}
 html[data-theme="light"] #theme-toggle .theme-toggle-icon::before{content:"☽";}
+
+/* ============================================================
+   VIEW CART BUTTONS — always readable:
+   red background + white text normally; white background + red text on hover
+   ============================================================ */
+.view-cart-btn, .cart-cta a, .cart-cta .btn{
+  background:#6d0000 !important; color:#fff !important; border:2px solid #6d0000 !important;
+}
+.view-cart-btn:hover, .cart-cta a:hover, .cart-cta .btn:hover,
+.view-cart-btn:active, .cart-cta a:active, .cart-cta .btn:active{
+  background:#fff !important; color:#6d0000 !important; filter:none !important;
+  box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink) !important;
+}
 
 /* ============================================================
    RED PILLS/BUTTONS = WHITE TEXT  ·  WHEN TURNED WHITE = RED TEXT
