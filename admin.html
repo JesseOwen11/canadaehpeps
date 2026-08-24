@@ -243,7 +243,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Admin v6 — full file with per-customer purchase caps */
+/* Admin v7 — sort-order duplicate guard + steady product cards */
 (function(){
   var STAFF_KEY = 'maple2026';
   var urlKey = new URLSearchParams(window.location.search).get('key');
@@ -569,6 +569,7 @@
     });
   }
 
+  /* ---- bulk products: steady cards, no duplicate sort numbers ---- */
   function buildProductCard(p){
     var card = document.createElement('div');
     card.className = 'sp-card';
@@ -615,7 +616,7 @@
           if(r.error){ askConfirm('Could not save', r.error.message, function(){}); return; }
           var fl = card.querySelector('.bp-flash');
           if(fl){ fl.classList.add('show'); setTimeout(function(){ fl.classList.remove('show'); }, 1600); }
-          loadProducts();
+          loadProducts(true);
         });
       }
       if(sort === null && !id){
@@ -624,10 +625,23 @@
           if(r.data && r.data.length && r.data[0].sort !== null){ next = Number(r.data[0].sort) + 1; }
           doSave({ name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, sort: next, active: true });
         });
+      } else if(sort !== null){
+        db.from('bulk_products').select('id, sort, name').then(function(r){
+          var clash = null;
+          (r.data || []).forEach(function(x){
+            if(x.id !== id && x.sort === sort){ clash = x; }
+          });
+          if(clash){
+            btn.disabled = false; btn.textContent = id ? 'Save changes' : 'Add product';
+            askConfirm('Sort number taken', 'Sort ' + sort + ' is already used by "' + clash.name + '". Pick a different number, eh.', function(){});
+            return;
+          }
+          var payload = { name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true, sort: sort };
+          doSave(payload);
+        });
       } else {
-        var payload = { name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true };
-        if(sort !== null){ payload.sort = sort; }
-        doSave(payload);
+        var payload2 = { name: name, size_label: size, price_cad: price, max_qty: maxQty, description: desc, active: true };
+        doSave(payload2);
       }
     });
     if(p){
@@ -636,7 +650,7 @@
         askConfirm('Remove product', 'Remove "' + p.name + '" from the store? Customers will no longer see it.', function(){
           db.from('bulk_products').delete().eq('id', id).then(function(r){
             if(r.error){ askConfirm('Could not remove', r.error.message, function(){}); return; }
-            loadProducts();
+            loadProducts(true);
           });
         });
       });
@@ -645,18 +659,20 @@
     }
     return card;
   }
-  function loadProducts(){
+  function loadProducts(silent){
     var box = document.getElementById('products-list');
-    box.innerHTML = '<div class="empty-note">Loading…</div>';
+    if(!silent){ box.innerHTML = '<div class="empty-note">Loading…</div>'; }
     db.from('bulk_products').select('*').order('sort', { ascending: true }).limit(200).then(function(r){
       if(r.error){ box.innerHTML = '<div class="empty-note">Could not load products: ' + esc(r.error.message) + '</div>'; return; }
       var items = r.data || [];
+      var scrollY = window.pageYOffset;
       box.innerHTML = '';
       if(!items.length){
         box.innerHTML = '<div class="empty-note">No products yet, eh. Click "+ Add product" above.</div>';
         return;
       }
       items.forEach(function(p){ box.appendChild(buildProductCard(p)); });
+      if(silent){ window.scrollTo(0, scrollY); }
     });
   }
   document.getElementById('add-product-btn').addEventListener('click', function(){
