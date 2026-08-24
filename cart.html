@@ -27,12 +27,7 @@
   .cl-qty{width:40px; text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:0.82rem;}
   .cl-remove{border:none; background:none; color:var(--rust-deep); font-family:'Space Mono',monospace; font-size:0.62rem; font-weight:700; cursor:pointer; text-decoration:underline;}
   .cart-empty{color:var(--ink-soft); font-weight:500; padding:14px 0;}
-  .est-box{background:var(--panel); border:2px dashed var(--ink); border-radius:var(--r-lg); padding:20px 22px; max-width:760px; margin-bottom:16px;}
-  .est-box h3{font-size:1.05rem; margin-bottom:10px;}
-  .est-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
   select.field-input{appearance:none; cursor:pointer; width:auto; min-width:220px;}
-  .est-result{font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700; color:var(--rust-deep); margin-top:10px; min-height:1em;}
-  .est-fine{font-size:0.72rem; color:var(--ink-soft); font-weight:500; margin-top:8px; line-height:1.45;}
   .ship-summary{background:var(--bg); border:2px dashed var(--ink); border-radius:var(--r-md); padding:14px 16px; font-size:0.84rem; font-weight:600; line-height:1.55; margin-bottom:14px;}
   .ship-summary a{color:var(--rust-deep); font-weight:700; font-size:0.74rem;}
   .ck-label{display:block; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:12px 0 6px 2px;}
@@ -101,38 +96,12 @@
       <div class="section-head">
         <span class="section-tag">Cart</span>
         <h2>Your cart.</h2>
-        <p>Bulk products and group-buy kits together, eh. Review, estimate shipping, and place the order — nothing is owed until we confirm.</p>
+        <p>Bulk products and group-buy kits together, eh. Review and place the order — nothing is owed until we confirm.</p>
       </div>
 
       <div id="cart-view">
         <div class="cart-box">
           <div id="cart-lines"><p class="cart-empty">Loading…</p></div>
-        </div>
-
-        <div class="est-box">
-          <h3>Shipping estimate</h3>
-          <div class="est-row">
-            <select class="field-input" id="est-region">
-              <option value="" disabled selected>Choose destination…</option>
-              <option>Ontario</option>
-              <option>Quebec</option>
-              <option>British Columbia</option>
-              <option>Alberta</option>
-              <option>Saskatchewan</option>
-              <option>Manitoba</option>
-              <option>Nova Scotia</option>
-              <option>New Brunswick</option>
-              <option>Prince Edward Island</option>
-              <option>Newfoundland and Labrador</option>
-              <option>Yukon</option>
-              <option>Northwest Territories</option>
-              <option>Nunavut</option>
-              <option>United States</option>
-            </select>
-            <button class="btn btn-ghost btn-sm" id="est-btn" type="button">Estimate</button>
-          </div>
-          <div class="est-result" id="est-result"></div>
-          <p class="est-fine">Canada Post, tracked, discreet packaging. Final shipping cost is confirmed with your order — this is a close estimate, eh.</p>
         </div>
 
         <button class="btn btn-primary" id="checkout-btn" style="max-width:760px;">Check out →</button>
@@ -233,14 +202,6 @@
   var currentUser = null;
   var profile = null;
 
-  var RATES = {
-    'Ontario': 9.99, 'Quebec': 12.99,
-    'British Columbia': 15.99, 'Alberta': 15.99, 'Saskatchewan': 15.99, 'Manitoba': 15.99,
-    'Nova Scotia': 16.99, 'New Brunswick': 16.99, 'Prince Edward Island': 16.99, 'Newfoundland and Labrador': 16.99,
-    'Yukon': 19.99, 'Northwest Territories': 19.99, 'Nunavut': 19.99,
-    'United States': 24.99
-  };
-
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
@@ -307,13 +268,6 @@
       });
     });
   }
-
-  document.getElementById('est-btn').addEventListener('click', function(){
-    var region = document.getElementById('est-region').value;
-    var el = document.getElementById('est-result');
-    if(!region || !RATES.hasOwnProperty(region)){ el.textContent = ''; return; }
-    el.textContent = 'Estimated shipping to ' + region + ': $' + RATES[region].toFixed(2) + ' CAD · Canada Post, tracked';
-  });
 
   document.getElementById('checkout-btn').addEventListener('click', function(){
     db.auth.getSession().then(function(r){
