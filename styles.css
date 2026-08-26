@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v16: always-readable View cart buttons) */
+/* CanadaEhPeps — styles.css (v17: unified hamburger menu) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -24,7 +24,7 @@ body{
 }
 @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
 
-/* SMOOTH PAGE TRANSITIONS — glides between pages instead of a hard redraw */
+/* SMOOTH PAGE TRANSITIONS */
 @view-transition{ navigation: same-origin; }
 @keyframes cepPageIn{ from{opacity:0;} to{opacity:1;} }
 @supports not (view-transition-name: none){
@@ -63,7 +63,7 @@ nav{
 .logo svg{flex-shrink:0;}
 .logo-stack{display:flex; flex-direction:row; align-items:center; gap:8px;}
 
-/* REAL CANADIAN FLAG — old inline SVGs hidden, proper flag shown everywhere */
+/* REAL CANADIAN FLAG */
 .ca-flag{display:none !important;}
 .footer-logo svg{display:none !important;}
 .logo-stack::before{
@@ -99,19 +99,29 @@ html.js .hamburger-btn{display:inline-flex;}
 .icon-btn:hover{background:var(--rust); color:var(--plum);}
 .icon-btn svg{width:18px; height:18px;}
 
+/* ---- Account pill + FAQ moved INTO the hamburger menu ---- */
+nav .icon-cluster a.icon-btn[href="account.html"]{display:none !important;}
+nav .navlinks a[href="faq.html"]{display:none !important;}
+
+/* ---- Hamburger dropdown menu ---- */
 #mobile-menu{
  display:none;
- position:absolute; top:calc(100% + 8px); left:10px; right:10px;
+ position:absolute; top:calc(100% + 8px); right:10px; left:auto;
+ width:min(280px, calc(100vw - 24px));
  background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg);
- padding:8px; z-index:55; box-shadow:0 12px 28px -8px rgba(0,0,0,0.35);
+ padding:10px; z-index:55; box-shadow:0 12px 28px -8px rgba(0,0,0,0.35);
 }
 #mobile-menu[data-open="true"]{display:block;}
 #mobile-menu a{
- display:block; padding:14px 16px; border-radius:var(--r-md);
- font-size:0.95rem; font-weight:600; color:var(--ink);
+ display:block; padding:13px 16px; border-radius:var(--r-md);
+ font-size:0.92rem; font-weight:600;
+ background:#6d0000; color:#fff; text-align:center;
 }
-#mobile-menu a:hover{background:var(--rust); color:var(--plum);}
+#mobile-menu a:hover{background:#fff; color:#6d0000; box-shadow:0 0 0 2px #6d0000 inset;}
 #mobile-menu a + a{margin-top:2px;}
+#mobile-menu .mm-navlinks{display:flex; flex-direction:column; gap:2px;}
+#mobile-menu .mm-extra{display:flex; flex-direction:column; gap:2px; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(122,43,43,0.3);}
+#mobile-menu .mm-auth{display:flex; flex-direction:column; gap:2px; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(122,43,43,0.3);}
 
 @media (max-width:420px){
  nav{padding:8px 10px;}
@@ -120,11 +130,12 @@ html.js .hamburger-btn{display:inline-flex;}
  .icon-btn{width:36px; height:36px;}
  .icon-btn svg{width:16px; height:16px;}
  .icon-cluster{gap:6px;}
+ #mobile-menu{right:6px; width:calc(100vw - 20px);}
 }
 
 @media (min-width:900px){
  header{padding:14px 16px 0;}
- nav{gap:18px; padding:10px 14px 10px 20px;}
+ nav{gap:18px; padding:10px 14px 10px 20px; flex-wrap:nowrap;}
  .brand-group{order:1; flex:0 0 auto; gap:32px; align-items:flex-end;}
  .logo{font-size:1.2rem;}
  .logo-stack{flex-direction:column; align-items:flex-start; gap:3px;}
@@ -140,12 +151,14 @@ html.js .hamburger-btn{display:inline-flex;}
  }
  .navlinks a{font-size:0.86rem; padding:9px 10px;}
  .icon-cluster{order:4; gap:10px;}
- .hamburger-btn, html.js .hamburger-btn{display:none;}
- #mobile-menu{display:none !important;}
+ /* hamburger stays visible on desktop now */
+ .hamburger-btn, html.js .hamburger-btn{display:inline-flex;}
+ /* on desktop the main nav links live in the bar, so hide that block inside the menu */
+ #mobile-menu .mm-navlinks{display:none;}
  .disclaimer-bar{font-size:0.72rem; padding:11px 20px;}
 }
 
-/* SUPPORT POPUP — hidden until Support is clicked */
+/* SUPPORT POPUP */
 .support-overlay{display:none; position:fixed; inset:0; z-index:100; background:transparent;}
 .support-overlay[data-open="true"]{display:block;}
 .support-pop{
@@ -466,18 +479,12 @@ footer{background:var(--plum); color:var(--cream-text); padding:44px 20px 24px; 
  .footer-legal{flex-direction:row; justify-content:space-between; font-size:0.72rem;}
 }
 
-/* ============================================================
-   THEME ICON — drawn by pure CSS from the page's data-theme so it
-   never waits for JavaScript and never flickers on page load
-   ============================================================ */
+/* THEME ICON */
 #theme-toggle .theme-toggle-icon{font-size:0 !important; line-height:1;}
 #theme-toggle .theme-toggle-icon::before{content:"☼"; font-size:1.05rem;}
 html[data-theme="light"] #theme-toggle .theme-toggle-icon::before{content:"☽";}
 
-/* ============================================================
-   VIEW CART BUTTONS — always readable:
-   red background + white text normally; white background + red text on hover
-   ============================================================ */
+/* VIEW CART BUTTONS */
 .view-cart-btn, .cart-cta a, .cart-cta .btn{
   background:#6d0000 !important; color:#fff !important; border:2px solid #6d0000 !important;
 }
@@ -487,18 +494,12 @@ html[data-theme="light"] #theme-toggle .theme-toggle-icon::before{content:"☽";
   box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink) !important;
 }
 
-/* ============================================================
-   RED PILLS/BUTTONS = WHITE TEXT  ·  WHEN TURNED WHITE = RED TEXT
-   LABELS = BLACK/BRIGHT-RED
-   ============================================================ */
-
-/* nav links */
+/* RED PILLS/BUTTONS = WHITE TEXT · WHEN TURNED WHITE = RED TEXT */
 .navlinks a{background:#6d0000 !important; color:#fff !important;}
 .navlinks a:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .navlinks a.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
-#mobile-menu a.nav-active{background:#6d0000 !important; color:#fff !important;}
+#mobile-menu a.nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 
-/* ALL .btn buttons — solid red, white text; hover flips white with red text */
 .btn{border-color:#6d0000 !important;}
 .btn-primary,.btn-ghost{background:#6d0000 !important; color:#fff !important;}
 .btn-primary:hover,.btn-ghost:hover,.btn-primary:active,.btn-ghost:active{
@@ -509,29 +510,23 @@ html[data-theme="light"] #theme-toggle .theme-toggle-icon::before{content:"☽";
 .oc-del:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset !important;}
 html[data-theme="dark"] .btn-ghost{color:#fff !important; border-color:#6d0000 !important;}
 
-/* admin top bar: User accounts stays white (with red text) while its view is open */
 .bar-active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 3px 3px 0 rgba(0,0,0,0.28);}
 
-/* one-click action buttons (account page) — stay solid red with white text */
 .acct-red-btn{background:#6d0000 !important; color:#fff !important; border:2px solid #6d0000 !important; border-radius:100px !important; cursor:pointer;}
 .acct-red-btn:hover,.acct-red-btn:active{background:#6d0000 !important; color:#fff !important; box-shadow:none !important; transform:none !important;}
 
-/* sign-in popup tabs */
 .authm-tab{background:transparent !important; color:#6d0000 !important; border-color:#6d0000 !important;}
 .authm-tab.active{background:#6d0000 !important; color:#fff !important;}
 html[data-theme="dark"] .authm-tab{color:#FF2B2B !important; border-color:#FF2B2B !important;}
 html[data-theme="dark"] .authm-tab.active{background:#6d0000 !important; color:#fff !important;}
 
-/* icon buttons — cart, dark mode, hamburger, close buttons */
 .icon-btn{background:#6d0000 !important; color:#fff !important;}
 .icon-btn:hover{background:#fff !important; color:#6d0000 !important;}
 
-/* Log out pill (built by script.js) */
 a.acct-pill{background:#6d0000 !important; color:#fff !important; border-color:#6d0000 !important;}
 a.acct-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 .acct-pill-label{color:inherit !important;}
 
-/* ACCOUNT PILL — drawn complete by pure CSS from the first paint */
 a.icon-btn[href="account.html"]{
   display:inline-flex !important; align-items:center; gap:7px;
   width:auto !important; height:auto !important; padding:8px 15px !important;
@@ -551,7 +546,6 @@ a.icon-btn[href="account.html"]:hover::after{color:#6d0000;}
 a.icon-btn[href="account.html"].nav-active{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset;}
 a.icon-btn[href="account.html"].nav-active::after{color:#6d0000;}
 
-/* misc clickable bits */
 .tradition-pill{background:#6d0000 !important; color:#fff !important;}
 .tradition-pill:hover{background:#fff !important; color:#6d0000 !important; box-shadow:0 0 0 2px #6d0000 inset, 4px 4px 0 var(--ink);}
 .ticket-cta{background:#6d0000 !important; color:#fff !important;}
@@ -564,7 +558,6 @@ html[data-theme="dark"] .crosslink a,html[data-theme="dark"] .past-link,html[dat
 .prod-remove,.cl-remove{color:#6d0000 !important;}
 html[data-theme="dark"] .prod-remove,html[data-theme="dark"] .cl-remove{color:#FF2B2B !important;}
 
-/* admin pills & tabs */
 .pill{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 .pill .cnt{color:#fff !important;}
 .pill:hover{color:#fff !important; border-color:#fff !important; filter:brightness(1.25);}
@@ -575,7 +568,6 @@ html[data-theme="dark"] .prod-remove,html[data-theme="dark"] .cl-remove{color:#F
 .admin-tab.active{background:#fff !important; color:#6d0000 !important; border-color:#6d0000 !important; box-shadow:3px 3px 0 rgba(0,0,0,0.28);}
 .oc-status,.bm-status{background:#6d0000 !important; color:#fff !important; border-color:#fff !important;}
 
-/* LABEL-ONLY chips — black fill, bright red border + text */
 .section-tag{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
 .eyebrow{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
 .buy-code{background:#000 !important; color:#FF2B2B !important; border:2px solid #FF2B2B !important;}
