@@ -1,5 +1,40 @@
 /* CanadaEhPeps — script.js */
 
+/* nav login pills — built FIRST so the Log out pill never drops in late and flickers */
+(function(){
+  function loggedInSync(){
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && /^sb-.*-auth-token$/.test(k)){
+          var v = localStorage.getItem(k);
+          if(v && v.indexOf('access_token') !== -1){ return true; }
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+  var acctLink = document.querySelector('a.icon-btn[href="account.html"]');
+  if(acctLink && loggedInSync() && !document.querySelector('a.acct-logout')){
+    var out = document.createElement('a');
+    out.href = '#';
+    out.className = 'acct-pill acct-logout';
+    out.setAttribute('title', 'Log out');
+    var lbl = document.createElement('span');
+    lbl.className = 'acct-pill-label';
+    lbl.textContent = 'Log out';
+    out.appendChild(lbl);
+    out.addEventListener('click', function(e){
+      e.preventDefault();
+      if(window.supabase){
+        var d = supabase.createClient('https://wbarnmxyagkomxndorzd.supabase.co', 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR');
+        d.auth.signOut().then(function(){ window.location.reload(); });
+      }
+    });
+    acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
+  }
+})();
+
 /* active nav pill — the page you're on keeps its white pill (incl. Account) */
 (function(){
   var path = window.location.pathname.split('/').pop() || 'index.html';
@@ -180,19 +215,6 @@
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
 
-  function loggedInSync(){
-    try{
-      for(var i=0;i<localStorage.length;i++){
-        var k = localStorage.key(i);
-        if(k && /^sb-.*-auth-token$/.test(k)){
-          var v = localStorage.getItem(k);
-          if(v && v.indexOf('access_token') !== -1){ return true; }
-        }
-      }
-    }catch(e){}
-    return false;
-  }
-
   var css =
   'a.acct-pill{display:inline-flex; align-items:center; gap:7px; width:auto; height:auto; padding:8px 15px; border:2px solid var(--ink); border-radius:999px; background:var(--panel); transition:all .15s;}' +
   'a.acct-pill:hover{background:var(--plum); border-color:var(--plum); color:#fff;}' +
@@ -352,28 +374,6 @@
       }
     });
   });
-
-  /* Log out pill — built ONCE, synchronously, so it never pops in late and flickers.
-     No delayed background re-check — the pill's state is decided instantly from the
-     browser's own session record on each page load. */
-  function buildLogout(){
-    if(!acctLink || document.querySelector('a.acct-logout')) return;
-    var out = document.createElement('a');
-    out.href = '#';
-    out.className = 'acct-pill acct-logout';
-    out.setAttribute('title', 'Log out');
-    var lbl = document.createElement('span');
-    lbl.className = 'acct-pill-label';
-    lbl.textContent = 'Log out';
-    out.appendChild(lbl);
-    out.addEventListener('click', function(e){
-      e.preventDefault();
-      var d = getDb();
-      if(d){ d.auth.signOut().then(function(){ window.location.reload(); }); }
-    });
-    acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
-  }
-  if(loggedInSync()){ buildLogout(); }
 
   if(!window.supabase){
     var s = document.createElement('script');
