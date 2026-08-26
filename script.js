@@ -126,10 +126,30 @@
 })();
 
 /* ============================================================
-   HAMBURGER MENU — holds Account, FAQ, Learn, Terms, Privacy,
-   Refund policy + Log in/Log out. Everything lives inside the
-   closed menu, so the login state is settled BEFORE anyone opens
-   it — nothing flickers.
+   SUPPORT HEADPHONES BUTTON — sits right of the dark-mode button
+   on every screen size, and opens the Support popup.
+   ============================================================ */
+(function(){
+  var cluster = document.querySelector('nav .icon-cluster');
+  var themeBtn = document.getElementById('theme-toggle');
+  if(!cluster || !themeBtn) return;
+  if(cluster.querySelector('.support-headphones')) return;
+  var btn = document.createElement('button');
+  btn.className = 'icon-btn support-headphones';
+  btn.type = 'button';
+  btn.setAttribute('data-support-open','');
+  btn.setAttribute('aria-label','Support');
+  btn.setAttribute('title','Support');
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3v5z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3v5z"/></svg>';
+  themeBtn.insertAdjacentElement('afterend', btn);
+})();
+
+/* ============================================================
+   HAMBURGER MENU — order is:
+   1) Log in/Log out + Account
+   2) page links (mobile only)
+   3) FAQ, Learn, Terms, Privacy, Refund policy
+   Support is NOT here — it's the headphones button in the bar.
    ============================================================ */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
@@ -150,45 +170,24 @@
   var menu = document.getElementById('mobile-menu');
   if(!menu) return;
 
-  /* wrap the existing nav links so they can be hidden on desktop */
-  var navWrap = document.createElement('div');
-  navWrap.className = 'mm-navlinks';
-  while(menu.firstChild){ navWrap.appendChild(menu.firstChild); }
-  menu.appendChild(navWrap);
+  /* pull the original nav links out of the menu */
+  var originalLinks = [];
+  while(menu.firstChild){ originalLinks.push(menu.firstChild); menu.removeChild(menu.firstChild); }
 
-  /* extra section: Account, FAQ, Learn, Terms, Privacy, Refund policy */
-  var extraWrap = document.createElement('div');
-  extraWrap.className = 'mm-extra';
-
-  var acctA = document.createElement('a');
-  acctA.href = 'account.html';
-  acctA.textContent = 'Account';
-  extraWrap.appendChild(acctA);
-
-  var faqLink = navWrap.querySelector('a[href="faq.html"]');
-  if(faqLink){ extraWrap.appendChild(faqLink); }
-
-  var extras = [
-    {text:'Learn', href:'learn.html'},
-    {text:'Terms', href:'terms.html'},
-    {text:'Privacy', href:'privacy.html'},
-    {text:'Refund policy', href:'refunds.html'}
-  ];
-  extras.forEach(function(item){
-    var a = document.createElement('a');
-    a.href = item.href;
-    a.textContent = item.text;
-    extraWrap.appendChild(a);
-  });
-  menu.appendChild(extraWrap);
-
-  /* auth section: Log in / Log out */
+  /* group 1 — Log in/Log out + Account (always first) */
   var authWrap = document.createElement('div');
   authWrap.className = 'mm-auth';
+
   var authLink = document.createElement('a');
   authLink.href = '#';
   authLink.textContent = loggedInSync() ? 'Log out' : 'Log in';
   authWrap.appendChild(authLink);
+
+  var acctA = document.createElement('a');
+  acctA.href = 'account.html';
+  acctA.textContent = 'Account';
+  authWrap.appendChild(acctA);
+
   menu.appendChild(authWrap);
 
   authLink.addEventListener('click', function(e){
@@ -207,6 +206,37 @@
       }
     }
   });
+
+  /* group 2 — the page nav links (Support dropped, FAQ moved to info group) */
+  var navWrap = document.createElement('div');
+  navWrap.className = 'mm-navlinks';
+  var faqLink = null;
+  originalLinks.forEach(function(node){
+    if(node.nodeType !== 1) return;
+    if(node.hasAttribute && node.hasAttribute('data-support-open')) return; /* Support now lives in the bar */
+    var href = node.getAttribute('href') || '';
+    if(href === 'faq.html'){ faqLink = node; return; }
+    navWrap.appendChild(node);
+  });
+  menu.appendChild(navWrap);
+
+  /* group 3 — info links: FAQ, Learn, Terms, Privacy, Refund policy */
+  var extraWrap = document.createElement('div');
+  extraWrap.className = 'mm-extra';
+  if(faqLink){ extraWrap.appendChild(faqLink); }
+  var extras = [
+    {text:'Learn', href:'learn.html'},
+    {text:'Terms', href:'terms.html'},
+    {text:'Privacy', href:'privacy.html'},
+    {text:'Refund policy', href:'refunds.html'}
+  ];
+  extras.forEach(function(item){
+    var a = document.createElement('a');
+    a.href = item.href;
+    a.textContent = item.text;
+    extraWrap.appendChild(a);
+  });
+  menu.appendChild(extraWrap);
 })();
 
 /* hamburger open/close */
