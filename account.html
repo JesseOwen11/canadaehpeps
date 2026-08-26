@@ -105,8 +105,8 @@
         <p>Your email, orders, shipping address, and settings — all in one place, eh.</p>
       </div>
 
-      <!-- signed-out gate -->
-      <div class="acct-card" id="gate-card" style="text-align:center;">
+      <!-- signed-out gate (hidden by default; revealed instantly only if signed out) -->
+      <div class="acct-card" id="gate-card" style="text-align:center; display:none;">
         <h3>Sign in to see your account</h3>
         <p style="color:var(--ink-soft); font-weight:500; max-width:420px; margin:0 auto 18px;">Your orders, saved shipping address, and settings live here. Sign in or create a free account — takes ten seconds.</p>
         <button class="btn btn-primary" id="gate-btn">Sign in / Create account</button>
@@ -316,6 +316,26 @@
 
   var nextUrl = new URLSearchParams(window.location.search).get('next');
   if(!nextUrl || !/^[a-zA-Z0-9_-]+\.html$/.test(nextUrl)){ nextUrl = null; }
+
+  /* Instant login check (reads the browser's saved session) so we can decide
+     what to show WITHOUT a flash. Signed out → reveal the sign-in card right
+     away. Signed in → leave it hidden; the dashboard appears instead. */
+  function loggedInSync(){
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && /^sb-.*-auth-token$/.test(k)){
+          var v = localStorage.getItem(k);
+          if(v && v.indexOf('access_token') !== -1){ return true; }
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+  var isRecoveryUrl = (window.location.hash || '').indexOf('type=recovery') !== -1;
+  if(!loggedInSync() && !isRecoveryUrl){
+    gate.style.display = 'block';
+  }
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -617,9 +637,7 @@
   db.auth.onAuthStateChange(function(event){
     if(event === 'PASSWORD_RECOVERY'){ enterRecovery(); }
   });
-  if((window.location.hash || '').indexOf('type=recovery') !== -1){
-    enterRecovery();
-  }
+  if(isRecoveryUrl){ enterRecovery(); }
 
   db.auth.getSession().then(function(r){
     if(recoveryHandled) return;
