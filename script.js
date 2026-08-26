@@ -353,7 +353,9 @@
     });
   });
 
-  /* Log out pill — built synchronously so it appears with the page, no pop-in */
+  /* Log out pill — built ONCE, synchronously, so it never pops in late and flickers.
+     No delayed background re-check — the pill's state is decided instantly from the
+     browser's own session record on each page load. */
   function buildLogout(){
     if(!acctLink || document.querySelector('a.acct-logout')) return;
     var out = document.createElement('a');
@@ -372,18 +374,6 @@
     acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
   }
   if(loggedInSync()){ buildLogout(); }
-
-  /* background check: reconcile if the instant read and the real session disagree */
-  (function(){
-    var d = getDb();
-    if(!d || !acctLink) return;
-    d.auth.getSession().then(function(r){
-      var has = !!(r.data && r.data.session);
-      var el = document.querySelector('a.acct-logout');
-      if(has && !el){ buildLogout(); }
-      else if(!has && el){ el.parentNode.removeChild(el); }
-    });
-  })();
 
   if(!window.supabase){
     var s = document.createElement('script');
