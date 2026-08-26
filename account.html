@@ -283,11 +283,15 @@
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  /* EmailJS — sends the security code to the customer */
+  /* EmailJS — guarded so it can NEVER break the sign-in button or the page */
   var EMAILJS_SERVICE = 'service_q2b4yak';
   var EMAILJS_TEMPLATE = 'template_8dnp3gb';
-  emailjs.init({ publicKey: 'ViBB_YLRng7tDW6g0' });
+  var EMAILJS_READY = false;
+  if(window.emailjs){
+    try{ emailjs.init({ publicKey: 'ViBB_YLRng7tDW6g0' }); EMAILJS_READY = true; }catch(e){}
+  }
   function sendSecurityCode(toEmail, code, cb){
+    if(!EMAILJS_READY || !window.emailjs){ cb(new Error('Email service unavailable')); return; }
     try{
       emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { code: code, to_email: toEmail })
         .then(function(){ cb(null); }, function(err){ cb(err); });
