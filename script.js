@@ -1,41 +1,6 @@
 /* CanadaEhPeps — script.js */
 
-/* nav login pills — built FIRST so the Log out pill never drops in late and flickers */
-(function(){
-  function loggedInSync(){
-    try{
-      for(var i=0;i<localStorage.length;i++){
-        var k = localStorage.key(i);
-        if(k && /^sb-.*-auth-token$/.test(k)){
-          var v = localStorage.getItem(k);
-          if(v && v.indexOf('access_token') !== -1){ return true; }
-        }
-      }
-    }catch(e){}
-    return false;
-  }
-  var acctLink = document.querySelector('a.icon-btn[href="account.html"]');
-  if(acctLink && loggedInSync() && !document.querySelector('a.acct-logout')){
-    var out = document.createElement('a');
-    out.href = '#';
-    out.className = 'acct-pill acct-logout';
-    out.setAttribute('title', 'Log out');
-    var lbl = document.createElement('span');
-    lbl.className = 'acct-pill-label';
-    lbl.textContent = 'Log out';
-    out.appendChild(lbl);
-    out.addEventListener('click', function(e){
-      e.preventDefault();
-      if(window.supabase){
-        var d = supabase.createClient('https://wbarnmxyagkomxndorzd.supabase.co', 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR');
-        d.auth.signOut().then(function(){ window.location.reload(); });
-      }
-    });
-    acctLink.parentNode.insertBefore(out, acctLink.nextSibling);
-  }
-})();
-
-/* active nav pill — the page you're on keeps its white pill (incl. Account) */
+/* active nav pill — the page you're on keeps its white pill */
 (function(){
   var path = window.location.pathname.split('/').pop() || 'index.html';
   function samePage(href){
@@ -44,7 +9,7 @@
     if(file === '') file = 'index.html';
     return file === path;
   }
-  document.querySelectorAll('.navlinks a, #mobile-menu a, a.icon-btn[href="account.html"]').forEach(function(a){
+  document.querySelectorAll('.navlinks a, #mobile-menu a').forEach(function(a){
     if(samePage(a.getAttribute('href'))){ a.classList.add('nav-active'); }
   });
 })();
@@ -160,7 +125,91 @@
   applyTheme(saved === 'light' ? 'light' : 'dark');
 })();
 
-/* hamburger menu */
+/* ============================================================
+   HAMBURGER MENU — holds Account, FAQ, Learn, Terms, Privacy,
+   Refund policy + Log in/Log out. Everything lives inside the
+   closed menu, so the login state is settled BEFORE anyone opens
+   it — nothing flickers.
+   ============================================================ */
+(function(){
+  var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+  function loggedInSync(){
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && /^sb-.*-auth-token$/.test(k)){
+          var v = localStorage.getItem(k);
+          if(v && v.indexOf('access_token') !== -1){ return true; }
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+
+  var menu = document.getElementById('mobile-menu');
+  if(!menu) return;
+
+  /* wrap the existing nav links so they can be hidden on desktop */
+  var navWrap = document.createElement('div');
+  navWrap.className = 'mm-navlinks';
+  while(menu.firstChild){ navWrap.appendChild(menu.firstChild); }
+  menu.appendChild(navWrap);
+
+  /* extra section: Account, FAQ, Learn, Terms, Privacy, Refund policy */
+  var extraWrap = document.createElement('div');
+  extraWrap.className = 'mm-extra';
+
+  var acctA = document.createElement('a');
+  acctA.href = 'account.html';
+  acctA.textContent = 'Account';
+  extraWrap.appendChild(acctA);
+
+  var faqLink = navWrap.querySelector('a[href="faq.html"]');
+  if(faqLink){ extraWrap.appendChild(faqLink); }
+
+  var extras = [
+    {text:'Learn', href:'learn.html'},
+    {text:'Terms', href:'terms.html'},
+    {text:'Privacy', href:'privacy.html'},
+    {text:'Refund policy', href:'refunds.html'}
+  ];
+  extras.forEach(function(item){
+    var a = document.createElement('a');
+    a.href = item.href;
+    a.textContent = item.text;
+    extraWrap.appendChild(a);
+  });
+  menu.appendChild(extraWrap);
+
+  /* auth section: Log in / Log out */
+  var authWrap = document.createElement('div');
+  authWrap.className = 'mm-auth';
+  var authLink = document.createElement('a');
+  authLink.href = '#';
+  authLink.textContent = loggedInSync() ? 'Log out' : 'Log in';
+  authWrap.appendChild(authLink);
+  menu.appendChild(authWrap);
+
+  authLink.addEventListener('click', function(e){
+    e.preventDefault();
+    if(loggedInSync()){
+      if(window.supabase){
+        var d = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        d.auth.signOut().then(function(){ window.location.reload(); });
+      }
+    } else {
+      if(typeof window.openSignInModal === 'function'){
+        window.openSignInModal();
+      } else {
+        var pill = document.querySelector('a.icon-btn[href="account.html"]');
+        if(pill){ pill.click(); }
+      }
+    }
+  });
+})();
+
+/* hamburger open/close */
 (function(){
   var b = document.getElementById('menu-toggle');
   var p = document.getElementById('mobile-menu');
@@ -168,7 +217,9 @@
   function close(){ p.setAttribute('data-open','false'); b.setAttribute('aria-expanded','false'); }
   function open(){ p.setAttribute('data-open','true'); b.setAttribute('aria-expanded','true'); }
   b.addEventListener('click', function(){ p.getAttribute('data-open') === 'true' ? close() : open(); });
-  p.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', close); });
+  p.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ setTimeout(close, 50); });
+  });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 })();
 
@@ -291,23 +342,11 @@
   }
   function openModal(){ overlay.setAttribute('data-open','true'); msg.textContent=''; }
   function closeModal(){ overlay.setAttribute('data-open','false'); }
+  window.openSignInModal = openModal;
 
   document.getElementById('authm-tab-signin').addEventListener('click', function(){ setMode('signin'); });
   document.getElementById('authm-tab-create').addEventListener('click', function(){ setMode('create'); });
-  /* the ✕ is the ONLY way to dismiss the bubble (besides signing in) */
   document.getElementById('authm-close').addEventListener('click', closeModal);
-
-  if(acctLink){
-    acctLink.addEventListener('click', function(e){
-      e.preventDefault();
-      var d = getDb();
-      if(!d){ window.location.href = 'account.html'; return; }
-      d.auth.getSession().then(function(r){
-        if(r.data && r.data.session){ window.location.href = 'account.html'; }
-        else { openModal(); }
-      });
-    });
-  }
 
   authBtn.addEventListener('click', function(){
     var d = getDb();
@@ -354,7 +393,6 @@
     if(e.key === 'Enter'){ authBtn.click(); }
   });
 
-  /* Forgot password? — email a reset link */
   document.getElementById('authm-forgot').addEventListener('click', function(){
     var d = getDb();
     if(!d){ msg.textContent = 'Connection problem — refresh and try again.'; return; }
