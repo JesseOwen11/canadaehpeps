@@ -43,6 +43,13 @@
   .set-msg.err{color:var(--rust-deep);}
   .next-banner{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:18px 22px; max-width:680px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
   .next-banner p{font-weight:600; font-size:0.9rem; margin:0;}
+  /* password show/hide eye */
+  .pass-wrap{position:relative; display:block; width:100%;}
+  .set-row .pass-wrap{flex:1; min-width:200px; width:auto;}
+  .pass-wrap input{width:100%; padding-right:46px;}
+  .pass-eye{position:absolute; right:7px; top:50%; transform:translateY(-50%); width:32px; height:32px; border:none; background:none; cursor:pointer; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; border-radius:50%;}
+  .pass-eye:hover{color:var(--ink); background:rgba(122,43,43,0.10);}
+  .pass-eye svg{width:20px; height:20px;}
 </style>
 </head>
 <body>
@@ -118,11 +125,17 @@
         <p style="color:var(--ink-soft); font-weight:500; font-size:0.86rem; margin:-6px 0 16px;">You clicked a password-reset link. Type a new password below to finish.</p>
         <div class="acct-field">
           <label class="acct-label" for="rec-pass">New password</label>
-          <input class="field-input" id="rec-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
+          <span class="pass-wrap">
+            <input class="field-input" id="rec-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
+            <button type="button" class="pass-eye" data-target="rec-pass" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </span>
         </div>
         <div class="acct-field">
           <label class="acct-label" for="rec-pass2">Repeat it</label>
-          <input class="field-input" id="rec-pass2" type="password" autocomplete="new-password" placeholder="Repeat the new password">
+          <span class="pass-wrap">
+            <input class="field-input" id="rec-pass2" type="password" autocomplete="new-password" placeholder="Repeat the new password">
+            <button type="button" class="pass-eye" data-target="rec-pass2" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </span>
         </div>
         <button class="btn btn-primary" id="rec-save-btn" style="width:100%;">Save new password</button>
         <div class="set-msg" id="rec-msg" style="margin-top:10px;"></div>
@@ -213,8 +226,14 @@
           <div class="set-block">
             <h4>Change password</h4>
             <div class="set-row" id="pass-edit-row">
-              <input class="field-input" id="new-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
-              <input class="field-input" id="new-pass2" type="password" autocomplete="new-password" placeholder="Repeat it">
+              <span class="pass-wrap">
+                <input class="field-input" id="new-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
+                <button type="button" class="pass-eye" data-target="new-pass" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </span>
+              <span class="pass-wrap">
+                <input class="field-input" id="new-pass2" type="password" autocomplete="new-password" placeholder="Repeat it">
+                <button type="button" class="pass-eye" data-target="new-pass2" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </span>
               <button class="btn btn-ghost btn-sm" id="upd-pass-btn">Update password</button>
             </div>
             <div class="set-row" id="pass-code-row" style="display:none;">
@@ -303,6 +322,20 @@
     if(ov){ ov.setAttribute('data-open','true'); return; }
     var pill = document.querySelector('a.acct-pill');
     if(pill){ pill.click(); } else { window.location.reload(); }
+  });
+
+  /* show/hide password eye toggles */
+  var EYE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  document.querySelectorAll('.pass-eye').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var input = document.getElementById(btn.getAttribute('data-target'));
+      if(!input) return;
+      var showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      btn.innerHTML = showing ? EYE_SVG : EYE_OFF_SVG;
+      btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    });
   });
 
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
