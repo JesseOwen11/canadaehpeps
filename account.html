@@ -307,9 +307,9 @@
   var EMAILJS_TEMPLATE = 'template_8dnp3gb';
   var EMAILJS_KEY = 'ViBB_YLRng7tDW6g0';
   function makeCode(){ return String(Math.floor(100000 + Math.random() * 900000)); }
-  function sendSecurityCode(toEmail, code){
+  function sendSecurityCode(toEmail, code, changeType){
     return emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE,
-      { code: code, to_email: toEmail },
+      { code: code, to_email: toEmail, change_type: changeType },
       { publicKey: EMAILJS_KEY });
   }
   var CODE_TTL = 10 * 60 * 1000; /* codes expire after 10 minutes */
@@ -484,7 +484,7 @@
     var code = makeCode();
     msgEl.textContent = 'Sending security code…';
     try {
-      await sendSecurityCode(currentUser.email, code);
+      await sendSecurityCode(currentUser.email, code, 'email address');
     } catch(err){
       msgEl.classList.add('err');
       msgEl.textContent = 'Could not send the security code. Try again in a moment.';
@@ -570,7 +570,7 @@
     var code = makeCode();
     msgEl.textContent = 'Sending security code…';
     try {
-      await sendSecurityCode(currentUser.email, code);
+      await sendSecurityCode(currentUser.email, code, 'password');
     } catch(err){
       msgEl.classList.add('err');
       msgEl.textContent = 'Could not send the security code. Try again in a moment.';
