@@ -1,4 +1,4 @@
-/* CanadaEhPeps — styles.css (v17: unified hamburger menu) */
+/* CanadaEhPeps — styles.css (v18: headphones support button + reordered menu) */
 :root{
  --bg:#F5E7D9; --panel:#FFF7EE; --ink:#2B1512; --ink-soft:#7A5248;
  --plum:#2B1518; --plum-2:#3D201E;
@@ -99,9 +99,11 @@ html.js .hamburger-btn{display:inline-flex;}
 .icon-btn:hover{background:var(--rust); color:var(--plum);}
 .icon-btn svg{width:18px; height:18px;}
 
-/* ---- Account pill + FAQ moved INTO the hamburger menu ---- */
+/* ---- Account pill + FAQ moved INTO the hamburger menu; Support moved to a headphones button ---- */
 nav .icon-cluster a.icon-btn[href="account.html"]{display:none !important;}
 nav .navlinks a[href="faq.html"]{display:none !important;}
+nav .navlinks a[data-support-open]{display:none !important;}
+#mobile-menu a[data-support-open]{display:none !important;}
 
 /* ---- Hamburger dropdown menu ---- */
 #mobile-menu{
@@ -119,9 +121,9 @@ nav .navlinks a[href="faq.html"]{display:none !important;}
 }
 #mobile-menu a:hover{background:#fff; color:#6d0000; box-shadow:0 0 0 2px #6d0000 inset;}
 #mobile-menu a + a{margin-top:2px;}
-#mobile-menu .mm-navlinks{display:flex; flex-direction:column; gap:2px;}
+#mobile-menu .mm-auth{display:flex; flex-direction:column; gap:2px;}
+#mobile-menu .mm-navlinks{display:flex; flex-direction:column; gap:2px; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(122,43,43,0.3);}
 #mobile-menu .mm-extra{display:flex; flex-direction:column; gap:2px; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(122,43,43,0.3);}
-#mobile-menu .mm-auth{display:flex; flex-direction:column; gap:2px; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(122,43,43,0.3);}
 
 @media (max-width:420px){
  nav{padding:8px 10px;}
