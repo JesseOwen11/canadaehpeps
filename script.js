@@ -292,10 +292,14 @@
   window.addEventListener('resize', function(){ if(isOpen()) close(); });
 })();
 
-/* account UI — sign-in bubble with Forgot password? */
+/* account UI — sign-in bubble with Forgot password? + password eye */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+
+  /* password show/hide eye icons */
+  var EYE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 
   var css =
   'a.acct-pill{display:inline-flex; align-items:center; gap:7px; width:auto; height:auto; padding:8px 15px; border:2px solid var(--ink); border-radius:999px; background:var(--panel); transition:all .15s;}' +
@@ -313,6 +317,11 @@
   '.authm-tab{flex:1; padding:10px 6px; border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--bg); font-family:"Space Mono",monospace; font-size:0.6rem; font-weight:700; cursor:pointer; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;}' +
   '.authm-tab.active{background:var(--plum); color:#fff; border-color:var(--plum);}' +
   '.authm .field-input{margin-bottom:12px;}' +
+  '.authm .pass-wrap{position:relative; display:block; width:100%; margin-bottom:12px;}' +
+  '.authm .pass-wrap input{width:100%; padding-right:46px; margin-bottom:0;}' +
+  '.authm .pass-eye{position:absolute; right:7px; top:50%; transform:translateY(-50%); width:32px; height:32px; border:none; background:none; cursor:pointer; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; border-radius:50%;}' +
+  '.authm .pass-eye:hover{color:var(--ink); background:rgba(122,43,43,0.10);}' +
+  '.authm .pass-eye svg{width:20px; height:20px;}' +
   '.authm-msg{color:var(--rust-deep); font-size:0.8rem; font-weight:700; margin-top:10px; min-height:1.1em;}' +
   '.authm-msg.ok{color:var(--ink-soft);}' +
   '.authm-forgot{display:block; margin:12px auto 0; background:none; border:none; color:var(--rust-deep); font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700; cursor:pointer; text-decoration:underline; padding:0;}' +
@@ -344,13 +353,29 @@
         '<button class="authm-tab" id="authm-tab-create" type="button">Create account</button>' +
       '</div>' +
       '<input class="field-input" id="authm-email" type="email" autocomplete="email" placeholder="Email">' +
-      '<input class="field-input" id="authm-pass" type="password" autocomplete="current-password" placeholder="Password">' +
+      '<span class="pass-wrap">' +
+        '<input class="field-input" id="authm-pass" type="password" autocomplete="current-password" placeholder="Password">' +
+        '<button type="button" class="pass-eye" data-target="authm-pass" aria-label="Show password">' + EYE_SVG + '</button>' +
+      '</span>' +
       '<button class="btn btn-primary" id="authm-btn" style="width:100%;">Sign in</button>' +
       '<div class="authm-msg" id="authm-msg"></div>' +
       '<button class="authm-forgot" id="authm-forgot" type="button">Forgot password?</button>' +
       '<p class="authm-note">Free account — saves your shipping details and order history. No email verification needed. Passwords are at least 8 characters.</p>' +
     '</div>';
   document.body.appendChild(overlay);
+
+  /* show/hide password eye for the sign-in popup */
+  var passEye = overlay.querySelector('.pass-eye');
+  if(passEye){
+    passEye.addEventListener('click', function(){
+      var input = document.getElementById(passEye.getAttribute('data-target'));
+      if(!input) return;
+      var showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      passEye.innerHTML = showing ? EYE_SVG : EYE_OFF_SVG;
+      passEye.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    });
+  }
 
   var db = null;
   function getDb(){
