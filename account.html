@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/400.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   .acct-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:26px 22px; max-width:680px; margin-bottom:16px;}
   .acct-card h3{font-size:1.25rem; margin-bottom:12px;}
@@ -197,19 +198,29 @@
 
           <div class="set-block">
             <h4>Change email</h4>
-            <div class="set-row">
+            <div class="set-row" id="email-edit-row">
               <input class="field-input" id="new-email" type="email" maxlength="150" placeholder="New email address" autocomplete="off">
               <button class="btn btn-ghost btn-sm" id="upd-email-btn">Update email</button>
+            </div>
+            <div class="set-row" id="email-code-row" style="display:none;">
+              <input class="field-input" id="email-code" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="off">
+              <button class="btn btn-primary btn-sm" id="email-confirm-btn">Confirm change</button>
+              <button class="btn btn-ghost btn-sm" id="email-cancel-btn">Cancel</button>
             </div>
             <div class="set-msg" id="email-msg"></div>
           </div>
 
           <div class="set-block">
             <h4>Change password</h4>
-            <div class="set-row">
+            <div class="set-row" id="pass-edit-row">
               <input class="field-input" id="new-pass" type="password" autocomplete="new-password" placeholder="New password (8+ characters)">
               <input class="field-input" id="new-pass2" type="password" autocomplete="new-password" placeholder="Repeat it">
               <button class="btn btn-ghost btn-sm" id="upd-pass-btn">Update password</button>
+            </div>
+            <div class="set-row" id="pass-code-row" style="display:none;">
+              <input class="field-input" id="pass-code" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="off">
+              <button class="btn btn-primary btn-sm" id="pass-confirm-btn">Confirm change</button>
+              <button class="btn btn-ghost btn-sm" id="pass-cancel-btn">Cancel</button>
             </div>
             <div class="set-msg" id="pass-msg"></div>
           </div>
@@ -266,10 +277,25 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
-/* Account dashboard: email, orders, address, settings, password recovery */
+/* Account dashboard: email, orders, address, settings, password recovery,
+   + EmailJS confirm-before-change security alert */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+
+  /* EmailJS — sends the security alert code to the customer's current email */
+  var EMAILJS_SERVICE = 'service_q2b4yak';
+  var EMAILJS_TEMPLATE = 'template_8dnp3gb';
+  var EMAILJS_KEY = 'ViBB_YLRng7tDW6g0';
+  function makeCode(){ return String(Math.floor(100000 + Math.random() * 900000)); }
+  function sendSecurityCode(toEmail, code){
+    return emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE,
+      { code: code, to_email: toEmail },
+      { publicKey: EMAILJS_KEY });
+  }
+  var CODE_TTL = 10 * 60 * 1000; /* codes expire after 10 minutes */
+  var pendingEmail = null; /* { code, newEmail, expires } */
+  var pendingPass = null;  /* { code, newPassword, expires } */
 
   /* attach the sign-in button FIRST so nothing added later can break it */
   document.getElementById('gate-btn').addEventListener('click', function(){
@@ -388,34 +414,96 @@
     db.auth.signOut().then(function(){ showGate(); });
   });
 
-  /* settings — change email */
+  /* ============================================================
+     CHANGE EMAIL — with confirm-before-change security alert
+     ============================================================ */
   document.getElementById('upd-email-btn').addEventListener('click', async function(){
     var msgEl = document.getElementById('email-msg');
     var em = document.getElementById('new-email').value.trim();
     msgEl.classList.remove('err');
     msgEl.textContent = '';
+    if(!currentUser){ msgEl.classList.add('err'); msgEl.textContent = 'Sign in first.'; return; }
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
       msgEl.classList.add('err');
       msgEl.textContent = 'Enter a valid email address.';
       return;
     }
-    var r = await db.auth.updateUser({ email: em });
+    var code = makeCode();
+    msgEl.textContent = 'Sending security code…';
+    try {
+      await sendSecurityCode(currentUser.email, code);
+    } catch(err){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Could not send the security code. Try again in a moment.';
+      return;
+    }
+    pendingEmail = { code: code, newEmail: em, expires: Date.now() + CODE_TTL };
+    document.getElementById('email-edit-row').style.display = 'none';
+    document.getElementById('email-code-row').style.display = 'flex';
+    msgEl.textContent = 'We sent a 6-digit code to ' + currentUser.email + '. Enter it below to confirm this change. If this wasn\'t you, contact admin.';
+  });
+
+  function emailBackToEdit(){
+    document.getElementById('email-code-row').style.display = 'none';
+    document.getElementById('email-edit-row').style.display = 'flex';
+  }
+
+  document.getElementById('email-confirm-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('email-msg');
+    var entered = document.getElementById('email-code').value.trim();
+    msgEl.classList.remove('err');
+    msgEl.textContent = '';
+    if(!pendingEmail){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Nothing to confirm — click "Update email" first.';
+      emailBackToEdit();
+      return;
+    }
+    if(Date.now() > pendingEmail.expires){
+      pendingEmail = null;
+      msgEl.classList.add('err');
+      msgEl.textContent = 'That code expired. Click "Update email" to send a new one.';
+      emailBackToEdit();
+      return;
+    }
+    if(entered !== pendingEmail.code){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'That code doesn\'t match. Check the email and try again.';
+      return;
+    }
+    var target = pendingEmail.newEmail;
+    var r = await db.auth.updateUser({ email: target });
+    pendingEmail = null;
+    document.getElementById('email-code').value = '';
+    emailBackToEdit();
     if(r.error){
       msgEl.classList.add('err');
       msgEl.textContent = 'Could not update: ' + r.error.message;
     } else {
-      msgEl.textContent = 'Confirmation link sent to ' + em + ' — click it to finish the change.';
       document.getElementById('new-email').value = '';
+      msgEl.textContent = 'Confirmed — a confirmation link was sent to ' + target + '. Click it to finish the change.';
     }
   });
 
-  /* settings — change password */
+  document.getElementById('email-cancel-btn').addEventListener('click', function(){
+    pendingEmail = null;
+    document.getElementById('email-code').value = '';
+    emailBackToEdit();
+    var msgEl = document.getElementById('email-msg');
+    msgEl.classList.remove('err');
+    msgEl.textContent = 'Cancelled — no change was made.';
+  });
+
+  /* ============================================================
+     CHANGE PASSWORD — with confirm-before-change security alert
+     ============================================================ */
   document.getElementById('upd-pass-btn').addEventListener('click', async function(){
     var msgEl = document.getElementById('pass-msg');
     var p1 = document.getElementById('new-pass').value;
     var p2 = document.getElementById('new-pass2').value;
     msgEl.classList.remove('err');
     msgEl.textContent = '';
+    if(!currentUser){ msgEl.classList.add('err'); msgEl.textContent = 'Sign in first.'; return; }
     if(p1.length < 8){
       msgEl.classList.add('err');
       msgEl.textContent = 'Password must be at least 8 characters.';
@@ -426,15 +514,70 @@
       msgEl.textContent = 'The two passwords don\'t match.';
       return;
     }
-    var r = await db.auth.updateUser({ password: p1 });
+    var code = makeCode();
+    msgEl.textContent = 'Sending security code…';
+    try {
+      await sendSecurityCode(currentUser.email, code);
+    } catch(err){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Could not send the security code. Try again in a moment.';
+      return;
+    }
+    pendingPass = { code: code, newPassword: p1, expires: Date.now() + CODE_TTL };
+    document.getElementById('pass-edit-row').style.display = 'none';
+    document.getElementById('pass-code-row').style.display = 'flex';
+    msgEl.textContent = 'We sent a 6-digit code to ' + currentUser.email + '. Enter it below to confirm this change. If this wasn\'t you, contact admin.';
+  });
+
+  function passBackToEdit(){
+    document.getElementById('pass-code-row').style.display = 'none';
+    document.getElementById('pass-edit-row').style.display = 'flex';
+  }
+
+  document.getElementById('pass-confirm-btn').addEventListener('click', async function(){
+    var msgEl = document.getElementById('pass-msg');
+    var entered = document.getElementById('pass-code').value.trim();
+    msgEl.classList.remove('err');
+    msgEl.textContent = '';
+    if(!pendingPass){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'Nothing to confirm — click "Update password" first.';
+      passBackToEdit();
+      return;
+    }
+    if(Date.now() > pendingPass.expires){
+      pendingPass = null;
+      msgEl.classList.add('err');
+      msgEl.textContent = 'That code expired. Click "Update password" to send a new one.';
+      passBackToEdit();
+      return;
+    }
+    if(entered !== pendingPass.code){
+      msgEl.classList.add('err');
+      msgEl.textContent = 'That code doesn\'t match. Check the email and try again.';
+      return;
+    }
+    var r = await db.auth.updateUser({ password: pendingPass.newPassword });
+    pendingPass = null;
+    document.getElementById('pass-code').value = '';
+    passBackToEdit();
     if(r.error){
       msgEl.classList.add('err');
       msgEl.textContent = 'Could not update: ' + r.error.message + ' — if this keeps happening, sign out and back in, then try again.';
     } else {
-      msgEl.textContent = 'Password updated ✓';
       document.getElementById('new-pass').value = '';
       document.getElementById('new-pass2').value = '';
+      msgEl.textContent = 'Password updated ✓';
     }
+  });
+
+  document.getElementById('pass-cancel-btn').addEventListener('click', function(){
+    pendingPass = null;
+    document.getElementById('pass-code').value = '';
+    passBackToEdit();
+    var msgEl = document.getElementById('pass-msg');
+    msgEl.classList.remove('err');
+    msgEl.textContent = 'Cancelled — no change was made.';
   });
 
   /* password recovery — save the new password after clicking the reset link */
