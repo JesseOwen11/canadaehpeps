@@ -292,10 +292,26 @@
   window.addEventListener('resize', function(){ if(isOpen()) close(); });
 })();
 
-/* account UI — sign-in bubble with Forgot password? + password eye */
+/* account UI — sign-in bubble: Forgot password, password eye,
+   and email-verification before a new account is created */
 (function(){
   var SUPABASE_URL = 'https://wbarnmxyagkomxndorzd.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_0_6PjuyD0hcS2BGB-dEMTg_G7GuwFCR';
+
+  /* EmailJS — sends the signup confirmation code (loaded on demand) */
+  var SIGNUP_SERVICE = 'service_q2b4yak';
+  var SIGNUP_TEMPLATE = 'template_2c1uldk';
+  var SIGNUP_KEY = 'ViBB_YLRng7tDW6g0';
+  var SIGNUP_TTL = 10 * 60 * 1000; /* code valid 10 minutes */
+  function makeCode(){ return String(Math.floor(100000 + Math.random() * 900000)); }
+  function ensureEmailJs(cb){
+    if(window.emailjs){ cb(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    s.onload = function(){ cb(); };
+    s.onerror = function(){ cb(new Error('load failed')); };
+    document.head.appendChild(s);
+  }
 
   /* password show/hide eye icons */
   var EYE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -353,14 +369,16 @@
         '<button class="authm-tab" id="authm-tab-create" type="button">Create account</button>' +
       '</div>' +
       '<input class="field-input" id="authm-email" type="email" autocomplete="email" placeholder="Email">' +
-      '<span class="pass-wrap">' +
+      '<span class="pass-wrap" id="authm-passwrap">' +
         '<input class="field-input" id="authm-pass" type="password" autocomplete="current-password" placeholder="Password">' +
         '<button type="button" class="pass-eye" data-target="authm-pass" aria-label="Show password">' + EYE_SVG + '</button>' +
       '</span>' +
+      '<input class="field-input" id="authm-code" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="off" style="display:none;">' +
       '<button class="btn btn-primary" id="authm-btn" style="width:100%;">Sign in</button>' +
+      '<button class="authm-forgot" id="authm-back" type="button" style="display:none;">← Back — change email / password</button>' +
       '<div class="authm-msg" id="authm-msg"></div>' +
       '<button class="authm-forgot" id="authm-forgot" type="button">Forgot password?</button>' +
-      '<p class="authm-note">Free account — saves your shipping details and order history. No email verification needed. Passwords are at least 8 characters.</p>' +
+      '<p class="authm-note">Free account — saves your shipping details and order history. New accounts confirm a code we email to them. Passwords are at least 8 characters.</p>' +
     '</div>';
   document.body.appendChild(overlay);
 
@@ -386,9 +404,25 @@
   var mode = 'signin';
   var msg = document.getElementById('authm-msg');
   var authBtn = document.getElementById('authm-btn');
+  var pendingSignup = null; /* { code, email, password, expires } */
+
+  function resetSignupForm(){
+    pendingSignup = null;
+    var em = document.getElementById('authm-email');
+    var pw = document.getElementById('authm-pass');
+    var codeField = document.getElementById('authm-code');
+    var backBtn = document.getElementById('authm-back');
+    if(em){ em.disabled = false; }
+    if(pw){ pw.disabled = false; }
+    if(codeField){ codeField.value = ''; codeField.style.display = 'none'; }
+    if(backBtn){ backBtn.style.display = 'none'; }
+    authBtn.textContent = mode === 'create' ? 'Create account' : 'Sign in';
+    authBtn.disabled = false;
+  }
 
   function setMode(m){
     mode = m;
+    if(m === 'signin'){ resetSignupForm(); }
     document.getElementById('authm-tab-signin').classList.toggle('active', m === 'signin');
     document.getElementById('authm-tab-create').classList.toggle('active', m === 'create');
     authBtn.textContent = m === 'signin' ? 'Sign in' : 'Create account';
@@ -397,7 +431,7 @@
     msg.textContent = '';
   }
   function openModal(){ overlay.setAttribute('data-open','true'); msg.textContent=''; }
-  function closeModal(){ overlay.setAttribute('data-open','false'); }
+  function closeModal(){ overlay.setAttribute('data-open','false'); msg.textContent=''; resetSignupForm(); }
   window.openSignInModal = openModal;
 
   document.getElementById('authm-tab-signin').addEventListener('click', function(){ setMode('signin'); });
@@ -411,11 +445,12 @@
     var pass = document.getElementById('authm-pass').value;
     msg.classList.remove('ok');
     msg.textContent = '';
-    if(!email || !pass){ msg.textContent = 'Enter your email and password.'; return; }
-    if(pass.length < 8){ msg.textContent = 'Password must be at least 8 characters.'; return; }
-    authBtn.disabled = true;
 
+    /* ---- SIGN IN ---- */
     if(mode === 'signin'){
+      if(!email || !pass){ msg.textContent = 'Enter your email and password.'; return; }
+      if(pass.length < 8){ msg.textContent = 'Password must be at least 8 characters.'; return; }
+      authBtn.disabled = true;
       d.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
         if(r.error){
           msg.textContent = 'Could not sign in — check your email and password.';
@@ -424,28 +459,82 @@
         }
         window.location.href = 'index.html';
       });
-    } else {
-      d.auth.signUp({ email: email, password: pass }).then(function(r){
-        if(r.error){
-          msg.textContent = 'Could not create account: ' + r.error.message;
+      return;
+    }
+
+    /* ---- CREATE ACCOUNT, step 1: send a confirmation code ---- */
+    if(!pendingSignup){
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = 'Enter a valid email address.'; return; }
+      if(pass.length < 8){ msg.textContent = 'Password must be at least 8 characters.'; return; }
+      var code = makeCode();
+      authBtn.disabled = true;
+      msg.textContent = 'Sending confirmation code…';
+      ensureEmailJs(function(err){
+        if(err){
+          msg.textContent = 'Could not send the code. Try again in a moment.';
           authBtn.disabled = false;
           return;
         }
-        if(r.data.session){
-          d.from('profiles').insert({ id: r.data.user.id, email: email }).then(function(){
-            window.location.href = 'index.html';
-          });
-        } else {
-          msg.classList.add('ok');
-          msg.textContent = 'Account created — now sign in.';
-          setMode('signin');
+        emailjs.send(SIGNUP_SERVICE, SIGNUP_TEMPLATE,
+          { code: code, to_email: email },
+          { publicKey: SIGNUP_KEY }
+        ).then(function(){
+          pendingSignup = { code: code, email: email, password: pass, expires: Date.now() + SIGNUP_TTL };
+          document.getElementById('authm-email').disabled = true;
+          document.getElementById('authm-pass').disabled = true;
+          document.getElementById('authm-code').style.display = 'block';
+          document.getElementById('authm-back').style.display = 'block';
+          authBtn.textContent = 'Confirm & create account';
           authBtn.disabled = false;
-        }
+          msg.classList.add('ok');
+          msg.textContent = 'We sent a 6-digit code to ' + email + '. Enter it above to finish creating your account. If this wasn\'t you, just ignore the email.';
+        }, function(){
+          msg.textContent = 'Could not send the code. Try again in a moment.';
+          authBtn.disabled = false;
+        });
       });
+      return;
     }
+
+    /* ---- CREATE ACCOUNT, step 2: check the code, then create ---- */
+    if(Date.now() > pendingSignup.expires){
+      msg.textContent = 'That code expired. Click "Back" and try again.';
+      return;
+    }
+    var entered = document.getElementById('authm-code').value.trim();
+    if(entered !== pendingSignup.code){
+      msg.textContent = 'That code doesn\'t match. Check the email and try again.';
+      return;
+    }
+    authBtn.disabled = true;
+    d.auth.signUp({ email: pendingSignup.email, password: pendingSignup.password }).then(function(r){
+      if(r.error){
+        msg.textContent = 'Could not create account: ' + r.error.message;
+        authBtn.disabled = false;
+        return;
+      }
+      if(r.data.session){
+        d.from('profiles').insert({ id: r.data.user.id, email: pendingSignup.email }).then(function(){
+          window.location.href = 'index.html';
+        });
+      } else {
+        msg.classList.add('ok');
+        msg.textContent = 'Account created — now sign in.';
+        setMode('signin');
+      }
+    });
+  });
+
+  document.getElementById('authm-back').addEventListener('click', function(){
+    resetSignupForm();
+    msg.classList.remove('ok');
+    msg.textContent = '';
   });
 
   document.getElementById('authm-pass').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ authBtn.click(); }
+  });
+  document.getElementById('authm-code').addEventListener('keydown', function(e){
     if(e.key === 'Enter'){ authBtn.click(); }
   });
 
