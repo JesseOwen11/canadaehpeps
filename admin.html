@@ -17,6 +17,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-mono/700.css">
 <link rel="stylesheet" href="styles.css">
 <style>
+/* price inputs: hide the up/down stepper (Group buys + Bulk products) */
+input.p-price::-webkit-outer-spin-button, input.p-price::-webkit-inner-spin-button,
+input.bp-price::-webkit-outer-spin-button, input.bp-price::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+input.p-price, input.bp-price{ -moz-appearance:textfield; appearance:textfield; }
+
   .admin-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; max-width:1100px; margin:20px auto 0; padding:0 18px;}
   .admin-bar h1{font-size:1.3rem; display:flex; align-items:center; gap:10px;}
   .admin-bar h1 span.tint{color:var(--rust-deep);}
@@ -213,7 +218,7 @@
   </div>
 
   <div id="products-tab" style="display:none;">
-    <p class="bp-hint">These products appear on the public <b>Bulk Orders</b> page. Leave price blank to show <b>$--</b>. Set a purchase cap to limit how many each customer can buy. Changes go live the moment you save.</p>
+    <p class="bp-hint">These products appear on the public <b>Bulk Orders</b> page. Set a purchase cap to limit how many each customer can buy. Changes go live the moment you save.</p>
     <button class="btn btn-primary btn-sm" id="add-product-btn" style="margin-bottom:16px;">+ Add product</button>
     <div id="products-list"><div class="empty-note">Loading…</div></div>
   </div>
@@ -452,7 +457,7 @@
         '<div class="f-field"><label class="lab">Kit label</label><input class="field-input p-kit" type="text" maxlength="80" placeholder="kit · 10 vials"></div>' +
       '</div>' +
       '<div class="two">' +
-        '<div class="f-field"><label class="lab">Price per kit (CAD)</label><input class="field-input p-price" type="number" min="0" step="0.01" placeholder="38"></div>' +
+        '<div class="f-field"><label class="lab">Price per kit (USD)</label><input class="field-input p-price" type="number" min="0" step="0.01" placeholder="38"></div>' +
         '<div class="f-field"><label class="lab">Total kits available</label><input class="field-input p-total" type="number" min="1" max="9999" placeholder="20"></div>' +
       '</div>' +
       '<div class="f-field"><label class="lab">Vendor</label><input class="field-input p-vendor" type="text" maxlength="80" placeholder="Vendor / factory"></div>';
@@ -538,7 +543,7 @@
       var totalUnits = prods.reduce(function(s,p){ return s + (p.total_units||0); }, 0);
       var prodHtml = prods.map(function(p){
         return '<div class="bp-line">' + esc(p.name) +
-          '<span class="bp-meta">' + esc(p.kit_label || 'kit') + ' · $' + Number(p.price_cad) + ' CAD · ' + (p.total_units||0) + ' kits' + (p.vendor ? ' · ' + esc(p.vendor) : '') + '</span>' +
+          '<span class="bp-meta">' + esc(p.kit_label || 'kit') + ' · $' + Number(p.price_cad) + ' USD · ' + (p.total_units||0) + ' kits' + (p.vendor ? ' · ' + esc(p.vendor) : '') + '</span>' +
         '</div>';
       }).join('');
       var opts = BUY_STATUSES.map(function(s){
@@ -605,7 +610,7 @@
       '<div class="sp-grid">' +
         '<div class="sp-field"><label>Product name</label><input class="bp-name" type="text" maxlength="100" value="' + esc(p ? p.name : '') + '" placeholder="MOTS-C"></div>' +
         '<div class="sp-field"><label>Size label</label><input class="bp-size" type="text" maxlength="60" value="' + esc(p ? p.size_label : '') + '" placeholder="10mg vial"></div>' +
-        '<div class="sp-field"><label>Price CAD (blank = $--)</label><input class="bp-price" type="number" min="0" step="0.01" value="' + priceVal + '" placeholder="blank = price on request"></div>' +
+        '<div class="sp-field"><label>Price (USD)</label><input class="bp-price" type="number" min="0" step="0.01" value="' + priceVal + '" placeholder="blank = price on request"></div>' +
         '<div class="sp-field"><label>Per-customer purchase cap (blank = unlimited)</label><input class="bp-max" type="number" min="1" max="999" value="' + maxVal + '" placeholder="unlimited"></div>' +
         '<div class="sp-field"><label>Sort order</label><input class="bp-sort" type="number" min="1" max="999" value="' + sortVal + '" placeholder="' + (p ? '' : 'auto') + '"></div>' +
         '<div class="sp-field wide"><label>Description</label><textarea class="bp-desc" maxlength="300" placeholder="Batch-tested. Price confirmed at order review.">' + esc(p ? (p.description || '') : '') + '</textarea></div>' +
