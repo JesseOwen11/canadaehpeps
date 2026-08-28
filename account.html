@@ -207,7 +207,7 @@
           <div class="set-block">
             <h4>Change email</h4>
             <div class="set-row" id="email-edit-row">
-              <input class="field-input" id="new-email" type="email" maxlength="150" placeholder="New email address" autocomplete="off">
+              <input class="field-input" id="new-email" type="text" inputmode="email" maxlength="150" placeholder="New email address" autocomplete="off" readonly>
               <button class="btn btn-ghost btn-sm" id="upd-email-btn">Update email</button>
             </div>
             <div class="set-row" id="email-code-row" style="display:none;">
@@ -369,9 +369,22 @@
     dash.style.display = 'none';
   }
 
-  /* Ensure change-email field never auto-populates */
+  /* Ensure the change-email field NEVER auto-populates.
+     Browsers ignore autocomplete="off" on email fields and inject the saved
+     address anyway, so we use three layers:
+     1. The field starts readonly — browsers skip autofilling readonly inputs.
+     2. On focus/click the readonly is removed so the user can type normally.
+     3. A belt-and-braces clear on window load in case anything slipped in. */
   var newEmailField = document.getElementById('new-email');
-  if(newEmailField){ newEmailField.value = ''; }
+  if(newEmailField){
+    newEmailField.value = '';
+    newEmailField.addEventListener('focus', function(){ this.removeAttribute('readonly'); });
+    newEmailField.addEventListener('click', function(){ this.removeAttribute('readonly'); });
+  }
+  window.addEventListener('load', function(){
+    var f = document.getElementById('new-email');
+    if(f && document.activeElement !== f){ f.value = ''; }
+  });
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -727,3 +740,4 @@
 </script>
 </body>
 </html>
+<input class="field-input" id="new-email" type="text" inputmode="email" maxlength="150" placeholder="New email address" autocomplete="off" readonly>
