@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
+.cart-badge{position:absolute; top:-6px; right:-8px; min-width:18px; height:18px; border-radius:999px; background:var(--rust-deep); color:#fff; font-family:'Space Mono',monospace; font-size:0.6rem; font-weight:700; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1;}
+
   .acct-card{background:var(--panel); border:2px solid var(--ink); border-radius:var(--r-lg); padding:26px 22px; max-width:680px; margin-bottom:16px;}
   .acct-card h3{font-size:1.25rem; margin-bottom:12px;}
   .card-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
@@ -83,8 +85,9 @@
       <a class="icon-btn" href="account.html" aria-label="Account" title="Account">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.2c.8-3.4 3.9-5.2 7.5-5.2s6.7 1.8 7.5 5.2"/></svg>
       </a>
-      <a class="icon-btn" href="cart.html" aria-label="Cart">
+      <a class="icon-btn" href="cart.html" aria-label="Cart" style="position:relative;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8h13l-1.1 12.5H6.6L5.5 8z"/><path d="M9 8V6.5a3 3 0 016 0V8"/></svg>
+      <span class="cart-badge" id="cart-badge">0</span>
       </a>
       <button class="icon-btn" id="theme-toggle" aria-label="Toggle light / dark theme" aria-pressed="true"><span class="theme-toggle-icon">☽</span></button>
       <button class="icon-btn hamburger-btn" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
@@ -332,6 +335,23 @@
   });
 
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* cart badge — same behaviour as the shop pages */
+  (function(){
+    function updateBadge(){
+      var b = document.getElementById('cart-badge');
+      if(!b) return;
+      var n = 0;
+      try{
+        var items = JSON.parse(localStorage.getItem('cep_cart') || '[]');
+        n = items.reduce(function(s, it){ return s + (it.qty || 0); }, 0);
+      }catch(e){}
+      b.textContent = n > 99 ? '99+' : n;
+      b.style.display = n > 0 ? 'flex' : 'none';
+    }
+    updateBadge();
+  })();
+
   var gate = document.getElementById('gate-card');
   var dash = document.getElementById('dash');
   var nextBanner = document.getElementById('next-banner');
@@ -740,4 +760,3 @@
 </script>
 </body>
 </html>
-<input class="field-input" id="new-email" type="text" inputmode="email" maxlength="150" placeholder="New email address" autocomplete="off" readonly>
