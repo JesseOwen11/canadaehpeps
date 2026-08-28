@@ -260,7 +260,7 @@
         var total = p.total_units || 0;
         var pct = total > 0 ? Math.min(100, Math.round((reserved / total) * 100)) : 0;
         return '<div class="prod-row">' +
-          '<div class="pr-head"><span class="pr-name">' + esc(p.name) + '</span><span class="pr-price">$' + Number(p.price_cad) + ' / kit</span></div>' +
+          '<div class="pr-head"><span class="pr-name">' + esc(p.name) + '</span><span class="pr-price">$' + Number(p.price_cad) + ' USD / kit</span></div>' +
           '<div class="pr-kit">' + esc(p.kit_label || 'kit') + (p.vendor ? ' · ' + esc(p.vendor) : '') + '</div>' +
           '<div class="fill-track"><div class="fill-bar" style="width:' + pct + '%"></div></div>' +
           '<div class="buy-meta"><span>' + reserved + ' / ' + total + ' reserved</span></div>' +
@@ -319,7 +319,7 @@
     currentProd = prod;
     msg.textContent = '';
     document.getElementById('resv-title').textContent = prod.name;
-    document.getElementById('resv-kit').textContent = buy.code + ' · ' + (prod.kit_label || 'kit') + ' · $' + Number(prod.price_cad) + ' per kit';
+    document.getElementById('resv-kit').textContent = buy.code + ' · ' + (prod.kit_label || 'kit') + ' · $' + Number(prod.price_cad) + ' USD per kit';
     var left = kitsLeft();
     document.getElementById('resv-left').textContent = left + ' kit' + (left === 1 ? '' : 's') + ' left';
     document.getElementById('resv-qty').value = 1;
