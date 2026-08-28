@@ -210,7 +210,7 @@
     grid.innerHTML = prods.map(function(p){
       var priceHtml = (p.price_cad === null || p.price_cad === undefined)
         ? '$--<span>' + esc(p.size_label) + '</span>'
-        : '$' + Number(p.price_cad) + '<span>' + esc(p.size_label) + '</span>';
+        : '$' + Number(p.price_cad) + ' USD<span>' + esc(p.size_label) + '</span>';
       var limitHtml = p.max_qty ? '<span class="prod-limit">Limit ' + Number(p.max_qty) + ' per customer</span>' : '';
       var qid = 'q-' + p.id;
       return '<div class="prod-card">' +
